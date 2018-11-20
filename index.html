@@ -1,0 +1,193 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Kymatio: wavelet scattering in Python &#8212; kymatio  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="kymatio-wavelet-scattering-in-python">
+<h1>Kymatio: wavelet scattering in Python<a class="headerlink" href="#kymatio-wavelet-scattering-in-python" title="Permalink to this headline">¶</a></h1>
+<p>kymatio is a Python module for computing wavelet and scattering transforms.</p>
+<p>It is built on top of PyTorch, but also has a fast CUDA backend via cupy and
+skcuda.</p>
+<p>Use kymatio if you need a library that:</p>
+<ul class="simple">
+<li>integrates wavelet scattering in a deep learning architecture,</li>
+<li>supports 1-D, 2-D, and 3-D wavelets, and</li>
+<li>runs seamlessly on CPU and GPU hardware.</li>
+</ul>
+<p>A brief intro to wavelet scattering is provided in <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a>. For a
+list of publications see
+<a class="reference external" href="https://www.di.ens.fr/data/publications">Publications</a>.</p>
+<div class="section" id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>On Linux or macOS, open a shell and run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">kymatio</span>
+</pre></div>
+</div>
+<p>In the Python intepreter, you may then call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kymatio</span>
+</pre></div>
+</div>
+<p>which should run without error if the package has been correctly installed.</p>
+<div class="section" id="apply-2d-scattering-to-a-32x32-random-image">
+<h3>Apply 2D scattering to a 32x32 random image<a class="headerlink" href="#apply-2d-scattering-to-a-32x32-random-image" title="Permalink to this headline">¶</a></h3>
+<p>The following code imports <code class="docutils literal notranslate"><span class="pre">torch</span></code> and the <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> class, which
+implements the 2D scattering transform. It then creates an instance of this
+class to compute the scattering transform at scale <code class="docutils literal notranslate"><span class="pre">J</span> <span class="pre">=</span> <span class="pre">2</span></code> of a 32x32 image
+consisting of Gaussian white noise:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
+<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">Sx</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Sx</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This should output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">81</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This corresponds to 81 scattering coefficients, each corresponding to an
+8x8 image.</p>
+<p>Check out the <a class="reference internal" href="userguide.html#user-guide"><span class="std std-ref">User Guide</span></a> for more scattering transform examples.</p>
+<p>The performance of the scattering transform depends on the specific backend
+that’s in use. For more information on switching backends to improve
+performance, see the <a class="reference internal" href="userguide.html#backend-story"><span class="std std-ref">Backend</span></a> section.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#recommended">Recommended</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#from-source">From source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#optimizing-gpu-acceleration">Optimizing GPU acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#developer">Developer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#introduction-to-scattering-transforms">Introduction to scattering transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#practical-implementation">Practical implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#output-size">Output size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#switching-from-cpu-to-gpu">Switching from CPU to GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#backend">Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userguide.html#benchmark-with-previous-versions">Benchmark with previous versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developerguide.html">Information for developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developerguide.html#backend-core-of-the-algorithm">Backend: core of the algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developerguide.html#unit-tests">Unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developerguide.html#checking-speed">Checking speed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developerguide.html#proposing-a-pull-request-pr">Proposing a Pull Request(PR)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_1d/index.html">1D examples</a><ul>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_2d/index.html">2D examples</a><ul>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_3d/index.html">3D examples</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">kymatio</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_3d/index.html">3D examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

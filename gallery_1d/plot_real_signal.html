@@ -1,0 +1,259 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Compute the scattering transform of a speech recording &#8212; kymatio  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1D scattering transform benchmark" href="compute_speed.html" />
+    <link rel="prev" title="Plot the 1D wavelet filters" href="plot_filters.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-gallery-1d-plot-real-signal-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="compute-the-scattering-transform-of-a-speech-recording">
+<span id="sphx-glr-gallery-1d-plot-real-signal-py"></span><h1>Compute the scattering transform of a speech recording<a class="headerlink" href="#compute-the-scattering-transform-of-a-speech-recording" title="Permalink to this headline">¶</a></h1>
+<p>This script loads a speech signal from the free spoken digit dataset (FSDD)
+of a man pronouncing the word “zero,” computes its scattering transform, and
+displays the zeroth-, first-, and second-order scattering coefficients.</p>
+<div class="section" id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
+<p>Since kymatio handles PyTorch arrays, we first import <cite>torch</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+</pre></div>
+</div>
+<p>To handle audio file I/O, we import <cite>os</cite> and <cite>scipy.io.wavfile</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">scipy.io.wavfile</span>
+</pre></div>
+</div>
+<p>We import <cite>matplotlib</cite> to plot the calculated scattering coefficients.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>Finally, we import the <cite>Scattering1D</cite> class from the <cite>scattering</cite> package and
+the <cite>fetch_fsdd</cite> function from <cite>scattering.datasets</cite>. The <cite>Scattering1D</cite>
+class is what lets us calculate the scattering transform, while the
+<cite>fetch_fsdd</cite> function downloads the FSDD, if needed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering1D</span>
+<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">fetch_fsdd</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scattering-setup">
+<h2>Scattering setup<a class="headerlink" href="#scattering-setup" title="Permalink to this headline">¶</a></h2>
+<p>First, we make download the FSDD (if not already downloaded) and read in the
+recording <cite>0_jackson_0.wav</cite> of a man pronouncing the word “zero”.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">info_dataset</span> <span class="o">=</span> <span class="n">fetch_fsdd</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_dataset</span><span class="p">[</span><span class="s1">&#39;path_dataset&#39;</span><span class="p">],</span>
+                        <span class="nb">sorted</span><span class="p">(</span><span class="n">info_dataset</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once the recording is in memory, we convert it to a PyTorch Tensor, normalize
+it, and reshape it to the form <cite>(B, C, T)</cite>, where <cite>B</cite> is the batch size, <cite>C</cite>
+is the number of channels, and <cite>T</cite> is the number of samples in the recording.
+In our case, we have only one signal in our batch, so <cite>B = 1</cite>. We also have
+a single channel, so <cite>C = 1</cite>. Note that <cite>C</cite> is almost always <cite>1</cite>, for input
+Tensors as this axis indexes the different scattering coefficients.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">/=</span> <span class="n">x</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We are now ready to set up the parameters for the scattering transform.
+First, the number of samples, <cite>T</cite>, is given by the size of our input <cite>x</cite>.
+The averaging scale is specified as a power of two, <cite>2**J</cite>. Here, we set
+<cite>J = 6</cite> to get an averaging, or maximum, scattering scale of <cite>2**6 = 64</cite>
+samples. Finally, we set the number of wavelets per octave, <cite>Q</cite>, to <cite>16</cite>.
+This lets us resolve frequencies at a resolution of <cite>1/16</cite> octaves.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="mi">16</span>
+</pre></div>
+</div>
+<p>Finally, we are able to create the object which computes our scattering
+transform, <cite>scattering</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compute-and-display-the-scattering-coefficients">
+<h2>Compute and display the scattering coefficients<a class="headerlink" href="#compute-and-display-the-scattering-coefficients" title="Permalink to this headline">¶</a></h2>
+<p>Computing the scattering transform of a PyTorch Tensor is achieved using the
+<cite>forward()</cite> method of the <cite>Scattering1D</cite> class. The output is another Tensor
+of shape <cite>(B, C, T)</cite>. Here, <cite>B</cite> is the same as for the input <cite>x</cite>, but <cite>C</cite> is
+the number of scattering coefficient outputs, and <cite>T</cite> is the number of
+samples along the time axis. This is typically much smaller than the number
+of input samples since the scattering transform performs an average in time
+and subsamples the result to save memory.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx</span> <span class="o">=</span> <span class="n">scattering</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To display the scattering coefficients, we must first identify which belong
+to each order (zeroth, first, or second). We do this by extracting the <cite>meta</cite>
+information from the scattering object and constructing masks for each order.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">meta</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="o">.</span><span class="n">compute_meta_scattering</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+<span class="n">order0</span> <span class="o">=</span> <span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">order1</span> <span class="o">=</span> <span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">order2</span> <span class="o">=</span> <span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, we plot the original signal <cite>x</cite>. Note that we have to index it as
+<cite>x[0,0,:]</cite> to convert it to a one-dimensional array and convert it to a
+numpy array using the <cite>numpy()</cite> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original signal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_real_signal_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_real_signal_001.png" />
+<p>We now plot the zeroth-order scattering coefficient, which is simply an
+average of the original signal at the scale <cite>2**J</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">order0</span><span class="p">,:]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scattering Order 0&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_real_signal_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_real_signal_002.png" />
+<p>We then plot the first-order coefficients, which are arranged along time
+and log-frequency.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">order1</span><span class="p">,:]</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scattering Order 1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_real_signal_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_real_signal_003.png" />
+<p>Finally, we plot the second-order scattering coefficients. These are also
+organized aling time, but has two log-frequency indices: one first-order
+frequency and one second-order frequency. Here, both indices are mixed along
+the vertical axis.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">order2</span><span class="p">,:]</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scattering Order 2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_real_signal_004.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_real_signal_004.png" />
+<p>Display the plots!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.508 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-plot-real-signal-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_real_signal.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_real_signal.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_real_signal.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_real_signal.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">kymatio</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 1D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html#plot-the-filters">Plot the filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Compute the scattering transform of a speech recording</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_speed.html">1D scattering transform benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_synthetic.html">Compute the scattering transform of a synthetic signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_classif.html">Classification of spoken digit recordings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">1D examples</a><ul>
+      <li>Previous: <a href="plot_filters.html" title="previous chapter">Plot the 1D wavelet filters</a></li>
+      <li>Next: <a href="compute_speed.html" title="next chapter">1D scattering transform benchmark</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="../_sources/gallery_1d/plot_real_signal.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

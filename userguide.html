@@ -1,0 +1,434 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>User Guide &#8212; kymatio  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Information for developers" href="developerguide.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="user-guide">
+<span id="id1"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction-to-scattering-transforms">
+<h2>Introduction to scattering transforms<a class="headerlink" href="#introduction-to-scattering-transforms" title="Permalink to this headline">¶</a></h2>
+<p>A scattering transform is a non-linear signal representation that builds
+invariance to geometric transformations while preserving a high degree of
+discriminability. These transforms can be made invariant to translations,
+rotations (for 2D or 3D signals), frequency shifting (for 1D signals), or
+changes of scale. These transformations are often irrelevant to many
+classification and regression tasks, so representing signals using their
+scattering transform reduces unnecessary variability while capturing structure
+needed for a given task. This reduced variability simplifies the building of
+models, especially given small training sets.</p>
+<p>The scattering transform is defined as a complex-valued convolutional neural
+network whose filters are fixed to be wavelets and the non-linearity is a
+complex modulus. Each layer is a wavelet transform, which separates the scales
+of the incoming signal. The wavelet transform is contractive, and so is the
+complex modulus, so the whole network is contractive. The result is a reduction
+of variance and a stability to additive noise. The separation of scales by
+wavelets also enables stability to deformation of the original signal. These
+properties make the scattering transform well-suited for representing structured
+signals such as natural images, textures, audio recordings, biomedical signals,
+or molecular density functions.</p>
+<p>Let us consider a set of wavelets <img class="math" src="_images/math/60cc670ea773ae19ff9ca03cd6a39f101b550183.png" alt="\{\psi_\lambda\}_\lambda"/>, such that
+ther exists some <img class="math" src="_images/math/65d19c66c148d5016c6a89d26486bf6d1966ded1.png" alt="\epsilon"/> satisfying:</p>
+<div class="math">
+<p><img src="_images/math/717e7c31ccd1d97eed0b5a341dad63d2c14fb4a4.png" alt="1-\epsilon \leq \sum_\lambda |\hat \psi_\lambda(\omega)|^2 \leq 1"/></p>
+</div><p>Given a signal <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/>, we define its scattering coefficient of order
+<img class="math" src="_images/math/0b7c1e16a3a8a849bb8ffdcdbf86f65fd1f30438.png" alt="k"/> corresponding to the sequence of frequencies
+<img class="math" src="_images/math/9cdf0c26b6d787c418bb4cd3155561132b380dee.png" alt="(\lambda_1,...,\lambda_k)"/> to be</p>
+<div class="math">
+<p><img src="_images/math/88edc24dccb427481150e678d7143e3bff5ae73a.png" alt="Sx[\lambda_1,...,\lambda_k] = |\psi_{\lambda_k} \star ...| \psi_{\lambda_1} \star x|...|"/></p>
+</div><p>For a general treatment of the scattering transform, see
+<a class="reference internal" href="#mallat2012group" id="id2">[Mal12]</a>. More specific descriptions of the scattering transform
+are found in <a class="reference internal" href="#anden2014deep" id="id3">[AndenM14]</a> for 1D, <a class="reference internal" href="#bruna2013invariant" id="id4">[BM13]</a> for 2D,
+and <a class="reference internal" href="#eickenberg2017solid" id="id5">[EEHM17]</a> for 3D.</p>
+</div>
+<div class="section" id="practical-implementation">
+<h2>Practical implementation<a class="headerlink" href="#practical-implementation" title="Permalink to this headline">¶</a></h2>
+<p>Previous implementations, such as ScatNet <a class="reference internal" href="#anden2014scatnet" id="id6">[AndenSM+14]</a>, of the
+scattering transform relied on computing the scattering coefficients layer by
+layer. In Kymatio, we instead traverse the scattering transform tree in a
+depth-first fashion. This limits memory usage and makes the implementation
+better suited for execution on a GPU. The difference between the two approaches
+is illustrated in the figure below.</p>
+<div class="figure align-center" id="id25">
+<a class="reference internal image-reference" href="_images/algorithm.png"><img alt="Comparison of ScatNet and Kymatio implementations." src="_images/algorithm.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">The scattering tree traversal strategies of (a) the ScatNet toolbox, and (b)
+Kymatio. While ScatNet traverses the tree in a breadth-first fashion (layer
+by layer), Kymatio performs a depth-first traversal.</span></p>
+</div>
+<p>More details about our implementation can be found in <a class="reference internal" href="developerguide.html#dev-guide"><span class="std std-ref">Information for developers</span></a>.</p>
+<div class="section" id="d">
+<h3>1-D<a class="headerlink" href="#d" title="Permalink to this headline">¶</a></h3>
+<p>The 1D scattering coefficients computed by Kymatio are similar to those of
+ScatNet <a class="reference internal" href="#anden2014scatnet" id="id7">[AndenSM+14]</a>, but do not coincide exactly. This is due to a
+slightly different choice of filters, subsampling rules, and coefficient
+selection criteria. The resulting coefficients, however, have a comparable
+performance for classification and regression tasks.</p>
+</div>
+<div class="section" id="id8">
+<h3>2-D<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p>The 2D implementation in this package provides scattering coefficients that
+exactly match those of ScatNet <a class="reference internal" href="#anden2014scatnet" id="id9">[AndenSM+14]</a>.</p>
+</div>
+<div class="section" id="id10">
+<h3>3-D<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="output-size">
+<h2>Output size<a class="headerlink" href="#output-size" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h3>1-D<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>If the input <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/> is a Tensor of size <img class="math" src="_images/math/8e30b6756aaa09b2abb6285b224d8081daec6928.png" alt="(B, 1, T)"/>, the output of the
+1D scattering transform is of size <img class="math" src="_images/math/37766bc81d37aa144bc34c9d28ccd95a8842e6e4.png" alt="(B, P, T/2**J)"/>, where <img class="math" src="_images/math/9dcbbef8e0f76051d388013b90a95bec3069e484.png" alt="P"/> is
+the number of scattering coefficients and <cite>2**J</cite> is the maximum scale of the
+transform. The value of <img class="math" src="_images/math/9dcbbef8e0f76051d388013b90a95bec3069e484.png" alt="P"/> depends on the maximum order of the scattering
+transform and the parameters <img class="math" src="_images/math/331157c6afbd113256867fd408d80277d1a24756.png" alt="Q"/> and <img class="math" src="_images/math/ca54d3a4a8a221da5f7a13a28ec6a45b4abcc5a5.png" alt="J"/>. It is roughly proportional
+to <img class="math" src="_images/math/faf9232af1705f967a7576c6cc6366df24751590.png" alt="1 + J Q + J (J-1) Q / 2"/>.</p>
+</div>
+<div class="section" id="id12">
+<h3>2-D<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>Let us assume that <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/> is a tensor of size <img class="math" src="_images/math/674895174f438ddc4eea926c4293cf857e8ba2c1.png" alt="(B,C,N_1,N_2)"/>. Then, if the
+output <img class="math" src="_images/math/ea5ff52ba3b9b8063bb31d1b44fd226ff675b8dd.png" alt="Sx"/> via a Scattering Transform with scale <img class="math" src="_images/math/ca54d3a4a8a221da5f7a13a28ec6a45b4abcc5a5.png" alt="J"/> and <img class="math" src="_images/math/ae2b750f71e1fc0daaa3de9a85d42794d7cd1326.png" alt="L"/> angles will have
+size:</p>
+<div class="math">
+<p><img src="_images/math/1dfd180f2801f161f1c8f0447f802ae024d17de9.png" alt="(B,C,1+LJ+\frac{L^2J(J-1)}{2},\frac{N_1}{2^J},\frac{N_2}{2^J})"/></p>
+</div></div>
+<div class="section" id="id13">
+<h3>3-D<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="switching-from-cpu-to-gpu">
+<h2>Switching from CPU to GPU<a class="headerlink" href="#switching-from-cpu-to-gpu" title="Permalink to this headline">¶</a></h2>
+<p>When initialized, a scattering transform object is stored on the CPU:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
+
+<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We use this to compute scattering transforms of signals in CPU memory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+<span class="n">Sx</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If a CUDA-enabled GPU is available, we may transfer the scattering transform
+object to GPU memory by calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">cuda()</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Transferring the signal to GPU memory as well, we can then compute its
+scattering coefficients:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_gpu</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="n">Sx_gpu</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Transferring the output back to CPU memory, we may then compare the outputs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_gpu</span> <span class="o">=</span> <span class="n">Sx_gpu</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Sx_gpu</span><span class="o">-</span><span class="n">Sx</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>These coefficients should agree up to machine precision. We may transfer the
+scattering transform object back to the CPU by calling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="backend">
+<span id="backend-story"></span><h2>Backend<a class="headerlink" href="#backend" title="Permalink to this headline">¶</a></h2>
+<p>The scattering transform implementation in Kymatio is structured around a
+flexible backend framework. These backends encapsulate the most computationally
+intensive part of the scattering transform calculation. As a result, improved
+performance can often achieved by replacing the default backend with a more
+optimized alternative.</p>
+<p>The default backend in Kymatio, <code class="docutils literal notranslate"><span class="pre">torch</span></code>, is implemented in PyTorch. This is
+available for 1D, 2D, and 3D. It is also compatible with the PyTorch automatic
+differentiation framework.</p>
+<p>A more powerful backend, <code class="docutils literal notranslate"><span class="pre">skcuda</span></code>, relies on <code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code> and <code class="docutils literal notranslate"><span class="pre">cupy</span></code> to
+improve performance through optimized CUDA kernels. This backend is available
+only in 1D and 2D. It is not differentiable and relies on additional
+dependencies to work properly. These may be installed by running:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements_optional_cuda</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>To specify which backend is to be used, you may edit the configuration file
+found in <code class="docutils literal notranslate"><span class="pre">~/.config/kymatio/kymatio.cfg</span></code>. To temporarily switch a backend, you
+may use the <code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND</span></code> environment variable, which overrides the
+default setting in the configuration file. Alternatively, the backend may be
+specified on a per-dimension basis through the <code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND_1D</span></code>,
+<code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND_2D</span></code>, and <code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND_3D</span></code> variables.</p>
+<div class="section" id="d-backend">
+<h3>1-D backend<a class="headerlink" href="#d-backend" title="Permalink to this headline">¶</a></h3>
+<p>Currently, two backends exist for the 1D scattering transform:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">torch</span></code>: A PyTorch-only implementation which is differentiable with respect
+to its inputs. However, it relies on general-purpose CUDA kernels for GPU
+computation which reduces performance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">skcuda</span></code>: An implementation using custom CUDA kernels (through <code class="docutils literal notranslate"><span class="pre">cupy</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code>. This implementation only runs on the GPU (that is, you must
+call <code class="xref py py-meth docutils literal notranslate"><span class="pre">cuda()</span></code> prior to applying it) and is currently only slightly faster
+than the default <code class="docutils literal notranslate"><span class="pre">torch</span></code> backend. Work to further optimize this backend is
+currently underway.</li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h3>2-D backend<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>Currently, two backends exist for the 2D scattering transform:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">torch</span></code>: A PyTorch-only implementation which is differentiable with respect
+to its inputs. However, it relies on general-purpose CUDA kernels for GPU
+computation which reduces performance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">skcuda</span></code>: An implementation using custom CUDA kernels (through <code class="docutils literal notranslate"><span class="pre">cupy</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code>. This implementation only runs on the GPU (that is, you must
+call <code class="xref py py-meth docutils literal notranslate"><span class="pre">cuda()</span></code> prior to applying it). Since it uses kernels optimized for
+the various steps of the scattering transform, it achieves better performance
+compared to the default <code class="docutils literal notranslate"><span class="pre">torch</span></code> backend (see benchmarks below).</li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>3-D backend<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p>Currently, one backends exists for the 3D scattering transform:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">torch</span></code>: A PyTorch-only implementation which is differentiable with respect
+to its inputs. However, it relies on general-purpose CUDA kernels for GPU
+computation which reduces performance.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="benchmark-with-previous-versions">
+<h2>Benchmark with previous versions<a class="headerlink" href="#benchmark-with-previous-versions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h3>1-D backend<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p>We compared our implementation with that of the ScatNet MATLAB package
+<a class="reference internal" href="#anden2014scatnet" id="id17">[AndenSM+14]</a> with similar settings. The following table shows the
+average computation time for a batch of size <img class="math" src="_images/math/861fc7520857cce73dd8b7a0883be680819aaa36.png" alt="64 \times 1 \times 65536"/>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="64%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Average time per batch (s)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ScatNet <a class="reference internal" href="#anden2014scatnet" id="id18">[AndenSM+14]</a></td>
+<td>1.65</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</td>
+<td>2.74</td>
+</tr>
+<tr class="row-even"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, Quadro M4000 GPU)</td>
+<td>0.81</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, V100 GPU)</td>
+<td>0.15</td>
+</tr>
+<tr class="row-even"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backend, Quadro M4000 GPU)</td>
+<td>0.66</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backend, V100 GPU)</td>
+<td>0.11</td>
+</tr>
+</tbody>
+</table>
+<p>The CPU tests were performed on a 24-core machine. Further optimization of both
+the torch and skcuda backends is currently underway, so we expect these numbers
+to improve in the near future.</p>
+</div>
+<div class="section" id="id19">
+<h3>2-D backend<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>We compared our implementation the ScatNetLight MATLAB package
+<a class="reference internal" href="#oyallon-2015-cvpr" id="id20">[OM15]</a> and a previous PyTorch implementation, <em>PyScatWave</em>
+<a class="reference internal" href="#id24" id="id21">[OZH+18]</a>. The following table shows the average computation time for a
+batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a00d58522ea.png" alt="128 \times 3 \times 256 \times 256"/>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="64%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Average time per batch (s)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MATLAB <a class="reference internal" href="#oyallon-2015-cvpr" id="id22">[OM15]</a></td>
+<td>&gt;200</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</td>
+<td>110</td>
+</tr>
+<tr class="row-even"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, 1080Ti GPU)</td>
+<td>4.4</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, V100 GPU)</td>
+<td>2.9</td>
+</tr>
+<tr class="row-even"><td>PyScatWave (1080Ti GPU)</td>
+<td>0.5</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backend, 1080Ti GPU)</td>
+<td>0.5</td>
+</tr>
+</tbody>
+</table>
+<p>The CPU tests were performed on a 48-core machine.</p>
+</div>
+<div class="section" id="id23">
+<h3>3-D backend<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<p class="rubric">References</p>
+<p id="bibtex-bibliography-userguide-0"><table class="docutils citation" frame="void" id="anden2014deep" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[AndenM14]</a></td><td>J.&nbsp;Andén and S.&nbsp;Mallat. Deep scattering spectrum. <em>IEEE Trans. Signal Process.</em>, 62:4114–4128, 2014.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="anden2014scatnet" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[AndenSM+14]</td><td><em>(<a class="fn-backref" href="#id6">1</a>, <a class="fn-backref" href="#id7">2</a>, <a class="fn-backref" href="#id9">3</a>, <a class="fn-backref" href="#id17">4</a>, <a class="fn-backref" href="#id18">5</a>)</em> J&nbsp;Andén, L&nbsp;Sifre, S&nbsp;Mallat, M&nbsp;Kapoko, V&nbsp;Lostanlen, and E&nbsp;Oyallon. Scatnet. <em><span>Computer Software. Available: <a class="reference external" href="#"></a></span>http://www.di.ens.fr/data/software/scatnet</em>, 2014.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="bruna2013invariant" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[BM13]</a></td><td>J.&nbsp;Bruna and S.&nbsp;Mallat. Invariant scattering convolution networks. <em>IEEE Trans. Pattern Anal. Mach. Intell.</em>, 35(8):1872–1886, 2013.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="eickenberg2017solid" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[EEHM17]</a></td><td>Michael Eickenberg, Georgios Exarchakis, Matthew Hirn, and Stéphane Mallat. Solid harmonic wavelet scattering: predicting quantum molecular energy from invariant descriptors of 3d electronic densities. In <em>Advances in Neural Information Processing Systems</em>, 6540–6549. 2017.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="mallat2012group" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Mal12]</a></td><td>Stéphane Mallat. Group invariant scattering. <em>Communications on Pure and Applied Mathematics</em>, 65(10):1331–1398, 2012.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="id24" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id21">[OZH+18]</a></td><td>E.&nbsp;Oyallon, S.&nbsp;Zagoruyko, G.&nbsp;Huang, N.&nbsp;Komodakis, S.&nbsp;Lacoste-Julien, M.&nbsp;B. Blaschko, and E.&nbsp;Belilovsky. Scattering networks for hybrid representation learning. <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em>, ():1–1, 2018. <a class="reference external" href="https://doi.org/10.1109/TPAMI.2018.2855738">doi:10.1109/TPAMI.2018.2855738</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="oyallon-2015-cvpr" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[OM15]</td><td><em>(<a class="fn-backref" href="#id20">1</a>, <a class="fn-backref" href="#id22">2</a>)</em> Edouard Oyallon and Stephane Mallat. Deep roto-translation scattering for object classification. In <em>The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>. June 2015.</td></tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">kymatio</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction-to-scattering-transforms">Introduction to scattering transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#practical-implementation">Practical implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output-size">Output size</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#switching-from-cpu-to-gpu">Switching from CPU to GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend">Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benchmark-with-previous-versions">Benchmark with previous versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_3d/index.html">3D examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="developerguide.html" title="next chapter">Information for developers</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/userguide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

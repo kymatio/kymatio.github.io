@@ -1,0 +1,148 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Information for developers &#8212; kymatio  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code documentation of the library" href="codereference.html" />
+    <link rel="prev" title="User Guide" href="userguide.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="information-for-developers">
+<span id="dev-guide"></span><h1>Information for developers<a class="headerlink" href="#information-for-developers" title="Permalink to this headline">¶</a></h1>
+<p>Something something how the code works</p>
+<div class="section" id="backend-core-of-the-algorithm">
+<h2>Backend: core of the algorithm<a class="headerlink" href="#backend-core-of-the-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>Common to the 1-2-3-D routines of the Scattering Transform, four low-level functions
+must be optimized:</p>
+<ol class="arabic simple">
+<li>FFT/iFFT</li>
+<li>SubsamplingFourier</li>
+<li>Non-linearity (e.g. modulus for 1-2D)</li>
+<li>Dotwise complex multiplication</li>
+<li>Padding/unpadding</li>
+</ol>
+</div>
+<div class="section" id="unit-tests">
+<h2>Unit tests<a class="headerlink" href="#unit-tests" title="Permalink to this headline">¶</a></h2>
+<p>For running all the unit tests and avoiding bugs, please simply run from the
+main folder:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+<p>If all the tests pass, then you might be able to submit your Pull Request as explained
+in the next section!</p>
+</div>
+<div class="section" id="checking-speed">
+<h2>Checking speed<a class="headerlink" href="#checking-speed" title="Permalink to this headline">¶</a></h2>
+<p>Please check <cite>examples/.d/compute_speed.py</cite> to benchmark your modification of backend.</p>
+</div>
+<div class="section" id="proposing-a-pull-request-pr">
+<h2>Proposing a Pull Request(PR)<a class="headerlink" href="#proposing-a-pull-request-pr" title="Permalink to this headline">¶</a></h2>
+<p>Each PR must be documented using docstings, illustrated with an example and must run the
+unit tests.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">kymatio</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Information for developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#backend-core-of-the-algorithm">Backend: core of the algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unit-tests">Unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-speed">Checking speed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposing-a-pull-request-pr">Proposing a Pull Request(PR)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_3d/index.html">3D examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="userguide.html" title="previous chapter">User Guide</a></li>
+      <li>Next: <a href="codereference.html" title="next chapter">Code documentation of the library</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/developerguide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

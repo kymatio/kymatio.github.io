@@ -1,0 +1,489 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Classification of spoken digit recordings &#8212; kymatio  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2D examples" href="../gallery_2d/index.html" />
+    <link rel="prev" title="Compute the scattering transform of a synthetic signal" href="plot_synthetic.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-gallery-1d-plot-classif-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="classification-of-spoken-digit-recordings">
+<span id="sphx-glr-gallery-1d-plot-classif-py"></span><h1>Classification of spoken digit recordings<a class="headerlink" href="#classification-of-spoken-digit-recordings" title="Permalink to this headline">¶</a></h1>
+<p>In this example we use the 1D scattering transform to represent spoken digits,
+which we then classify using a simple classifier. This shows that 1D scattering
+representations are useful for this type of problem.</p>
+<p>This dataset is automatically downloaded and preprocessed from
+<a class="reference external" href="https://github.com/Jakobovski/free-spoken-digit-dataset.git">https://github.com/Jakobovski/free-spoken-digit-dataset.git</a></p>
+<p>Downloading and precomputing scattering coefficients should take about 5 min.
+Running the gradient descent takes about 1 min.</p>
+<p>Results:
+Training accuracy = 99.7%
+Testing accuracy = 98.0%</p>
+<div class="section" id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
+<p>Since kymatio handles PyTorch arrays, we first import <cite>torch</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+</pre></div>
+</div>
+<p>We will be constructing a logistic regression classifier on top of the
+scattering coefficients, so we need some of the neural network tools from
+<cite>torch.nn</cite> and the Adam optimizer from <cite>torch.optim</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">Linear</span><span class="p">,</span> <span class="n">NLLLoss</span><span class="p">,</span> <span class="n">LogSoftmax</span><span class="p">,</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">Adam</span>
+</pre></div>
+</div>
+<p>To handle audio file I/O, we import <cite>os</cite> and <cite>scipy.io.wavfile</cite>. We also need
+<cite>numpy</cite> for some basic array manipulation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">wavfile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>To evaluate our results, we need to form a confusion matrix using
+scikit-learn and display them using <cite>matplotlib</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>Finally, we import the <cite>Scattering1D</cite> class from the <cite>scattering</cite> package and
+the <cite>fetch_fsdd</cite> function from <cite>scattering.datasets</cite>. The <cite>Scattering1D</cite>
+class is what lets us calculate the scattering transform, while the
+<cite>fetch_fsdd</cite> function downloads the FSDD, if needed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering1D</span>
+<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">fetch_fsdd</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pipeline-setup">
+<h2>Pipeline setup<a class="headerlink" href="#pipeline-setup" title="Permalink to this headline">¶</a></h2>
+<p>We start by specifying the dimensions of our processing pipeline along with
+some other parameters.</p>
+<p>First, we have signal length. Longer signals are truncated and shorter
+signals are zero-padded. The sampling rate is 8000 Hz, so this corresponds to
+little over a second.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">13</span>
+</pre></div>
+</div>
+<p>Maximum scale 2**J of the scattering transform (here, about 30 milliseconds)
+and the number of wavelets per octave.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="mi">12</span>
+</pre></div>
+</div>
+<p>We need a small constant to add to the scattering coefficients before
+computing the logarithm. This prevents very large values when the scattering
+coefficients are very close to zero.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">log_eps</span> <span class="o">=</span> <span class="mf">1e-6</span>
+</pre></div>
+</div>
+<p>If a GPU is available, let’s use it!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">use_cuda</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For reproducibility, we fix the seed of the random number generator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loading-the-data">
+<h2>Loading the data<a class="headerlink" href="#loading-the-data" title="Permalink to this headline">¶</a></h2>
+<p>Once the parameter are set, we can start loading the data into a format that
+can be fed into the scattering transform and then a logistic regression
+classifier.</p>
+<p>We first download the dataset. If it’s already downloaded, <cite>fetch_fsdd</cite> will
+simply return the information corresponding to the dataset that’s already
+on disk.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">info_data</span> <span class="o">=</span> <span class="n">fetch_fsdd</span><span class="p">()</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">info_data</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span>
+<span class="n">path_dataset</span> <span class="o">=</span> <span class="n">info_data</span><span class="p">[</span><span class="s1">&#39;path_dataset&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Set up Tensors to hold the audio signals (<cite>x_all</cite>), the labels (<cite>y_all</cite>), and
+whether the signal is in the train or test set (<cite>subset</cite>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_all</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">y_all</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For each file in the dataset, we extract its label <cite>y</cite> and its index from the
+filename. If the index is between 0 and 4, it is placed in the test set, while
+files with larger indices are used for training. The actual signals are
+normalized to have maximum amplitude one, and are truncated or zero-padded
+to the desired length <cite>T</cite>. They are then stored in the <cite>x_all</cite> Tensor while
+their labels are in <cite>y_all</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Get label (0-9) of recording.</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Index larger than 5 gets assigned to training set.</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">subset</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subset</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Load the audio signal and normalize it.</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_dataset</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="c1"># Convert from NumPy array to PyTorch Tensor.</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># If it&#39;s too long, truncate it.</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="c1"># If it&#39;s too short, zero-pad it.</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">numel</span><span class="p">())</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">x_all</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">numel</span><span class="p">()]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">y_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="log-scattering-transform">
+<h2>Log-scattering transform<a class="headerlink" href="#log-scattering-transform" title="Permalink to this headline">¶</a></h2>
+<p>We now create the <cite>Scattering1D</cite> object that will be used to calculate the
+scattering coefficients.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we are using CUDA, the scattering transform object must be transferred to
+the GPU by calling its <cite>cuda()</cite> method. The data is similarly transferred.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+    <span class="n">scattering</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">x_all</span> <span class="o">=</span> <span class="n">x_all</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">y_all</span> <span class="o">=</span> <span class="n">y_all</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Compute the scattering transform for all signals in the dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_all</span> <span class="o">=</span> <span class="n">scattering</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x_all</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since it does not carry useful information, we remove the zeroth-order
+scattering coefficients, which are always placed in the first channel of
+the scattering Tensor.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_all</span> <span class="o">=</span> <span class="n">Sx_all</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:,:]</span>
+</pre></div>
+</div>
+<p>To increase discriminability, we take the logarithm of the scattering
+coefficients (after adding a small constant to make sure nothing blows up
+when scattering coefficients are close to zero).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_all</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Sx_all</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_eps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we average along the last dimension (time) to get a time-shift
+invariant representation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_all</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Sx_all</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="training-the-classifier">
+<h2>Training the classifier<a class="headerlink" href="#training-the-classifier" title="Permalink to this headline">¶</a></h2>
+<p>With the log-scattering coefficients in hand, we are ready to train our
+logistic regression classifier.</p>
+<p>First, we extract the training data (those for which <cite>subset</cite> equals <cite>0</cite>)
+and the associated labels.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_tr</span><span class="p">,</span> <span class="n">y_tr</span> <span class="o">=</span> <span class="n">Sx_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Standardize the data to have mean zero and unit variance. Note that we need
+to apply the same transformation to the test data later, so we save the
+mean and standard deviation Tensors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mu_tr</span> <span class="o">=</span> <span class="n">Sx_tr</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">std_tr</span> <span class="o">=</span> <span class="n">Sx_tr</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Sx_tr</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sx_tr</span> <span class="o">-</span> <span class="n">mu_tr</span><span class="p">)</span> <span class="o">/</span> <span class="n">std_tr</span>
+</pre></div>
+</div>
+<p>Here we define a Logistic Regression model using PyTorch. We train it using
+Adam with a negative log-likelihood loss.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_input</span> <span class="o">=</span> <span class="n">Sx_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="n">y_tr</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">Linear</span><span class="p">(</span><span class="n">num_input</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span> <span class="n">LogSoftmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">NLLLoss</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As before, if we’re on a GPU, transfer the model and the loss function onto
+the device.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">criterion</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Before training the model, we set some parameters for the optimization
+procedure.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Number of signals to use in each gradient descent step (batch).</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="c1"># Number of epochs.</span>
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="c1"># Learning rate for Adam.</span>
+<span class="n">lr</span> <span class="o">=</span> <span class="mf">1e-4</span>
+</pre></div>
+</div>
+<p>Given these parameters, we compute the total number of batches.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nsamples</span> <span class="o">=</span> <span class="n">Sx_tr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">nbatches</span> <span class="o">=</span> <span class="n">nsamples</span> <span class="o">//</span> <span class="n">batch_size</span>
+</pre></div>
+</div>
+<p>Now we’re ready to train the classifier.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+    <span class="c1"># Randomly permute the data. If necessary, transfer the permutation to the</span>
+    <span class="c1"># GPU.</span>
+    <span class="n">perm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">nsamples</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">perm</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+    <span class="c1"># For each batch, calculate the gradient with respect to the loss and take</span>
+    <span class="c1"># one step.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbatches</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">perm</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">]</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">Sx_tr</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">y_tr</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="c1"># Calculate the response of the training data at the end of this epoch and</span>
+    <span class="c1"># the average loss.</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">Sx_tr</span><span class="p">)</span>
+    <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">y_tr</span><span class="p">)</span>
+
+    <span class="c1"># Try predicting the classes of the signals in the training set and compute</span>
+    <span class="c1"># the accuracy.</span>
+    <span class="n">y_hat</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_tr</span> <span class="o">==</span> <span class="n">y_hat</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Epoch {}, average loss = {:1.3f}, accuracy = {:1.3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">e</span><span class="p">,</span> <span class="n">avg_loss</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Epoch 0, average loss = 0.892, accuracy = 0.787
+Epoch 1, average loss = 0.612, accuracy = 0.881
+Epoch 2, average loss = 0.474, accuracy = 0.922
+Epoch 3, average loss = 0.396, accuracy = 0.930
+Epoch 4, average loss = 0.335, accuracy = 0.947
+Epoch 5, average loss = 0.295, accuracy = 0.955
+Epoch 6, average loss = 0.268, accuracy = 0.960
+Epoch 7, average loss = 0.237, accuracy = 0.968
+Epoch 8, average loss = 0.217, accuracy = 0.970
+Epoch 9, average loss = 0.201, accuracy = 0.965
+Epoch 10, average loss = 0.185, accuracy = 0.976
+Epoch 11, average loss = 0.172, accuracy = 0.979
+Epoch 12, average loss = 0.163, accuracy = 0.980
+Epoch 13, average loss = 0.153, accuracy = 0.981
+Epoch 14, average loss = 0.143, accuracy = 0.983
+Epoch 15, average loss = 0.135, accuracy = 0.983
+Epoch 16, average loss = 0.129, accuracy = 0.989
+Epoch 17, average loss = 0.124, accuracy = 0.984
+Epoch 18, average loss = 0.117, accuracy = 0.987
+Epoch 19, average loss = 0.112, accuracy = 0.989
+Epoch 20, average loss = 0.106, accuracy = 0.988
+Epoch 21, average loss = 0.102, accuracy = 0.990
+Epoch 22, average loss = 0.098, accuracy = 0.989
+Epoch 23, average loss = 0.094, accuracy = 0.991
+Epoch 24, average loss = 0.091, accuracy = 0.992
+Epoch 25, average loss = 0.088, accuracy = 0.992
+Epoch 26, average loss = 0.083, accuracy = 0.993
+Epoch 27, average loss = 0.082, accuracy = 0.990
+Epoch 28, average loss = 0.078, accuracy = 0.994
+Epoch 29, average loss = 0.075, accuracy = 0.994
+Epoch 30, average loss = 0.072, accuracy = 0.995
+Epoch 31, average loss = 0.071, accuracy = 0.995
+Epoch 32, average loss = 0.068, accuracy = 0.996
+Epoch 33, average loss = 0.066, accuracy = 0.996
+Epoch 34, average loss = 0.064, accuracy = 0.996
+Epoch 35, average loss = 0.062, accuracy = 0.996
+Epoch 36, average loss = 0.060, accuracy = 0.996
+Epoch 37, average loss = 0.059, accuracy = 0.996
+Epoch 38, average loss = 0.057, accuracy = 0.997
+Epoch 39, average loss = 0.056, accuracy = 0.997
+Epoch 40, average loss = 0.054, accuracy = 0.996
+Epoch 41, average loss = 0.053, accuracy = 0.997
+Epoch 42, average loss = 0.052, accuracy = 0.997
+Epoch 43, average loss = 0.050, accuracy = 0.997
+Epoch 44, average loss = 0.049, accuracy = 0.998
+Epoch 45, average loss = 0.047, accuracy = 0.997
+Epoch 46, average loss = 0.047, accuracy = 0.997
+Epoch 47, average loss = 0.046, accuracy = 0.999
+Epoch 48, average loss = 0.044, accuracy = 0.998
+Epoch 49, average loss = 0.043, accuracy = 0.998
+</pre></div>
+</div>
+<p>Now that our network is trained, let’s test it!</p>
+<p>First, we extract the test data (those for which <cite>subset</cite> equals <cite>1</cite>) and the
+associated labels.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_te</span><span class="p">,</span> <span class="n">y_te</span> <span class="o">=</span> <span class="n">Sx_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="n">y_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Use the mean and standard deviation calculated on the training data to
+standardize the testing data, as well.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Sx_te</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sx_te</span> <span class="o">-</span> <span class="n">mu_tr</span><span class="p">)</span> <span class="o">/</span> <span class="n">std_tr</span>
+</pre></div>
+</div>
+<p>Calculate the response of the classifier on the test data and the resulting
+loss.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">resp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">Sx_te</span><span class="p">)</span>
+<span class="n">avg_loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">y_te</span><span class="p">)</span>
+
+<span class="c1"># Try predicting the labels of the signals in the test data and compute the</span>
+<span class="c1"># accuracy.</span>
+<span class="n">y_hat</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">accu</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_te</span> <span class="o">==</span> <span class="n">y_hat</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;TEST, average loss = {:1.3f}, accuracy = {:1.3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+      <span class="n">avg_loss</span><span class="p">,</span> <span class="n">accu</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>TEST, average loss = 0.077, accuracy = 0.980
+</pre></div>
+</div>
+</div>
+<div class="section" id="plotting-the-classification-accuracy-as-a-confusion-matrix">
+<h2>Plotting the classification accuracy as a confusion matrix<a class="headerlink" href="#plotting-the-classification-accuracy-as-a-confusion-matrix" title="Permalink to this headline">¶</a></h2>
+<p>Let’s see what the very few misclassified sounds get misclassified as. We
+will plot a confusion matrix which indicates in a 2D histogram how often
+one sample was mistaken for another (anything on the diagonal is correctly
+classified, anything off the diagonal is wrong).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">predicted_categories</span> <span class="o">=</span> <span class="n">y_hat</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">actual_categories</span> <span class="o">=</span> <span class="n">y_te</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="n">confusion</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">actual_categories</span><span class="p">,</span> <span class="n">predicted_categories</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">confusion</span><span class="p">)</span>
+<span class="n">tick_locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ticks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">tick_locs</span><span class="p">,</span> <span class="n">ticks</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">tick_locs</span><span class="p">,</span> <span class="n">ticks</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;True number&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted number&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_plot_classif_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_classif_001.png" />
+<p><strong>Total running time of the script:</strong> ( 0 minutes  4.375 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-plot-classif-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_classif.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_classif.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/plot_classif.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_classif.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">kymatio</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 1D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html#plot-the-filters">Plot the filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_real_signal.html">Compute the scattering transform of a speech recording</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compute_speed.html">1D scattering transform benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_synthetic.html">Compute the scattering transform of a synthetic signal</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Classification of spoken digit recordings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">1D examples</a><ul>
+      <li>Previous: <a href="plot_synthetic.html" title="previous chapter">Compute the scattering transform of a synthetic signal</a></li>
+      <li>Next: <a href="../gallery_2d/index.html" title="next chapter">2D examples</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="../_sources/gallery_1d/plot_classif.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
