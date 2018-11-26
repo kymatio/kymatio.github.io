@@ -50,6 +50,26 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST ">
+
+.. only:: html
+
+    .. figure:: /gallery_2d/images/thumb/sphx_glr_mnist_thumb.png
+
+        :ref:`sphx_glr_gallery_2d_mnist.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/mnist
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a convolutional network to invert the scattering transform at ...">
 
 .. only:: html

@@ -4,9 +4,11 @@
    contain the root `toctree` directive.
 
 
-Kymatio: wavelet scattering in Python
-*************************************
-kymatio is a Python module for computing wavelet and scattering transforms.
+Kymatio:
+********
+
+
+Kymatio is a Python module for computing wavelet and scattering transforms.
 
 It is built on top of PyTorch, but also has a fast CUDA backend via cupy and
 skcuda.
@@ -26,7 +28,7 @@ list of publications see
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Wavelet Scattering in PyTorch
 
    installation
    userguide

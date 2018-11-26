@@ -40,7 +40,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Scattering1D&#39;</span><span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">.backend</span> <span class="k">import</span> <span class="n">pad</span><span class="p">,</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">subsample_fourier</span><span class="p">,</span> <span class="n">modulus_complex</span><span class="p">,</span> <span class="n">fft1d_c2c</span><span class="p">,</span> <span class="n">ifft1d_c2c</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">compute_padding</span><span class="p">,</span> <span class="n">compute_border_indices</span>
@@ -450,16 +451,16 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s1">&#39;Options average=False and vectorize=True are &#39;</span> <span class="o">+</span>
                     <span class="s1">&#39;mutually incompatible. Please set vectorize to False.&#39;</span><span class="p">)</span>
-            <span class="n">size_scat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">precompute_size_scattering</span><span class="p">(</span>
+            <span class="n">size_scattering</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">precompute_size_scattering</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_order</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">size_scat</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">size_scattering</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">S</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi1_f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi2_f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_f</span><span class="p">,</span>
                        <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_order</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">average</span><span class="p">,</span>
                        <span class="n">pad_left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_left</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_right</span><span class="p">,</span>
                        <span class="n">ind_start</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_start</span><span class="p">,</span> <span class="n">ind_end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ind_end</span><span class="p">,</span>
                        <span class="n">oversampling</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">oversampling</span><span class="p">,</span>
-                       <span class="n">vectorize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vectorize</span><span class="p">,</span> <span class="n">size_scat</span><span class="o">=</span><span class="n">size_scat</span><span class="p">)</span>
+                       <span class="n">vectorize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vectorize</span><span class="p">,</span> <span class="n">size_scattering</span><span class="o">=</span><span class="n">size_scattering</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">S</span></div>
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
@@ -611,7 +612,7 @@
 
 <span class="k">def</span> <span class="nf">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">psi1</span><span class="p">,</span> <span class="n">psi2</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">pad_left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                <span class="n">ind_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ind_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">oversampling</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-               <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size_scat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vectorize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+               <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size_scattering</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vectorize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main function implementing the scattering computation.</span>
 
@@ -654,7 +655,7 @@
 <span class="sd">        Whether to compute the 2nd order or not. Defaults to False.</span>
 <span class="sd">    average_U1 : boolean, optional</span>
 <span class="sd">        whether to average the first order vector. Defaults to True</span>
-<span class="sd">    size_scat : dictionary or int, optional</span>
+<span class="sd">    size_scattering : dictionary or int, optional</span>
 <span class="sd">        contains the number of channels of the scattering,</span>
 <span class="sd">        precomputed for speed-up. Defaults to 0</span>
 <span class="sd">    vectorize : boolean, optional</span>
@@ -666,7 +667,7 @@
         <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">kJ</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">oversampling</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">temporal_size</span> <span class="o">=</span> <span class="n">ind_end</span><span class="p">[</span><span class="n">kJ</span><span class="p">]</span> <span class="o">-</span> <span class="n">ind_start</span><span class="p">[</span><span class="n">kJ</span><span class="p">]</span>
-        <span class="n">S</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">size_scat</span><span class="p">,</span> <span class="n">temporal_size</span><span class="p">)</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">size_scattering</span><span class="p">,</span> <span class="n">temporal_size</span><span class="p">)</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mf">0.</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">S</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -752,17 +753,41 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../index.html">kymatio</a></h1>
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
 
 
 
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/kymatio/kymatio">
+    <img
+        alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
+        src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
+    />
+</a>
+</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Wavelet Scattering in PyTorch</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User Guide</a></li>
@@ -807,6 +832,10 @@
       
     </div>
 
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     

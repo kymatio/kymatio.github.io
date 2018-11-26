@@ -16,7 +16,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Regularized inverse of a scattering transform on MNIST" href="regularized_inverse_scattering_MNIST.html" />
+    <link rel="next" title="Classification of handwritten digits" href="mnist.html" />
     <link rel="prev" title="2D scattering transform benchmark" href="compute_speed.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -40,9 +40,9 @@
 </div>
 <div class="sphx-glr-example-title section" id="plot-the-2d-wavelet-filters">
 <span id="sphx-glr-gallery-2d-plot-filters-py"></span><h1>Plot the 2D wavelet filters<a class="headerlink" href="#plot-the-2d-wavelet-filters" title="Permalink to this headline">¶</a></h1>
-<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering.scattering1d.filter_bank()</span></code> for more informations about the used wavelets.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">kymatio.scattering2d.filter_bank()</span></code> for more informations about the used wavelets.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">kymatio.scattering2d.filter_bank</span> <span class="kn">import</span> <span class="n">filter_bank</span>
 <span class="kn">from</span> <span class="nn">kymatio.scattering2d.utils</span> <span class="kn">import</span> <span class="n">fft2</span>
 </pre></div>
@@ -72,18 +72,18 @@
     <span class="n">B</span> <span class="o">=</span>  <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="mf">1.0</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="o">**</span><span class="mf">0.3</span><span class="p">)</span>
     <span class="n">c</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">hls_to_rgb</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">c</span>
-
-<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">J</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_plot_filters_0011.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_filters_0011.png" />
 </div>
 <div class="section" id="bandpass-filters">
 <h2>Bandpass filters<a class="headerlink" href="#bandpass-filters" title="Permalink to this headline">¶</a></h2>
-<p>First, we display each wavelets according to each scale and orientation.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+<p>First, we display each wavelet according to its scale and orientation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_figheight</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_figwidth</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">)</span>
+<span class="n">i</span><span class="o">=</span><span class="mi">0</span>
 <span class="k">for</span> <span class="nb">filter</span> <span class="ow">in</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;psi&#39;</span><span class="p">]:</span>
     <span class="n">f_r</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
     <span class="n">f_i</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
@@ -92,36 +92,39 @@
     <span class="n">filter_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">filter_c</span><span class="p">)</span>
     <span class="n">axs</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">colorize</span><span class="p">(</span><span class="n">filter_c</span><span class="p">))</span>
     <span class="n">axs</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;$j = {}$ </span><span class="se">\n</span><span class="s2"> $</span><span class="se">\\</span><span class="s2">theta={}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">))</span>
+    <span class="n">axs</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;$j = {}$ </span><span class="se">\n</span><span class="s2"> $</span><span class="se">\\</span><span class="s2">theta={}$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">))</span>
     <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
 
-
-<span class="c1"># Add blanks for pretty display</span>
-<span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
-    <span class="n">axs</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Wavelets for each scales $j$ and angles $</span><span class="se">\\</span><span class="s2">theta$ used.&quot;</span>
+<span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Color saturation and color hue respectively denote complex magnitude and complex phase.&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="../_images/sphx_glr_plot_filters_0011.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_filters_0011.png" />
 </div>
 <div class="section" id="lowpass-filter">
 <h2>Lowpass filter<a class="headerlink" href="#lowpass-filter" title="Permalink to this headline">¶</a></h2>
-<p>We finally display the Gaussian filter.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f_r</span> <span class="o">=</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<p>We finally display the low-pass filter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="s1">&#39;gray_r&#39;</span><span class="p">)</span>
+
+<span class="n">f_r</span> <span class="o">=</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <span class="n">f_i</span> <span class="o">=</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">f_r</span> <span class="o">+</span> <span class="mi">1j</span><span class="o">*</span><span class="n">f_i</span>
+
 <span class="n">filter_c</span> <span class="o">=</span> <span class="n">fft2</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 <span class="n">filter_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">filter_c</span><span class="p">)</span>
-<span class="n">axs</span><span class="p">[</span><span class="n">J</span><span class="p">,</span> <span class="n">L</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">colorize</span><span class="p">(</span><span class="n">filter_c</span><span class="p">))</span>
-
-<span class="c1"># Final caption.</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Wavelets for each scales $j$ and angles $</span><span class="se">\\</span><span class="s2">theta$ used, with the corresponding low-pass filter.&quot;</span>
-             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> The contrast corresponds to the amplitude and the color to the phase.&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
-
-
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;The corresponding low-pass filter, also known as scaling function.&quot;</span>
+<span class="s2">&quot;Color saturation and color hue respectively denote complex magnitude and complex phase&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">filter_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">filter_c</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filter_c</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.717 seconds)</p>
+<img alt="../_images/sphx_glr_plot_filters_0021.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_filters_0021.png" />
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.700 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-plot-filters-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/plot_filters1.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_filters.py</span></code></a></div>
@@ -139,17 +142,41 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">kymatio</a></h1>
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
 
 
 
 
 
 
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/kymatio/kymatio">
+    <img
+        alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
+        src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
+    />
+</a>
+</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Wavelet Scattering in PyTorch</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../userguide.html">User Guide</a></li>
@@ -159,6 +186,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">2D examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="compute_speed.html">2D scattering transform benchmark</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Plot the 2D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mnist.html">Classification of handwritten digits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST.html">Regularized inverse of a scattering transform on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar.html">Classification on CIFAR10</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar_resnet.html">Classification on CIFAR10 (ResNet)</a></li>
@@ -173,7 +201,7 @@
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">2D examples</a><ul>
       <li>Previous: <a href="compute_speed.html" title="previous chapter">2D scattering transform benchmark</a></li>
-      <li>Next: <a href="regularized_inverse_scattering_MNIST.html" title="next chapter">Regularized inverse of a scattering transform on MNIST</a></li>
+      <li>Next: <a href="mnist.html" title="next chapter">Classification of handwritten digits</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -206,6 +234,10 @@
           rel="nofollow">Page source</a>
     </div>
 
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     

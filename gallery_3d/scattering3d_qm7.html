@@ -1,0 +1,419 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>3D scattering quantum chemistry regression &#8212; kymatio  documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="3D scattering transform benchmark" href="compute_speed.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-gallery-3d-scattering3d-qm7-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="d-scattering-quantum-chemistry-regression">
+<span id="sphx-glr-gallery-3d-scattering3d-qm7-py"></span><h1>3D scattering quantum chemistry regression<a class="headerlink" href="#d-scattering-quantum-chemistry-regression" title="Permalink to this headline">¶</a></h1>
+<p>This uses the 3D scattering on a standard dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span><span class="p">,</span> <span class="n">model_selection</span><span class="p">,</span> <span class="n">preprocessing</span><span class="p">,</span> <span class="n">pipeline</span>
+<span class="kn">from</span> <span class="nn">kymatio.scattering3d</span> <span class="kn">import</span> <span class="n">Scattering3D</span>
+<span class="kn">from</span> <span class="nn">kymatio.scattering3d.utils</span> <span class="kn">import</span> <span class="n">compute_integrals</span><span class="p">,</span> <span class="n">generate_weighted_sum_of_gaussians</span>
+<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">fetch_qm7</span>
+<span class="kn">from</span> <span class="nn">kymatio.caching</span> <span class="kn">import</span> <span class="n">get_cache_dir</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span>
+
+
+<span class="k">def</span> <span class="nf">evaluate_linear_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluates linear ridge regression predictions of y using X.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X:  numpy array</span>
+<span class="sd">        input features, shape (N, D)</span>
+<span class="sd">    y: numpy array</span>
+<span class="sd">        target value, shape (N, 1)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_datapoints</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">n_datapoints</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_folds</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">cross_val_folds</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i_fold</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_folds</span><span class="p">):</span>
+        <span class="n">fold</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_folds</span><span class="p">)</span> <span class="o">!=</span> <span class="n">i_fold</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">P</span><span class="p">[</span><span class="n">i_fold</span><span class="p">])</span>
+        <span class="n">cross_val_folds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fold</span><span class="p">)</span>
+
+    <span class="n">alphas</span> <span class="o">=</span> <span class="mf">10.</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">alphas</span><span class="p">):</span>
+        <span class="n">regressor</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">make_pipeline</span><span class="p">(</span>
+            <span class="n">preprocessing</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="n">y_prediction</span> <span class="o">=</span> <span class="n">model_selection</span><span class="o">.</span><span class="n">cross_val_predict</span><span class="p">(</span>
+            <span class="n">regressor</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cross_val_folds</span><span class="p">)</span>
+        <span class="n">MAE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_prediction</span> <span class="o">-</span> <span class="n">y</span><span class="p">))</span>
+        <span class="n">RMSE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_prediction</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Ridge regression, alpha: {}, MAE: {}, RMSE: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">alpha</span><span class="p">,</span> <span class="n">MAE</span><span class="p">,</span> <span class="n">RMSE</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">get_valence</span><span class="p">(</span><span class="n">charges</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number valence electrons of a particle given the</span>
+<span class="sd">        nuclear charge.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        charges: numpy array</span>
+<span class="sd">            array containing the nuclear charges, arbitrary size</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        valence_charges : numpy array</span>
+<span class="sd">            same size as the input</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">charges</span> <span class="o">*</span> <span class="p">(</span><span class="n">charges</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">charges</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">charges</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">charges</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">charges</span> <span class="o">-</span> <span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">charges</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">,</span> <span class="n">charges</span> <span class="o">&lt;=</span> <span class="mi">18</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">get_qm7_energies</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the energies of the molecules of the QM7 dataset.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        energies: numpy array</span>
+<span class="sd">            array containing the energies of the molecules</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">qm7</span> <span class="o">=</span> <span class="n">fetch_qm7</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">qm7</span><span class="p">[</span><span class="s1">&#39;energies&#39;</span><span class="p">]</span>
+
+
+
+<span class="k">def</span> <span class="nf">get_qm7_positions_and_charges</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">overlapping_precision</span><span class="o">=</span><span class="mf">1e-1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the positions and charges of the molecules of the QM7 dataset.</span>
+<span class="sd">        QM7 is a dataset of 7165 organic molecules with up to 7 non-hydrogen</span>
+<span class="sd">        atoms, whose energies were computed with a quantun chemistry</span>
+<span class="sd">        computational method named Density Functional Theory.</span>
+<span class="sd">        This dataset has been made available to train machine learning models</span>
+<span class="sd">        to predict these energies.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sigma : float</span>
+<span class="sd">            width parameter of the Gaussian that represents a particle</span>
+
+<span class="sd">        overlapping_precision : float, optional</span>
+<span class="sd">            affects the scaling of the positions. The positions are re-scaled</span>
+<span class="sd">            such that two Gaussian functions of width sigma centerd at the qm7</span>
+<span class="sd">            positions overlapp with amplitude &lt;= the overlapping_precision</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        positions, charges, valence_charges: torch arrays</span>
+<span class="sd">            array containing the positions, charges and valence charges</span>
+<span class="sd">            of the QM7 database molecules</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">qm7</span> <span class="o">=</span> <span class="n">fetch_qm7</span><span class="p">(</span><span class="n">align</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">qm7</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">]</span>
+    <span class="n">charges</span> <span class="o">=</span> <span class="n">qm7</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">valence_charges</span> <span class="o">=</span> <span class="n">get_valence</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span>
+
+    <span class="c1"># normalize positions</span>
+    <span class="n">min_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">positions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">charges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">n_atoms</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">min_dist</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">min_dist</span><span class="p">,</span> <span class="n">pdist</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">overlapping_precision</span><span class="p">))</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">positions</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">min_dist</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">positions</span><span class="p">),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">charges</span><span class="p">),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">valence_charges</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">compute_qm7_solid_harmonic_scattering_coefficients</span><span class="p">(</span>
+        <span class="n">M</span><span class="o">=</span><span class="mi">192</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">O</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">integral_powers</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the scattering coefficients of the molecules of the</span>
+<span class="sd">        QM7 database. Channels used are full charges, valence charges</span>
+<span class="sd">        and core charges. Linear regression of the qm7 energies with</span>
+<span class="sd">        the given values gives MAE 2.75, RMSE 4.18 (kcal.mol-1).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        M, N, O: int</span>
+<span class="sd">            dimensions of the numerical grid</span>
+<span class="sd">        sigma : float</span>
+<span class="sd">            width parameter of the Gaussian that represents a particle</span>
+<span class="sd">        J: int</span>
+<span class="sd">            maximal scale of the solid harmonic wavelets</span>
+<span class="sd">        L: int</span>
+<span class="sd">            maximal first order of the solid harmonic wavelets</span>
+<span class="sd">        integral_powers: list of int</span>
+<span class="sd">            powers for the integrals</span>
+<span class="sd">        batch_size: int</span>
+<span class="sd">            size of the batch for computations</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        order_0: torch tensor</span>
+<span class="sd">            array containing the order 0 scattering coefficients</span>
+<span class="sd">        order_1: torch tensor</span>
+<span class="sd">            array containing the order 1 scattering coefficients</span>
+<span class="sd">        order_2: torch tensor</span>
+<span class="sd">            array containing the order 2 scattering coefficients</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cuda</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="o">-</span><span class="n">M</span><span class="o">//</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="n">M</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="n">M</span><span class="p">,</span> <span class="o">-</span><span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="n">N</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="n">N</span><span class="p">,</span> <span class="o">-</span><span class="n">O</span><span class="o">//</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="n">O</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="n">O</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+            <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+    <span class="n">pos</span><span class="p">,</span> <span class="n">full_charges</span><span class="p">,</span> <span class="n">valence_charges</span> <span class="o">=</span> <span class="n">get_qm7_positions_and_charges</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cuda</span><span class="p">:</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">full_charges</span> <span class="o">=</span> <span class="n">full_charges</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">valence_charges</span> <span class="o">=</span> <span class="n">valence_charges</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+    <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">n_batches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_molecules</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering3D</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="o">=</span><span class="n">O</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+
+    <span class="n">order_0</span><span class="p">,</span> <span class="n">order_1</span><span class="p">,</span> <span class="n">order_2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Computing solid harmonic scattering coefficients of {} molecules &#39;</span>
+        <span class="s1">&#39;of QM7 database on {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;GPU&#39;</span> <span class="k">if</span> <span class="n">cuda</span> <span class="k">else</span> <span class="s1">&#39;CPU&#39;</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;sigma: {}, L: {}, J: {}, integral powers: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">))</span>
+
+    <span class="n">this_time</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">last_time</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_batches</span><span class="p">):</span>
+        <span class="n">this_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">last_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">this_time</span> <span class="o">-</span> <span class="n">last_time</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Iteration {} ETA: [{:02}:{:02}:{:02}]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(((</span><span class="n">n_batches</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3600</span><span class="p">),</span>
+                        <span class="nb">int</span><span class="p">((((</span><span class="n">n_batches</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span> <span class="o">//</span> <span class="mi">60</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">),</span>
+                        <span class="nb">int</span><span class="p">(((</span><span class="n">n_batches</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">)),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Iteration {} ETA: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span><span class="s1">&#39;-&#39;</span><span class="p">),</span><span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">last_time</span> <span class="o">=</span> <span class="n">this_time</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">,</span> <span class="nb">min</span><span class="p">((</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">n_molecules</span><span class="p">)</span>
+
+        <span class="n">pos_batch</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">full_batch</span> <span class="o">=</span> <span class="n">full_charges</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">val_batch</span> <span class="o">=</span> <span class="n">valence_charges</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+        <span class="n">full_density_batch</span> <span class="o">=</span> <span class="n">generate_weighted_sum_of_gaussians</span><span class="p">(</span>
+                <span class="n">grid</span><span class="p">,</span> <span class="n">pos_batch</span><span class="p">,</span> <span class="n">full_batch</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span><span class="p">)</span>
+        <span class="n">full_order_0</span> <span class="o">=</span> <span class="n">compute_integrals</span><span class="p">(</span><span class="n">full_density_batch</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">full_order_1</span><span class="p">,</span> <span class="n">full_order_2</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span>
+                <span class="n">full_density_batch</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span>
+                <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+
+        <span class="n">val_density_batch</span> <span class="o">=</span> <span class="n">generate_weighted_sum_of_gaussians</span><span class="p">(</span>
+                <span class="n">grid</span><span class="p">,</span> <span class="n">pos_batch</span><span class="p">,</span> <span class="n">val_batch</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span><span class="p">)</span>
+        <span class="n">val_order_0</span> <span class="o">=</span> <span class="n">compute_integrals</span><span class="p">(</span><span class="n">val_density_batch</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">val_order_1</span><span class="p">,</span> <span class="n">val_order_2</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span>
+                <span class="n">val_density_batch</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span>
+                <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+
+        <span class="n">core_density_batch</span> <span class="o">=</span> <span class="n">full_density_batch</span> <span class="o">-</span> <span class="n">val_density_batch</span>
+        <span class="n">core_order_0</span> <span class="o">=</span> <span class="n">compute_integrals</span><span class="p">(</span><span class="n">core_density_batch</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">core_order_1</span><span class="p">,</span> <span class="n">core_order_2</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span>
+                <span class="n">core_density_batch</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span>
+                <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+
+
+        <span class="n">order_0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">full_order_0</span><span class="p">,</span> <span class="n">val_order_0</span><span class="p">,</span> <span class="n">core_order_0</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">order_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">full_order_1</span><span class="p">,</span> <span class="n">val_order_1</span><span class="p">,</span> <span class="n">core_order_1</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">order_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">full_order_2</span><span class="p">,</span> <span class="n">val_order_2</span><span class="p">,</span> <span class="n">core_order_2</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">order_0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">order_0</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">order_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">order_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">order_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">order_0</span><span class="p">,</span> <span class="n">order_1</span><span class="p">,</span> <span class="n">order_2</span>
+
+<span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+<span class="n">integral_powers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span>  <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">]</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">2.</span>
+
+<span class="n">order_0</span><span class="p">,</span> <span class="n">order_1</span><span class="p">,</span> <span class="n">order_2</span> <span class="o">=</span> <span class="n">compute_qm7_solid_harmonic_scattering_coefficients</span><span class="p">(</span>
+    <span class="n">M</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="o">=</span><span class="n">O</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">,</span>
+    <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="n">n_molecules</span> <span class="o">=</span> <span class="n">order_0</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">np_order_0</span> <span class="o">=</span> <span class="n">order_0</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_molecules</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">np_order_1</span> <span class="o">=</span> <span class="n">order_1</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_molecules</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">np_order_2</span> <span class="o">=</span> <span class="n">order_2</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_molecules</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="n">basename</span> <span class="o">=</span> <span class="s1">&#39;qm7_L_{}_J_{}_sigma_{}_MNO_{}_powers_{}.npy&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">L</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">),</span> <span class="n">integral_powers</span><span class="p">)</span>
+<span class="n">cachedir</span> <span class="o">=</span> <span class="n">get_cache_dir</span><span class="p">(</span><span class="s2">&quot;qm7/experiments&quot;</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="s1">&#39;order_0_&#39;</span> <span class="o">+</span> <span class="n">basename</span><span class="p">),</span> <span class="n">np_order_0</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="s1">&#39;order_1_&#39;</span> <span class="o">+</span> <span class="n">basename</span><span class="p">),</span> <span class="n">np_order_1</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cachedir</span><span class="p">,</span> <span class="s1">&#39;order_2_&#39;</span> <span class="o">+</span> <span class="n">basename</span><span class="p">),</span> <span class="n">np_order_2</span><span class="p">)</span>
+
+<span class="n">scattering_coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np_order_0</span><span class="p">,</span> <span class="n">np_order_1</span><span class="p">,</span> <span class="n">np_order_2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">get_qm7_energies</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;order 1 : {} coef, order 2 : {} coefs&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np_order_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                                    <span class="n">np_order_2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">evaluate_linear_regression</span><span class="p">(</span><span class="n">scattering_coef</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-3d-scattering3d-qm7-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/scattering3d_qm7.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">scattering3d_qm7.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/scattering3d_qm7.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">scattering3d_qm7.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/kymatio/kymatio">
+    <img
+        alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
+        src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Wavelet Scattering in PyTorch</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Code documentation of the library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">3D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="compute_speed.html">3D scattering transform benchmark</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3D scattering quantum chemistry regression</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">3D examples</a><ul>
+      <li>Previous: <a href="compute_speed.html" title="previous chapter">3D scattering transform benchmark</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="../_sources/gallery_3d/scattering3d_qm7.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

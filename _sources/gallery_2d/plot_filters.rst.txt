@@ -9,15 +9,15 @@
 
 Plot the 2D wavelet filters
 ===========================
-See :meth:`scattering.scattering1d.filter_bank` for more informations about the used wavelets.
+See :meth:`kymatio.scattering2d.filter_bank` for more informations about the used wavelets.
 
 
 
 .. code-block:: python
 
 
-    import numpy as np
     import matplotlib.pyplot as plt
+    import numpy as np
     from kymatio.scattering2d.filter_bank import filter_bank
     from kymatio.scattering2d.utils import fft2
 
@@ -46,9 +46,8 @@ Initial parameters of the filter bank
 
 
 
-
 Imshow complex images
--------------------------------------
+---------------------
 Thanks to https://stackoverflow.com/questions/17044052/mathplotlib-imshow-complex-2d-array
 
 
@@ -69,9 +68,40 @@ Thanks to https://stackoverflow.com/questions/17044052/mathplotlib-imshow-comple
         c[idx] = [hls_to_rgb(a, b, 0.8) for a,b in zip(A,B)]
         return c
 
-    fig, axs = plt.subplots(J+1, L, sharex=True, sharey=True)
+
+
+
+
+
+
+Bandpass filters
+----------------
+First, we display each wavelet according to its scale and orientation.
+
+
+
+.. code-block:: python
+
+    fig, axs = plt.subplots(J, L, sharex=True, sharey=True)
+    fig.set_figheight(6)
+    fig.set_figwidth(6)
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
+    i=0
+    for filter in filters_set['psi']:
+        f_r = filter[0][...,0].numpy()
+        f_i = filter[0][..., 1].numpy()
+        f = f_r + 1j*f_i
+        filter_c = fft2(f)
+        filter_c = np.fft.fftshift(filter_c)
+        axs[i // L, i % L].imshow(colorize(filter_c))
+        axs[i // L, i % L].axis('off')
+        axs[i // L, i % L].set_title("$j = {}$ \n $\\theta={}$".format(i // L, i % L))
+        i = i+1
+
+    fig.suptitle("Wavelets for each scales $j$ and angles $\\theta$ used."
+    "\n Color saturation and color hue respectively denote complex magnitude and complex phase.", fontsize=13)
+    fig.show()
 
 
 
@@ -82,66 +112,40 @@ Thanks to https://stackoverflow.com/questions/17044052/mathplotlib-imshow-comple
 
 
 
-Bandpass filters
-----------------
-First, we display each wavelets according to each scale and orientation.
-
-
-
-.. code-block:: python
-
-    i=0
-    for filter in filters_set['psi']:
-        f_r = filter[0][...,0].numpy()
-        f_i = filter[0][..., 1].numpy()
-        f = f_r + 1j*f_i
-        filter_c = fft2(f)
-        filter_c = np.fft.fftshift(filter_c)
-        axs[i // L, i % L].imshow(colorize(filter_c))
-        axs[i // L, i % L].axis('off')
-        axs[i // L, i % L].set_title("$j = {}$ \n $\\theta={}".format(i // L, i % L))
-        i = i+1
-
-
-    # Add blanks for pretty display
-    for z in range(L):
-        axs[i // L, i % L].axis('off')
-        i = i+1
-
-
-
-
-
-
-
 Lowpass filter
-----------------
-We finally display the Gaussian filter.
+--------------
+We finally display the low-pass filter.
 
 
 
 .. code-block:: python
 
-    f_r = filters_set['phi'][0][...,0].numpy()
+    plt.figure()
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
+    plt.axis('off')
+    plt.set_cmap('gray_r')
+
+    f_r = filters_set['phi'][0][..., 0].numpy()
     f_i = filters_set['phi'][0][..., 1].numpy()
     f = f_r + 1j*f_i
+
     filter_c = fft2(f)
     filter_c = np.fft.fftshift(filter_c)
-    axs[J, L // 2].imshow(colorize(filter_c))
-
-    # Final caption.
-    fig.suptitle("Wavelets for each scales $j$ and angles $\\theta$ used, with the corresponding low-pass filter."
-                 "\n The contrast corresponds to the amplitude and the color to the phase.", fontsize=13)
-
-
-    plt.show()
+    plt.suptitle("The corresponding low-pass filter, also known as scaling function."
+    "Color saturation and color hue respectively denote complex magnitude and complex phase", fontsize=13)
+    filter_c = np.abs(filter_c)
+    plt.imshow(filter_c)
 
 
 
+.. image:: /gallery_2d/images/sphx_glr_plot_filters_002.png
+    :class: sphx-glr-single-img
 
 
 
-**Total running time of the script:** ( 0 minutes  0.717 seconds)
+
+**Total running time of the script:** ( 0 minutes  0.700 seconds)
 
 
 .. _sphx_glr_download_gallery_2d_plot_filters.py:

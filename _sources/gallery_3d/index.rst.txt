@@ -27,6 +27,26 @@ class, ``Scattering3D``.
    :hidden:
 
    /gallery_3d/compute_speed
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3D scattering quantum chemistry regression">
+
+.. only:: html
+
+    .. figure:: /gallery_3d/images/thumb/sphx_glr_scattering3d_qm7_thumb.png
+
+        :ref:`sphx_glr_gallery_3d_scattering3d_qm7.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_3d/scattering3d_qm7
 .. raw:: html
 
     <div style='clear:both'></div>

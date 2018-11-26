@@ -102,6 +102,13 @@ recording `0_jackson_0.wav` of a man pronouncing the word "zero".
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Cloning git repository at  https://github.com/Jakobovski/free-spoken-digit-dataset.git
 
 
 Once the recording is in memory, we convert it to a PyTorch Tensor, normalize
@@ -309,7 +316,7 @@ Display the plots!
 
 
 
-**Total running time of the script:** ( 0 minutes  0.508 seconds)
+**Total running time of the script:** ( 0 minutes  2.897 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_plot_real_signal.py:
