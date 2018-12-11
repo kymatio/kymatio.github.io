@@ -126,7 +126,7 @@ colors channels in an RGB image.
 .. code-block:: python
 
 
-    scattering = Scattering2D(M, N, J, L)
+    scattering = Scattering2D(J, shape=(M, N), L=L)
 
     x = torch.randn(batch_size, 3, M, N, dtype=torch.float32)
 

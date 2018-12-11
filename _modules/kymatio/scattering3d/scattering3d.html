@@ -9,7 +9,7 @@
     <title>kymatio.scattering3d.scattering3d &#8212; kymatio  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
@@ -44,6 +44,9 @@
 <span class="kn">from</span> <span class="nn">.backend</span> <span class="k">import</span> <span class="n">cdgmm3d</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">complex_modulus</span><span class="p">,</span> <span class="n">to_complex</span>
 <span class="kn">from</span> <span class="nn">.filter_bank</span> <span class="k">import</span> <span class="n">solid_harmonic_filter_bank</span><span class="p">,</span> <span class="n">gaussian_filter_bank</span>
 
+<span class="c1"># TODO remove &quot;import backend&quot; below after implementing skcuda backend</span>
+<span class="kn">from</span> <span class="nn">kymatio.scattering3d</span> <span class="k">import</span> <span class="n">backend</span>
+
 
 <div class="viewcode-block" id="Scattering3D"><a class="viewcode-back" href="../../../codereference.html#kymatio.Scattering3D">[docs]</a><span class="k">class</span> <span class="nc">Scattering3D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;3D Solid Harmonic scattering .</span>
@@ -55,30 +58,31 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    M: int</span>
-<span class="sd">        height of input 3D image size</span>
-<span class="sd">    N: int</span>
-<span class="sd">        width of input 3D image size</span>
-<span class="sd">    O: int</span>
-<span class="sd">        depth of input 3D image size</span>
 <span class="sd">    J: int</span>
 <span class="sd">        number of scales</span>
+<span class="sd">    shape: tuple of int</span>
+<span class="sd">        shape (M, N, O) of the input signal</span>
 <span class="sd">    L: int</span>
 <span class="sd">        number of l values</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s2">&quot;skcuda&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">skcuda_notimplementederror</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Scattering3D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">O</span> <span class="o">=</span> <span class="n">O</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="n">J</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">L</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_0</span> <span class="o">=</span> <span class="n">sigma_0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">solid_harmonic_filter_bank</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_filters</span> <span class="o">=</span> <span class="n">gaussian_filter_bank</span><span class="p">(</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sigma_0</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_fft_convolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">filter_array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -117,7 +121,7 @@
 <span class="sd">        output: the result of input_array :math:`\\star phi_J`</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cuda</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
+        <span class="n">cuda</span> <span class="o">=</span> <span class="n">input_array</span><span class="o">.</span><span class="n">is_cuda</span>
         <span class="n">low_pass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_filters</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">cuda</span><span class="p">:</span>
             <span class="n">low_pass</span> <span class="o">=</span> <span class="n">low_pass</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
@@ -231,7 +235,7 @@
 <span class="sd">            tensor of the same size as input_array. It holds the output of</span>
 <span class="sd">            the operation::</span>
 
-<span class="sd">            .. math::   \\sqrt{\\sum_m (\\text{input}_\\text{array} \\star \\psi_{j,l,m})^2)}</span>
+<span class="sd">            $\sqrt{\sum_m (\text{input}_\text{array} \star \psi_{j,l,m})^2)}</span>
 
 <span class="sd">            which is covariant to 3D translations and rotations</span>
 
@@ -271,7 +275,7 @@
 <span class="sd">                .. math:: \\text{input}_\\text{array} \\star \\psi_{j,l,m})</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cuda</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
+        <span class="n">cuda</span> <span class="o">=</span> <span class="n">input_array</span><span class="o">.</span><span class="n">is_cuda</span>
         <span class="n">filters_l_m_j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="n">m</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">cuda</span><span class="p">:</span>
             <span class="n">filters_l_m_j</span> <span class="o">=</span> <span class="n">filters_l_m_j</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
@@ -310,11 +314,11 @@
 <span class="sd">        rotation_covariant: bool, optional</span>
 <span class="sd">            if set to True the first order moduli take the form::</span>
 
-<span class="sd">            .. math:: \\sqrt(\\sum_m (input_array \\star \\psi_{j,l,m})^2))</span>
+<span class="sd">            $\sqrt(\sum_m (input_array \star \psi_{j,l,m})^2))$</span>
 
 <span class="sd">            if set to False the first order moduli take the form::</span>
 
-<span class="sd">            .. math:: input_array \\star \\psi_{j,l,m})</span>
+<span class="sd">            $input_array \star \psi_{j,l,m})$</span>
 
 <span class="sd">            The second order moduli change analogously</span>
 <span class="sd">            Defaut: True</span>
@@ -371,9 +375,11 @@
                 <span class="n">s_order_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">s_order_2_l</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">order_2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> 
-                    <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)],</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
 
 
     <span class="fm">__call__</span> <span class="o">=</span> <span class="n">forward</span></div>
@@ -388,7 +394,7 @@
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../../index.html">
-    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    <img class="logo" src="../../../_static/kymatio.jpg" alt="Logo"/>
     
   </a>
 </p>
@@ -410,7 +416,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -452,6 +458,14 @@
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -460,8 +474,8 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
@@ -471,6 +485,22 @@
     </a>
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>

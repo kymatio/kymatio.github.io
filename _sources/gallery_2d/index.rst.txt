@@ -141,13 +141,13 @@ class, ``Scattering2D``.
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: gallery_2d_python.zip <//home/jlg/michael/gbox/code/scattering/kymatio/doc/source/gallery_2d/gallery_2d_python.zip>`
+    :download:`Download all examples in Python source code: gallery_2d_python.zip <//Users/oyallon/kymatio/doc/source/gallery_2d/gallery_2d_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: gallery_2d_jupyter.zip <//home/jlg/michael/gbox/code/scattering/kymatio/doc/source/gallery_2d/gallery_2d_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: gallery_2d_jupyter.zip <//Users/oyallon/kymatio/doc/source/gallery_2d/gallery_2d_jupyter.zip>`
 
 
 .. only:: html

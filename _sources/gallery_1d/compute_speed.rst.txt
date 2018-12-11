@@ -128,9 +128,9 @@ some compatible test data with the specified batch size.
 .. code-block:: python
 
 
-    scattering = Scattering1D(T, J, Q)
+    scattering = Scattering1D(J, T, Q)
 
-    x = torch.randn(batch_size, 1, T, dtype=torch.float32)
+    x = torch.randn(batch_size, T, dtype=torch.float32)
 
 
 Run the benchmark

@@ -9,7 +9,7 @@
     <title>Compute the scattering transform of a synthetic signal &#8212; kymatio  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
@@ -85,7 +85,7 @@ and then adds a windowed version to the output signal.</p>
                      <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">u</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">base_freq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">phase</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
         <span class="n">x</span><span class="p">[</span><span class="n">ind_start</span><span class="p">:</span><span class="n">ind_start</span> <span class="o">+</span> <span class="n">support</span><span class="p">]</span> <span class="o">+=</span> <span class="n">note</span> <span class="o">*</span> <span class="n">window</span>
     <span class="c1"># Transform x into a torch Tensor</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">x</span>
 </pre></div>
 </div>
@@ -116,7 +116,7 @@ and then adds a windowed version to the output signal.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="mi">6</span>
 <span class="n">Q</span> <span class="o">=</span> <span class="mi">16</span>
 
-<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
 
 <span class="c1"># get the metadata on the coordinates of the scattering</span>
 <span class="n">meta</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="o">.</span><span class="n">compute_meta_scattering</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
@@ -140,12 +140,12 @@ and then adds a windowed version to the output signal.</p>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_synthetic_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_synthetic_003.png" />
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.626 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.750 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-plot-synthetic-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/plot_synthetic.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_synthetic.py</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/8bff3a3f634e94b49897f8ab37d0a45c/plot_synthetic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_synthetic.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/plot_synthetic.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_synthetic.ipynb</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/351fa5fd91673f05ae9cea6dacf473fc/plot_synthetic.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_synthetic.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -160,7 +160,7 @@ and then adds a windowed version to the output signal.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
     
   </a>
 </p>
@@ -182,7 +182,7 @@ and then adds a windowed version to the output signal.</p>
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -234,6 +234,14 @@ and then adds a windowed version to the output signal.</p>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -242,8 +250,8 @@ and then adds a windowed version to the output signal.</p>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/gallery_1d/plot_synthetic.rst.txt"
@@ -256,6 +264,22 @@ and then adds a windowed version to the output signal.</p>
     </a>
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>

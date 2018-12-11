@@ -9,7 +9,7 @@
     <title>Compute the scattering transform of a speech recording &#8212; kymatio  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
@@ -78,10 +78,6 @@ recording <cite>0_jackson_0.wav</cite> of a man pronouncing the word “zero”.
 <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Cloning git repository at  https://github.com/Jakobovski/free-spoken-digit-dataset.git
-</pre></div>
-</div>
 <p>Once the recording is in memory, we convert it to a PyTorch Tensor, normalize
 it, and reshape it to the form <cite>(B, C, T)</cite>, where <cite>B</cite> is the batch size, <cite>C</cite>
 is the number of channels, and <cite>T</cite> is the number of samples in the recording.
@@ -90,7 +86,7 @@ a single channel, so <cite>C = 1</cite>. Note that <cite>C</cite> is almost alwa
 Tensors as this axis indexes the different scattering coefficients.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
 <span class="n">x</span> <span class="o">/=</span> <span class="n">x</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We are now ready to set up the parameters for the scattering transform.
@@ -106,7 +102,7 @@ This lets us resolve frequencies at a resolution of <cite>1/16</cite> octaves.</
 </div>
 <p>Finally, we are able to create the object which computes our scattering
 transform, <cite>scattering</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -135,7 +131,7 @@ information from the scattering object and constructing masks for each order.</p
 <cite>x[0,0,:]</cite> to convert it to a one-dimensional array and convert it to a
 numpy array using the <cite>numpy()</cite> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original signal&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -170,12 +166,12 @@ the vertical axis.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  2.897 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.468 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-plot-real-signal-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/plot_real_signal.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_real_signal.py</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/013929b0f5cd70a36651a4ee29152cfc/plot_real_signal.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_real_signal.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/plot_real_signal.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_real_signal.ipynb</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/5d8b1a7866a113720c92e6760ac930ec/plot_real_signal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_real_signal.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -190,7 +186,7 @@ the vertical axis.</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
     
   </a>
 </p>
@@ -212,7 +208,7 @@ the vertical axis.</p>
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -264,6 +260,14 @@ the vertical axis.</p>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -272,8 +276,8 @@ the vertical axis.</p>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/gallery_1d/plot_real_signal.rst.txt"
@@ -286,6 +290,22 @@ the vertical axis.</p>
     </a>
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>

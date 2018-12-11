@@ -9,7 +9,7 @@
     <title>Kymatio: &#8212; kymatio  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
@@ -35,7 +35,7 @@
             
   <div class="section" id="kymatio">
 <h1>Kymatio:<a class="headerlink" href="#kymatio" title="Permalink to this headline">¶</a></h1>
-<p>Kymatio is a Python module for computing wavelet and scattering transforms.</p>
+<img alt="https://img.shields.io/badge/python-3.6-blue.svg" src="https://img.shields.io/badge/python-3.6-blue.svg" /><img alt="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" /><p>Kymatio is a Python module for computing wavelet and scattering transforms.</p>
 <p>It is built on top of PyTorch, but also has a fast CUDA backend via cupy and
 skcuda.</p>
 <p>Use kymatio if you need a library that:</p>
@@ -49,10 +49,7 @@ list of publications see
 <a class="reference external" href="https://www.di.ens.fr/data/publications">Publications</a>.</p>
 <div class="section" id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
-<p>On Linux or macOS, open a shell and run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">kymatio</span>
-</pre></div>
-</div>
+<p>On Linux or macOS, open a shell and run the instruction of <a class="reference external" href="https://github.com/kymatio/kymatio">https://github.com/kymatio/kymatio</a> .</p>
 <p>In the Python intepreter, you may then call:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kymatio</span>
 </pre></div>
@@ -66,7 +63,7 @@ class to compute the scattering transform at scale <code class="docutils literal
 consisting of Gaussian white noise:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
-<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
 <span class="n">Sx</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">Sx</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
@@ -133,7 +130,7 @@ performance, see the <a class="reference internal" href="userguide.html#backend-
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="#">
-    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    <img class="logo" src="_static/kymatio.jpg" alt="Logo"/>
     
   </a>
 </p>
@@ -155,7 +152,7 @@ performance, see the <a class="reference internal" href="userguide.html#backend-
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -196,6 +193,14 @@ performance, see the <a class="reference internal" href="userguide.html#backend-
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -204,8 +209,8 @@ performance, see the <a class="reference internal" href="userguide.html#backend-
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"
@@ -218,6 +223,22 @@ performance, see the <a class="reference internal" href="userguide.html#backend-
     </a>
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>

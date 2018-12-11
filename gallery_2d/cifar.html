@@ -9,7 +9,7 @@
     <title>Classification on CIFAR10 &#8212; kymatio  documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
@@ -160,10 +160,10 @@
     <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">use_cuda</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">order2</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">max_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">K</span> <span class="o">=</span> <span class="mi">17</span><span class="o">*</span><span class="mi">3</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
         <span class="n">K</span> <span class="o">=</span> <span class="mi">81</span><span class="o">*</span><span class="mi">3</span>
     <span class="k">if</span> <span class="n">use_cuda</span><span class="p">:</span>
         <span class="n">scattering</span> <span class="o">=</span> <span class="n">scattering</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
@@ -220,9 +220,9 @@
 <p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-cifar-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/cifar.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cifar.py</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/0ce1a4d7fe1ba2943ba9d014dca2b062/cifar.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cifar.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/cifar.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cifar.ipynb</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/a54de0f0751c1ca4de24856281323468/cifar.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cifar.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -236,7 +236,7 @@
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/logo.png" alt="Logo"/>
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
     
   </a>
 </p>
@@ -258,7 +258,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -310,6 +310,14 @@
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -318,8 +326,8 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/gallery_2d/cifar.rst.txt"
@@ -332,6 +340,22 @@
     </a>
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>

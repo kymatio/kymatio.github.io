@@ -9,7 +9,7 @@
     <title>kymatio.scattering2d.scattering2d &#8212; kymatio  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
@@ -69,7 +69,7 @@
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
 <span class="sd">        # 1) Define a Scattering object as:</span>
-<span class="sd">        s = Scattering2D(M, N, J)</span>
+<span class="sd">        s = Scattering2D(J, M, N)</span>
 <span class="sd">        #    where (M, N) are the image sizes and 2**J the scale of the scattering</span>
 <span class="sd">        # 2) Forward on an input Variable x of shape B x 1 x M x N,</span>
 <span class="sd">        #     where B is the batch size.</span>
@@ -77,12 +77,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    M, N : int</span>
-<span class="sd">        spatial support of the input</span>
 <span class="sd">    J : int</span>
 <span class="sd">        logscale of the scattering</span>
+<span class="sd">    shape : tuple of int</span>
+<span class="sd">        spatial support (M, N) of the input</span>
 <span class="sd">    L : int, optional</span>
 <span class="sd">        number of angles used for the wavelet transform</span>
+<span class="sd">    max_order : int, optional</span>
+<span class="sd">        The maximum order of scattering coefficients to compute. Must be either</span>
+<span class="sd">        `1` or `2`. Defaults to `2`.</span>
 <span class="sd">    pre_pad : boolean, optional</span>
 <span class="sd">        controls the padding: if set to False, a symmetric padding is applied</span>
 <span class="sd">        on the signal. If set to true, the software will assume the signal was</span>
@@ -90,12 +93,15 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    M, N : int</span>
-<span class="sd">        spatial support of the input</span>
 <span class="sd">    J : int</span>
 <span class="sd">        logscale of the scattering</span>
+<span class="sd">    shape : tuple of int</span>
+<span class="sd">        spatial support (M, N) of the input</span>
 <span class="sd">    L : int, optional</span>
 <span class="sd">        number of angles used for the wavelet transform</span>
+<span class="sd">    max_order : int, optional</span>
+<span class="sd">        The maximum order of scattering coefficients to compute.</span>
+<span class="sd">        Must be either equal to `1` or `2`. Defaults to `2`.</span>
 <span class="sd">    pre_pad : boolean</span>
 <span class="sd">        controls the padding</span>
 <span class="sd">    Psi : dictionary</span>
@@ -116,13 +122,16 @@
 <span class="sd">     to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">pre_pad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">order2</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">L</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pre_pad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">J</span><span class="p">,</span> <span class="n">L</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pre_pad</span> <span class="o">=</span> <span class="n">pre_pad</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">order2</span> <span class="o">=</span> <span class="n">order2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">=</span> <span class="n">max_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modulus</span> <span class="o">=</span> <span class="n">Modulus</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pad</span> <span class="o">=</span> <span class="n">Pad</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="n">pre_pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_pad</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsample_fourier</span> <span class="o">=</span> <span class="n">SubsampleFourier</span><span class="p">()</span>
@@ -193,7 +202,7 @@
         <span class="n">modulus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modulus</span>
         <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad</span>
         <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">*</span><span class="n">J</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">output_size</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">*</span><span class="n">J</span><span class="o">*</span><span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
 
         <span class="n">S</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
@@ -226,7 +235,7 @@
             <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">psi</span><span class="p">)):</span>
                     <span class="n">j2</span> <span class="o">=</span> <span class="n">psi</span><span class="p">[</span><span class="n">n2</span><span class="p">][</span><span class="s1">&#39;j&#39;</span><span class="p">]</span>
                     <span class="k">if</span><span class="p">(</span><span class="n">j1</span> <span class="o">&lt;</span> <span class="n">j2</span><span class="p">):</span>
@@ -255,7 +264,7 @@
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../../index.html">
-    <img class="logo" src="../../../_static/logo.png" alt="Logo"/>
+    <img class="logo" src="../../../_static/kymatio.jpg" alt="Logo"/>
     
   </a>
 </p>
@@ -277,7 +286,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -319,6 +328,14 @@
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -327,8 +344,8 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
@@ -338,6 +355,22 @@
     </a>
     
 
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
     
   </body>
 </html>

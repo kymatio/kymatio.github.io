@@ -93,10 +93,10 @@ Based on pytorch example for MNIST
         device = torch.device("cuda" if use_cuda else "cpu")
 
         if args.mode == 1:
-            scattering = Scattering2D(M=28, N=28, J=2,order2=False)
+            scattering = Scattering2D(J=2, shape=(28, 28), max_order=1)
             K = 17
         else:
-            scattering = Scattering2D(M=28, N=28, J=2)
+            scattering = Scattering2D(J=2, shape=(28, 28))
             K = 81
         if use_cuda:
             scattering = scattering.cuda()
