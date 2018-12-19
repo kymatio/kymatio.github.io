@@ -184,6 +184,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
             <span class="k">raise</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;The input should be a torch.cuda.FloatTensor, a torch.FloatTensor or a torch.DoubleTensor&#39;</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Input tensor must have at least two &#39;</span>
+                <span class="s1">&#39;dimensions&#39;</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">input</span><span class="o">.</span><span class="n">is_contiguous</span><span class="p">()):</span>
             <span class="k">raise</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Tensor must be contiguous!&#39;</span><span class="p">))</span>
 
@@ -193,20 +197,25 @@
         <span class="k">if</span> <span class="p">((</span><span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_padded</span> <span class="ow">or</span> <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">M_padded</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre_pad</span><span class="p">):</span>
             <span class="k">raise</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Padded tensor must be of spatial size (</span><span class="si">%i</span><span class="s1">,</span><span class="si">%i</span><span class="s1">)!&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">M_padded</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_padded</span><span class="p">)))</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Input tensor must be 4D&#39;</span><span class="p">))</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">signal_shape</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+
+        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">signal_shape</span><span class="p">)</span>
 
         <span class="n">J</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span>
         <span class="n">phi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Phi</span>
         <span class="n">psi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Psi</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">subsample_fourier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample_fourier</span>
         <span class="n">modulus</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modulus</span>
         <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad</span>
-        <span class="n">output_size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">*</span><span class="n">J</span>
+        <span class="n">order0_size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">order1_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">*</span> <span class="n">J</span>
+        <span class="n">order2_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">J</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">output_size</span> <span class="o">=</span> <span class="n">order0_size</span> <span class="o">+</span> <span class="n">order1_size</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">output_size</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">*</span><span class="n">J</span><span class="o">*</span><span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">output_size</span> <span class="o">+=</span> <span class="n">order2_size</span>
 
         <span class="n">S</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
                       <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
@@ -221,8 +230,9 @@
 
         <span class="n">U_J_r</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">U_1_c</span><span class="p">,</span> <span class="s1">&#39;C2R&#39;</span><span class="p">)</span>
 
-        <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
+        <span class="n">n_order1</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">n_order2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">order1_size</span>
 
         <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">psi</span><span class="p">)):</span>
             <span class="n">j1</span> <span class="o">=</span> <span class="n">psi</span><span class="p">[</span><span class="n">n1</span><span class="p">][</span><span class="s1">&#39;j&#39;</span><span class="p">]</span>
@@ -235,8 +245,8 @@
             <span class="c1"># Second low pass filter</span>
             <span class="n">U_2_c</span> <span class="o">=</span> <span class="n">subsample_fourier</span><span class="p">(</span><span class="n">cdgmm</span><span class="p">(</span><span class="n">U_1_c</span><span class="p">,</span> <span class="n">phi</span><span class="p">[</span><span class="n">j1</span><span class="p">]),</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">J</span><span class="o">-</span><span class="n">j1</span><span class="p">))</span>
             <span class="n">U_J_r</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">U_2_c</span><span class="p">,</span> <span class="s1">&#39;C2R&#39;</span><span class="p">)</span>
-            <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n_order1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
+            <span class="n">n_order1</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">psi</span><span class="p">)):</span>
@@ -250,8 +260,11 @@
                         <span class="n">U_2_c</span> <span class="o">=</span> <span class="n">subsample_fourier</span><span class="p">(</span><span class="n">cdgmm</span><span class="p">(</span><span class="n">U_2_c</span><span class="p">,</span> <span class="n">phi</span><span class="p">[</span><span class="n">j2</span><span class="p">]),</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">J</span><span class="o">-</span><span class="n">j2</span><span class="p">))</span>
                         <span class="n">U_J_r</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">U_2_c</span><span class="p">,</span> <span class="s1">&#39;C2R&#39;</span><span class="p">)</span>
     
-                        <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
-                        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">S</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">n_order2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">U_J_r</span><span class="p">)</span>
+                        <span class="n">n_order2</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">scattering_shape</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="n">scattering_shape</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">S</span></div>
 

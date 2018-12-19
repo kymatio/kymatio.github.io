@@ -49,7 +49,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span><span class="p">,</span> <span class="n">model_selection</span><span class="p">,</span> <span class="n">preprocessing</span><span class="p">,</span> <span class="n">pipeline</span>
-<span class="kn">from</span> <span class="nn">kymatio.scattering3d</span> <span class="kn">import</span> <span class="n">Scattering3D</span>
+<span class="kn">from</span> <span class="nn">kymatio.scattering3d</span> <span class="kn">import</span> <span class="n">HarmonicScattering3D</span>
 <span class="kn">from</span> <span class="nn">kymatio.scattering3d.utils</span> <span class="kn">import</span> <span class="n">compute_integrals</span><span class="p">,</span> <span class="n">generate_weighted_sum_of_gaussians</span>
 <span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">fetch_qm7</span>
 <span class="kn">from</span> <span class="nn">kymatio.caching</span> <span class="kn">import</span> <span class="n">get_cache_dir</span>
@@ -214,7 +214,7 @@
     <span class="n">n_molecules</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">n_batches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_molecules</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
-    <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering3D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">),</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="n">scattering</span> <span class="o">=</span> <span class="n">HarmonicScattering3D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">),</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
 
     <span class="n">order_0</span><span class="p">,</span> <span class="n">order_1</span><span class="p">,</span> <span class="n">order_2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Computing solid harmonic scattering coefficients of {} molecules &#39;</span>
@@ -245,22 +245,19 @@
         <span class="n">full_density_batch</span> <span class="o">=</span> <span class="n">generate_weighted_sum_of_gaussians</span><span class="p">(</span>
                 <span class="n">grid</span><span class="p">,</span> <span class="n">pos_batch</span><span class="p">,</span> <span class="n">full_batch</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span><span class="p">)</span>
         <span class="n">full_order_0</span> <span class="o">=</span> <span class="n">compute_integrals</span><span class="p">(</span><span class="n">full_density_batch</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">)</span>
-        <span class="n">full_scattering</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span>
-                <span class="n">full_density_batch</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span>
-                <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">scattering</span><span class="o">.</span><span class="n">max_order</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">scattering</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;integral&#39;</span>
+        <span class="n">scattering</span><span class="o">.</span><span class="n">integral_powers</span> <span class="o">=</span> <span class="n">integral_powers</span>
+        <span class="n">full_scattering</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">full_density_batch</span><span class="p">)</span>
 
         <span class="n">val_density_batch</span> <span class="o">=</span> <span class="n">generate_weighted_sum_of_gaussians</span><span class="p">(</span>
                 <span class="n">grid</span><span class="p">,</span> <span class="n">pos_batch</span><span class="p">,</span> <span class="n">val_batch</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">cuda</span><span class="o">=</span><span class="n">cuda</span><span class="p">)</span>
         <span class="n">val_order_0</span> <span class="o">=</span> <span class="n">compute_integrals</span><span class="p">(</span><span class="n">val_density_batch</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">)</span>
-        <span class="n">val_scattering</span><span class="o">=</span> <span class="n">scattering</span><span class="p">(</span>
-                <span class="n">val_density_batch</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span>
-                <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">val_scattering</span><span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">val_density_batch</span><span class="p">)</span>
 
         <span class="n">core_density_batch</span> <span class="o">=</span> <span class="n">full_density_batch</span> <span class="o">-</span> <span class="n">val_density_batch</span>
         <span class="n">core_order_0</span> <span class="o">=</span> <span class="n">compute_integrals</span><span class="p">(</span><span class="n">core_density_batch</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">)</span>
-        <span class="n">core_scattering</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span>
-                <span class="n">core_density_batch</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span>
-                <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">core_scattering</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">core_density_batch</span><span class="p">)</span>
 
 
         <span class="n">order_0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>

@@ -39,19 +39,16 @@
 <span></span><span class="c1"># Authors: Louis Thiry, Georgios Exarchakis</span>
 <span class="c1"># Scientific Ancestry: Louis Thiry, Georgios Exarchakis, Matthew Hirn, Michael Eickenberg</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Scattering3D&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HarmonicScattering3D&#39;</span><span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">compute_integrals</span><span class="p">,</span> <span class="n">subsample</span>
- 
+
 <span class="kn">from</span> <span class="nn">.backend</span> <span class="k">import</span> <span class="n">cdgmm3d</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">complex_modulus</span><span class="p">,</span> <span class="n">to_complex</span>
 <span class="kn">from</span> <span class="nn">.filter_bank</span> <span class="k">import</span> <span class="n">solid_harmonic_filter_bank</span><span class="p">,</span> <span class="n">gaussian_filter_bank</span>
 
-<span class="c1"># TODO remove &quot;import backend&quot; below after implementing skcuda backend</span>
-<span class="kn">from</span> <span class="nn">kymatio.scattering3d</span> <span class="k">import</span> <span class="n">backend</span>
 
-
-<div class="viewcode-block" id="Scattering3D"><a class="viewcode-back" href="../../../codereference.html#kymatio.Scattering3D">[docs]</a><span class="k">class</span> <span class="nc">Scattering3D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HarmonicScattering3D"><a class="viewcode-back" href="../../../codereference.html#kymatio.HarmonicScattering3D">[docs]</a><span class="k">class</span> <span class="nc">HarmonicScattering3D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;3D Solid Harmonic scattering .</span>
 
 <span class="sd">    This class implements solid harmonic scattering on an input 3D image.</span>
@@ -65,18 +62,51 @@
 <span class="sd">        number of scales</span>
 <span class="sd">    shape: tuple of int</span>
 <span class="sd">        shape (M, N, O) of the input signal</span>
-<span class="sd">    L: int</span>
-<span class="sd">        number of l values</span>
+<span class="sd">    L: int, optional</span>
+<span class="sd">        Number of l values. Defaults to 3.</span>
+<span class="sd">    sigma_0: float, optional</span>
+<span class="sd">        Bandwidth of mother wavelet. Defaults to 1.</span>
+<span class="sd">    max_order: int, optional</span>
+<span class="sd">        The maximum order of scattering coefficients to compute. Must be</span>
+<span class="sd">        either 1 or 2. Defaults to 2.</span>
+<span class="sd">    rotation_covariant: bool, optional</span>
+<span class="sd">        if set to True the first order moduli take the form:</span>
+
+<span class="sd">        $\sqrt{\sum_m (x \star \psi_{j,l,m})^2)}$</span>
+
+<span class="sd">        if set to False the first order moduli take the form:</span>
+
+<span class="sd">        $x \star \psi_{j,l,m}$</span>
+
+<span class="sd">        The second order moduli change analogously</span>
+<span class="sd">        Defaut: True</span>
+<span class="sd">    method: string, optional</span>
+<span class="sd">        specifies the method for obtaining scattering coefficients</span>
+<span class="sd">        (&quot;standard&quot;,&quot;local&quot;,&quot;integral&quot;). Default: &quot;standard&quot;</span>
+<span class="sd">    points: array-like, optional</span>
+<span class="sd">        List of locations in which to sample wavelet moduli. Used when</span>
+<span class="sd">        method == &#39;local&#39;</span>
+<span class="sd">    integral_powers: array-like</span>
+<span class="sd">        List of exponents to the power of which moduli are raised before</span>
+<span class="sd">        integration. Used with method == &#39;standard&#39;, method == &#39;integral&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s2">&quot;skcuda&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">skcuda_notimplementederror</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Scattering3D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">rotation_covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">integral_powers</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HarmonicScattering3D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">=</span> <span class="n">J</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">L</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_0</span> <span class="o">=</span> <span class="n">sigma_0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">=</span> <span class="n">max_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_covariant</span> <span class="o">=</span> <span class="n">rotation_covariant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integral_powers</span> <span class="o">=</span> <span class="n">integral_powers</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
@@ -86,6 +116,20 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_filters</span> <span class="o">=</span> <span class="n">gaussian_filter_bank</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">O</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move to the GPU</span>
+
+<span class="sd">        This function prepares the object to accept input Tensors on the GPU.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move to the CPU</span>
+
+<span class="sd">        This function prepares the object to accept input Tensors on the CPU.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_fft_convolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">filter_array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -145,8 +189,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">convolved_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_pass_filter</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">subsample</span><span class="p">(</span><span class="n">convolved_input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
-            <span class="n">input_array</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subsample</span><span class="p">(</span><span class="n">convolved_input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_compute_local_scattering_coefs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -238,7 +281,7 @@
 <span class="sd">            tensor of the same size as input_array. It holds the output of</span>
 <span class="sd">            the operation::</span>
 
-<span class="sd">            $\sqrt{\sum_m (\text{input}_\text{array} \star \psi_{j,l,m})^2)}$</span>
+<span class="sd">            $\\sqrt{\\sum_m (\\text{input}_\\text{array} \\star \\psi_{j,l,m})^2)}$</span>
 
 <span class="sd">            which is covariant to 3D translations and rotations</span>
 
@@ -290,6 +333,14 @@
                 <span class="s1">&#39;The input should be a torch.cuda.FloatTensor, &#39;</span>
                 <span class="s1">&#39;a torch.FloatTensor or a torch.DoubleTensor&#39;</span><span class="p">))</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">input_array</span><span class="o">.</span><span class="n">is_cuda</span><span class="p">:</span>
+            <span class="k">raise</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;This transform is in GPU mode, but the input is &#39;</span>
+                            <span class="s1">&#39;on the CPU.&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cuda</span> <span class="ow">and</span> <span class="n">input_array</span><span class="o">.</span><span class="n">is_cuda</span><span class="p">:</span>
+            <span class="k">raise</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;This transform is in CPU mode, but the input is &#39;</span>
+                            <span class="s1">&#39;on the GPU.&#39;</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">input_array</span><span class="o">.</span><span class="n">is_contiguous</span><span class="p">()):</span>
             <span class="n">input_array</span> <span class="o">=</span> <span class="n">input_array</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
 
@@ -302,8 +353,7 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">input_array</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">):</span>
             <span class="k">raise</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Input tensor must be 4D&#39;</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Scattering3D.forward"><a class="viewcode-back" href="../../../codereference.html#kymatio.Scattering3D.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">order_2</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">rotation_covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">method</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">integral_powers</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)):</span>
+<div class="viewcode-block" id="HarmonicScattering3D.forward"><a class="viewcode-back" href="../../../codereference.html#kymatio.HarmonicScattering3D.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The forward pass of 3D solid harmonic scattering</span>
 
@@ -311,42 +361,18 @@
 <span class="sd">        ----------</span>
 <span class="sd">        input_array: torch tensor </span>
 <span class="sd">            input of size (batchsize, M, N, O)</span>
-<span class="sd">        order_2: bool, optional</span>
-<span class="sd">            if set to False|True it also excludes|includes second order</span>
-<span class="sd">            scattering coefficients (default: True).</span>
-<span class="sd">        rotation_covariant: bool, optional</span>
-<span class="sd">            if set to True the first order moduli take the form::</span>
-
-<span class="sd">            $\sqrt(\sum_m (input_array \star \psi_{j,l,m})^2))$</span>
-
-<span class="sd">            if set to False the first order moduli take the form::</span>
-
-<span class="sd">            $input_array \star \psi_{j,l,m})$</span>
-
-<span class="sd">            The second order moduli change analogously</span>
-<span class="sd">            Defaut: True</span>
-<span class="sd">        method: string, optional</span>
-<span class="sd">            specifies the method for obtaining scattering coefficients</span>
-<span class="sd">            (&quot;standard&quot;,&quot;local&quot;,&quot;integral&quot;). Default: &quot;standard&quot;</span>
-<span class="sd">        points: array-like, optional</span>
-<span class="sd">            List of locations in which to sample wavelet moduli. Used when</span>
-<span class="sd">            method == &#39;local&#39;</span>
-
-<span class="sd">        integral_powers: array-like</span>
-<span class="sd">            List of exponents to the power of which moduli are raised before</span>
-<span class="sd">            integration. Used with method == &#39;standard&#39;, method == &#39;integral&#39;</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        output: tuple | torch tensor</span>
-<span class="sd">            if order_2 is false it returns a torch tensor with the</span>
+<span class="sd">            if max_order is 1 it returns a torch tensor with the</span>
 <span class="sd">            first order scattering coefficients</span>
-<span class="sd">            if order_2 is true it returns a tuple with two elements,</span>
-<span class="sd">            the first and second order scattering coefficients</span>
-
+<span class="sd">            if max_order is 2 it returns a torch tensor with the</span>
+<span class="sd">            first and second order scattering coefficients,</span>
+<span class="sd">            concatenated along the feature axis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">input_array</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">rotation_covariant</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation_covariant</span><span class="p">:</span>
             <span class="n">convolution_and_modulus</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_rotation_covariant_convolution_and_modulus</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -358,31 +384,31 @@
         <span class="n">s_order_2</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">_input</span> <span class="o">=</span> <span class="n">to_complex</span><span class="p">(</span><span class="n">input_array</span><span class="p">)</span>
 
-        <span class="n">method_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">method_args</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span>
+                           <span class="n">integral_powers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">integral_powers</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">s_order_1_l</span><span class="p">,</span> <span class="n">s_order_2_l</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">j_1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
                 <span class="n">conv_modulus</span> <span class="o">=</span> <span class="n">convolution_and_modulus</span><span class="p">(</span><span class="n">_input</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j_1</span><span class="p">)</span>
                 <span class="n">s_order_1_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_scattering_coefs</span><span class="p">(</span>
-                    <span class="n">conv_modulus</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">method_args</span><span class="p">,</span> <span class="n">j_1</span><span class="p">))</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">order_2</span><span class="p">:</span>
+                    <span class="n">conv_modulus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">method_args</span><span class="p">,</span> <span class="n">j_1</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">for</span> <span class="n">j_2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j_1</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
                     <span class="n">conv_modulus_2</span> <span class="o">=</span> <span class="n">convolution_and_modulus</span><span class="p">(</span>
                         <span class="n">conv_modulus</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j_2</span><span class="p">)</span>
                     <span class="n">s_order_2_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_scattering_coefs</span><span class="p">(</span>
-                        <span class="n">conv_modulus_2</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">method_args</span><span class="p">,</span> <span class="n">j_2</span><span class="p">))</span>
-            <span class="n">s_order_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">s_order_1_l</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">order_2</span><span class="p">:</span>
-                <span class="n">s_order_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">s_order_2_l</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">order_2</span><span class="p">:</span>
+                        <span class="n">conv_modulus_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">method_args</span><span class="p">,</span> <span class="n">j_2</span><span class="p">))</span>
+            <span class="n">s_order_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">arr</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">s_order_1_l</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">s_order_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">arr</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">s_order_2_l</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)],</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+                <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)],</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">s_order_1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
 
     <span class="fm">__call__</span> <span class="o">=</span> <span class="n">forward</span></div>

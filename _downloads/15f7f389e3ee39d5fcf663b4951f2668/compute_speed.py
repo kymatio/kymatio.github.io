@@ -28,10 +28,10 @@ import time
 import kymatio.scattering3d.backend as backend
 
 ###############################################################################
-# Finally, we import the `Scattering3D` class that computes the scattering
+# Finally, we import the `HarmonicScattering3D` class that computes the scattering
 # transform.
 
-from kymatio import Scattering3D
+from kymatio import HarmonicScattering3D
 ###############################################################################
 # Benchmark setup
 # --------------------
@@ -66,16 +66,18 @@ times = 10
 
 if backend.NAME == 'torch':
     devices = ['cpu', 'gpu']
+elif backend.NAME == 'skcuda':
+    devices = ['gpu']
 
 ###############################################################################
 # Set up the scattering object and the test data
 # ----------------------------------------------
 
 ###############################################################################
-# Create the `Scattering3D` object using the given parameters and generate
+# Create the `HarmonicScattering3D` object using the given parameters and generate
 # some compatible test data with the specified batch size.
 
-scattering = Scattering3D(J, shape=(M, N, O), L=L, sigma_0=sigma_0)
+scattering = HarmonicScattering3D(J, shape=(M, N, O), L=L, sigma_0=sigma_0)
 
 x = torch.randn(batch_size, M, N, O, dtype=torch.float32)
 
@@ -99,14 +101,17 @@ for device in devices:
     else:
         x = x.cpu()
 
-    scattering.forward(x, method='integral', integral_powers=integral_powers)
+    scattering.method = 'integral'
+    scattering.integral_powers = integral_powers
+
+    scattering.forward(x)
 
     if device == 'gpu':
         torch.cuda.synchronize()
 
     t_start = time.time()
     for _ in range(times):
-        scattering.forward(x, method='integral', integral_powers=integral_powers)
+        scattering.forward(x)
 
     if device == 'gpu':
         torch.cuda.synchronize()

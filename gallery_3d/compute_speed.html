@@ -64,9 +64,9 @@ the benchmark.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kymatio.scattering3d.backend</span> <span class="kn">as</span> <span class="nn">backend</span>
 </pre></div>
 </div>
-<p>Finally, we import the <cite>Scattering3D</cite> class that computes the scattering
+<p>Finally, we import the <cite>HarmonicScattering3D</cite> class that computes the scattering
 transform.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering3D</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">HarmonicScattering3D</span>
 </pre></div>
 </div>
 </div>
@@ -99,14 +99,16 @@ get a reasonable estimate.</p>
 backend.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
     <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="s1">&#39;gpu&#39;</span><span class="p">]</span>
+<span class="k">elif</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s1">&#39;skcuda&#39;</span><span class="p">:</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gpu&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="set-up-the-scattering-object-and-the-test-data">
 <h2>Set up the scattering object and the test data<a class="headerlink" href="#set-up-the-scattering-object-and-the-test-data" title="Permalink to this headline">¶</a></h2>
-<p>Create the <cite>Scattering3D</cite> object using the given parameters and generate
+<p>Create the <cite>HarmonicScattering3D</cite> object using the given parameters and generate
 some compatible test data with the specified batch size.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering3D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">),</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="n">sigma_0</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">HarmonicScattering3D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">),</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="n">sigma_0</span><span class="p">)</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">O</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 </pre></div>
@@ -130,14 +132,17 @@ make sure that all CUDA kernels have finished executing.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
 
-    <span class="n">scattering</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span> <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+    <span class="n">scattering</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;integral&#39;</span>
+    <span class="n">scattering</span><span class="o">.</span><span class="n">integral_powers</span> <span class="o">=</span> <span class="n">integral_powers</span>
+
+    <span class="n">scattering</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span><span class="p">:</span>
         <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
 
     <span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
-        <span class="n">scattering</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;integral&#39;</span><span class="p">,</span> <span class="n">integral_powers</span><span class="o">=</span><span class="n">integral_powers</span><span class="p">)</span>
+        <span class="n">scattering</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span><span class="p">:</span>
         <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
