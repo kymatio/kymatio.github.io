@@ -121,13 +121,13 @@ class, ``Scattering1D``.
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: gallery_1d_python.zip <//Users/oyallon/kymatio/doc/source/gallery_1d/gallery_1d_python.zip>`
+    :download:`Download all examples in Python source code: gallery_1d_python.zip <//mnt/home/janden/projects/kymatio/doc/source/gallery_1d/gallery_1d_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: gallery_1d_jupyter.zip <//Users/oyallon/kymatio/doc/source/gallery_1d/gallery_1d_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: gallery_1d_jupyter.zip <//mnt/home/janden/projects/kymatio/doc/source/gallery_1d/gallery_1d_jupyter.zip>`
 
 
 .. only:: html

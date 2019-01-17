@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/kymatio.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -541,9 +542,9 @@ Convolutions are efficiently performed in the Fourier domain
 with this implementation.</p>
 <p class="rubric">Example</p>
 <p># 1) Define a Scattering object as:
-s = Scattering2D(J, M, N)
+s = Scattering2D(J, shape=(M, N))
 #    where (M, N) are the image sizes and 2**J the scale of the scattering
-# 2) Forward on an input Variable x of shape B x 1 x M x N,
+# 2) Forward on an input Tensor x of shape B x M x N,
 #     where B is the batch size.
 result_s = s(x)</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -861,7 +862,7 @@ concatenated along the feature axis</td>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -14,6 +14,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/kymatio.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -82,7 +83,7 @@ layer. In Kymatio, we instead traverse the scattering transform tree in a
 depth-first fashion. This limits memory usage and makes the implementation
 better suited for execution on a GPU. The difference between the two approaches
 is illustrated in the figure below.</p>
-<div class="figure align-center" id="id25">
+<div class="figure align-center" id="id22">
 <a class="reference internal image-reference" href="_images/algorithm.png"><img alt="Comparison of ScatNet and Kymatio implementations." src="_images/algorithm.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">The scattering tree traversal strategies of (a) the ScatNet toolbox, and (b)
 Kymatio. While ScatNet traverses the tree in a breadth-first fashion (layer
@@ -188,23 +189,7 @@ may use the <code class="docutils literal notranslate"><span class="pre">KYMATIO
 default setting in the configuration file. Alternatively, the backend may be
 specified on a per-dimension basis through the <code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND_1D</span></code>,
 <code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND_2D</span></code>, and <code class="docutils literal notranslate"><span class="pre">KYMATIO_BACKEND_3D</span></code> variables.</p>
-<div class="section" id="d-backend">
-<h3>1-D backend<a class="headerlink" href="#d-backend" title="Permalink to this headline">¶</a></h3>
-<p>Currently, two backends exist for the 1D scattering transform:</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">torch</span></code>: A PyTorch-only implementation which is differentiable with respect
-to its inputs. However, it relies on general-purpose CUDA kernels for GPU
-computation which reduces performance.</li>
-<li><code class="docutils literal notranslate"><span class="pre">skcuda</span></code>: An implementation using custom CUDA kernels (through <code class="docutils literal notranslate"><span class="pre">cupy</span></code>) and
-<code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code>. This implementation only runs on the GPU (that is, you must
-call <code class="xref py py-meth docutils literal notranslate"><span class="pre">cuda()</span></code> prior to applying it) and is currently only slightly faster
-than the default <code class="docutils literal notranslate"><span class="pre">torch</span></code> backend. Work to further optimize this backend is
-currently underway.</li>
-</ul>
-</div>
-<div class="section" id="id14">
-<h3>2-D backend<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
-<p>Currently, two backends exist for the 2D scattering transform:</p>
+<p>Currently, two backends exist:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">torch</span></code>: A PyTorch-only implementation which is differentiable with respect
 to its inputs. However, it relies on general-purpose CUDA kernels for GPU
@@ -213,26 +198,20 @@ computation which reduces performance.</li>
 <code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code>. This implementation only runs on the GPU (that is, you must
 call <code class="xref py py-meth docutils literal notranslate"><span class="pre">cuda()</span></code> prior to applying it). Since it uses kernels optimized for
 the various steps of the scattering transform, it achieves better performance
-compared to the default <code class="docutils literal notranslate"><span class="pre">torch</span></code> backend (see benchmarks below).</li>
+compared to the default <code class="docutils literal notranslate"><span class="pre">torch</span></code> backend (see benchmarks below). This
+improvement is currently small in 1D and 3D, but work is underway to further
+optimize this backend.</li>
 </ul>
 </div>
-<div class="section" id="id15">
-<h3>3-D backend<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
-<p>Currently, one backends exists for the 3D scattering transform:</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">torch</span></code>: A PyTorch-only implementation which is differentiable with respect
-to its inputs. However, it relies on general-purpose CUDA kernels for GPU
-computation which reduces performance.</li>
-</ul>
-</div>
-</div>
-<div class="section" id="benchmark-with-previous-versions">
-<h2>Benchmark with previous versions<a class="headerlink" href="#benchmark-with-previous-versions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id16">
-<h3>1-D backend<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="benchmarks">
+<h2>Benchmarks<a class="headerlink" href="#benchmarks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="d-backend">
+<h3>1D backend<a class="headerlink" href="#d-backend" title="Permalink to this headline">¶</a></h3>
 <p>We compared our implementation with that of the ScatNet MATLAB package
-<a class="reference internal" href="#anden2014scatnet" id="id17">[AndenSM+14]</a> with similar settings. The following table shows the
-average computation time for a batch of size <img class="math" src="_images/math/861fc7520857cce73dd8b7a0883be680819aaa36.png" alt="64 \times 1 \times 65536"/>:</p>
+<a class="reference internal" href="#anden2014scatnet" id="id14">[AndenSM+14]</a> with similar settings. The following table shows the
+average computation time for a batch of size <img class="math" src="_images/math/c7650cce5111957dff4740f53b27772e740c2d67.png" alt="64 \times 65536"/>. This
+corresponds to <img class="math" src="_images/math/5b7b6f62ca680b9dbe723209d5f3dfc7bf2e4a29.png" alt="64"/> signals containing <img class="math" src="_images/math/e592aecb20cb6a4fb8280ad0cc0b69a14da3d0cf.png" alt="65536"/>, or a total of about
+<img class="math" src="_images/math/dbaa4dd12f6be4c42003ecc5895ec5b4b3f5df19.png" alt="95"/> seconds of audio sampled at <img class="math" src="_images/math/4d08da545c541bfa49c2f6216fdf1d081ffba0ed.png" alt="44.1~\mathrm{kHz}"/>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="64%" />
@@ -244,7 +223,7 @@ average computation time for a batch of size <img class="math" src="_images/math
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>ScatNet <a class="reference internal" href="#anden2014scatnet" id="id18">[AndenSM+14]</a></td>
+<tr class="row-even"><td>ScatNet <a class="reference internal" href="#anden2014scatnet" id="id15">[AndenSM+14]</a></td>
 <td>1.65</td>
 </tr>
 <tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</td>
@@ -265,15 +244,16 @@ average computation time for a batch of size <img class="math" src="_images/math
 </tbody>
 </table>
 <p>The CPU tests were performed on a 24-core machine. Further optimization of both
-the torch and skcuda backends is currently underway, so we expect these numbers
-to improve in the near future.</p>
+the <code class="docutils literal notranslate"><span class="pre">torch</span></code> and <code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backends is currently underway, so we expect these
+numbers to improve in the near future.</p>
 </div>
-<div class="section" id="id19">
-<h3>2-D backend<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>2D backend<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>We compared our implementation the ScatNetLight MATLAB package
-<a class="reference internal" href="#oyallon-2015-cvpr" id="id20">[OM15]</a> and a previous PyTorch implementation, <em>PyScatWave</em>
-<a class="reference internal" href="#id24" id="id21">[OZH+18]</a>. The following table shows the average computation time for a
-batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a00d58522ea.png" alt="128 \times 3 \times 256 \times 256"/>:</p>
+<a class="reference internal" href="#oyallon-2015-cvpr" id="id17">[OM15]</a> and a previous PyTorch implementation, <em>PyScatWave</em>
+<a class="reference internal" href="#id21" id="id18">[OZH+18]</a>. The following table shows the average computation time for a
+batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a00d58522ea.png" alt="128 \times 3 \times 256 \times 256"/>. This corresponds to
+<img class="math" src="_images/math/42e332511a265f8b5a8a64e27bd01ba96f8cec29.png" alt="128"/> three-channel (e.g., RGB) images of size <img class="math" src="_images/math/459c4906bea7c4dc223f826a88f8d1083af8e692.png" alt="256 \times 256"/>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="64%" />
@@ -285,7 +265,7 @@ batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>MATLAB <a class="reference internal" href="#oyallon-2015-cvpr" id="id22">[OM15]</a></td>
+<tr class="row-even"><td>MATLAB <a class="reference internal" href="#oyallon-2015-cvpr" id="id19">[OM15]</a></td>
 <td>&gt;200</td>
 </tr>
 <tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</td>
@@ -307,8 +287,47 @@ batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a
 </table>
 <p>The CPU tests were performed on a 48-core machine.</p>
 </div>
-<div class="section" id="id23">
-<h3>3-D backend<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id20">
+<h3>3D backend<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<p>We compared our implementation for different backends with a batch size of <img class="math" src="_images/math/5b4096953d8458c9e71fbefcdfc8f564d96d4f95.png" alt="8 \times 128 \times 128 \times 128"/>.
+This means that eight different volumes of size <img class="math" src="_images/math/fef848b14f64c175db4cdbbd6cc734c1d0c1dcc2.png" alt="128 \times 128 \times 128"/> were processed at the same time. The resulting timings are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="64%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Average time per batch (s)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</td>
+<td>45</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, Quadro M4000 GPU)</td>
+<td>7.5</td>
+</tr>
+<tr class="row-even"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, V100 GPU)</td>
+<td>0.88</td>
+</tr>
+<tr class="row-odd"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backend, Quadro M4000 GPU)</td>
+<td>6.4</td>
+</tr>
+<tr class="row-even"><td>Kymatio (<code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backend, V100 GPU)</td>
+<td>0.74</td>
+</tr>
+</tbody>
+</table>
+<p>The CPU tests were performed on a 24-core machine. Further optimization of both
+the <code class="docutils literal notranslate"><span class="pre">torch</span></code> and <code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backends is currently underway, so we expect these
+numbers to improve in the near future.</p>
+</div>
+</div>
+<div class="section" id="how-to-cite">
+<h2>How to cite<a class="headerlink" href="#how-to-cite" title="Permalink to this headline">¶</a></h2>
+<p>If you use this package, please cite the following paper:</p>
+<p>Andreux M., Angles T., Exarchakis G., Leonarduzzi R., Rochette G., Thiry L., Zarka J., Mallat S., Andén J., Belilovsky E., Bruna J., Lostanlen V., Hirn M. J., Oyallon E., Zhang S., Cella C., Eickenberg M (2019). Kymatio: Scattering Transforms in Python. arXiv preprint arXiv:1812.11214. <a class="reference external" href="https://arxiv.org/abs/1812.11214">[paper]</a></p>
 <p class="rubric">References</p>
 <p id="bibtex-bibliography-userguide-0"><table class="docutils citation" frame="void" id="anden2014deep" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
@@ -319,7 +338,7 @@ batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a
 <table class="docutils citation" frame="void" id="anden2014scatnet" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[AndenSM+14]</td><td><em>(<a class="fn-backref" href="#id6">1</a>, <a class="fn-backref" href="#id7">2</a>, <a class="fn-backref" href="#id9">3</a>, <a class="fn-backref" href="#id17">4</a>, <a class="fn-backref" href="#id18">5</a>)</em> J&nbsp;Andén, L&nbsp;Sifre, S&nbsp;Mallat, M&nbsp;Kapoko, V&nbsp;Lostanlen, and E&nbsp;Oyallon. Scatnet. <em><span>Computer Software. Available: <a class="reference external" href="#"></a></span>http://www.di.ens.fr/data/software/scatnet</em>, 2014.</td></tr>
+<tr><td class="label">[AndenSM+14]</td><td><em>(<a class="fn-backref" href="#id6">1</a>, <a class="fn-backref" href="#id7">2</a>, <a class="fn-backref" href="#id9">3</a>, <a class="fn-backref" href="#id14">4</a>, <a class="fn-backref" href="#id15">5</a>)</em> J&nbsp;Andén, L&nbsp;Sifre, S&nbsp;Mallat, M&nbsp;Kapoko, V&nbsp;Lostanlen, and E&nbsp;Oyallon. Scatnet. <em><span>Computer Software. Available: <a class="reference external" href="#"></a></span>http://www.di.ens.fr/data/software/scatnet</em>, 2014.</td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="bruna2013invariant" rules="none">
@@ -340,20 +359,19 @@ batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a
 <tr><td class="label"><a class="fn-backref" href="#id2">[Mal12]</a></td><td>Stéphane Mallat. Group invariant scattering. <em>Communications on Pure and Applied Mathematics</em>, 65(10):1331–1398, 2012.</td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="id24" rules="none">
+<table class="docutils citation" frame="void" id="id21" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id21">[OZH+18]</a></td><td>E.&nbsp;Oyallon, S.&nbsp;Zagoruyko, G.&nbsp;Huang, N.&nbsp;Komodakis, S.&nbsp;Lacoste-Julien, M.&nbsp;B. Blaschko, and E.&nbsp;Belilovsky. Scattering networks for hybrid representation learning. <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em>, ():1–1, 2018. <a class="reference external" href="https://doi.org/10.1109/TPAMI.2018.2855738">doi:10.1109/TPAMI.2018.2855738</a>.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id18">[OZH+18]</a></td><td>E.&nbsp;Oyallon, S.&nbsp;Zagoruyko, G.&nbsp;Huang, N.&nbsp;Komodakis, S.&nbsp;Lacoste-Julien, M.&nbsp;B. Blaschko, and E.&nbsp;Belilovsky. Scattering networks for hybrid representation learning. <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em>, ():1–1, 2018. <a class="reference external" href="https://doi.org/10.1109/TPAMI.2018.2855738">doi:10.1109/TPAMI.2018.2855738</a>.</td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="oyallon-2015-cvpr" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[OM15]</td><td><em>(<a class="fn-backref" href="#id20">1</a>, <a class="fn-backref" href="#id22">2</a>)</em> Edouard Oyallon and Stephane Mallat. Deep roto-translation scattering for object classification. In <em>The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>. June 2015.</td></tr>
+<tr><td class="label">[OM15]</td><td><em>(<a class="fn-backref" href="#id17">1</a>, <a class="fn-backref" href="#id19">2</a>)</em> Edouard Oyallon and Stephane Mallat. Deep roto-translation scattering for object classification. In <em>The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>. June 2015.</td></tr>
 </tbody>
 </table>
 </p>
-</div>
 </div>
 </div>
 
@@ -408,7 +426,8 @@ batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a
 <li class="toctree-l2"><a class="reference internal" href="#output-size">Output size</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#switching-from-cpu-to-gpu">Switching from CPU to GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#backend">Backend</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#benchmark-with-previous-versions">Benchmark with previous versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benchmarks">Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-cite">How to cite</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developerguide.html">Information for developers</a></li>
@@ -455,7 +474,7 @@ batch of size <img class="math" src="_images/math/e8ee8dc01fa669f32ce2f143a0568a
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

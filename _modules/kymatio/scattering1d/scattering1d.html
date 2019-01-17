@@ -14,6 +14,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../../_static/kymatio.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -36,8 +37,8 @@
           <div class="body" role="main">
             
   <h1>Source code for kymatio.scattering1d.scattering1d</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Authors: Mathieu Andreux, Joakim Andén, Edouard Oyallon</span>
-<span class="c1"># Scientific Ancestry: Joakim Andén, Mathieu Andreux, Vincent Lostanlen</span>
+<span></span><span class="c1"># Authors: Mathieu Andreux, Joakim Anden, Edouard Oyallon</span>
+<span class="c1"># Scientific Ancestry: Joakim Anden, Mathieu Andreux, Vincent Lostanlen</span>
 
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">numbers</span>
@@ -549,7 +550,10 @@
                 <span class="k">if</span> <span class="n">j2</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">j1</span><span class="p">[</span><span class="n">n1</span><span class="p">]:</span>
                     <span class="n">size_order2</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">detail</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">size_order0</span><span class="p">,</span> <span class="n">size_order1</span><span class="p">,</span> <span class="n">size_order2</span>
+            <span class="k">if</span> <span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">size_order0</span><span class="p">,</span> <span class="n">size_order1</span><span class="p">,</span> <span class="n">size_order2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">size_order0</span><span class="p">,</span> <span class="n">size_order1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">size_order0</span> <span class="o">+</span> <span class="n">size_order1</span> <span class="o">+</span> <span class="n">size_order2</span>
@@ -692,7 +696,8 @@
         <span class="c1"># initialize the cursor</span>
         <span class="n">cc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">size_scattering</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># current coordinate</span>
         <span class="n">cc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">cc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">cc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">cc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">max_order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">cc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="c1"># Get S0</span>
     <span class="n">k0</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">oversampling</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
@@ -854,7 +859,7 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
