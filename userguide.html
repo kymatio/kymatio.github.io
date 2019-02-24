@@ -6,15 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>User Guide &#8212; kymatio 0.1.0-dev documentation</title>
+    <title>User Guide &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/kymatio.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -62,7 +61,7 @@ properties make the scattering transform well-suited for representing structured
 signals such as natural images, textures, audio recordings, biomedical signals,
 or molecular density functions.</p>
 <p>Let us consider a set of wavelets <img class="math" src="_images/math/60cc670ea773ae19ff9ca03cd6a39f101b550183.png" alt="\{\psi_\lambda\}_\lambda"/>, such that
-ther exists some <img class="math" src="_images/math/65d19c66c148d5016c6a89d26486bf6d1966ded1.png" alt="\epsilon"/> satisfying:</p>
+there exists some <img class="math" src="_images/math/65d19c66c148d5016c6a89d26486bf6d1966ded1.png" alt="\epsilon"/> satisfying:</p>
 <div class="math">
 <p><img src="_images/math/717e7c31ccd1d97eed0b5a341dad63d2c14fb4a4.png" alt="1-\epsilon \leq \sum_\lambda |\hat \psi_\lambda(\omega)|^2 \leq 1"/></p>
 </div><p>Given a signal <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/>, we define its scattering coefficient of order
@@ -105,6 +104,7 @@ exactly match those of ScatNet <a class="reference internal" href="#anden2014sca
 </div>
 <div class="section" id="id10">
 <h3>3-D<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>…</p>
 </div>
 </div>
 <div class="section" id="output-size">
@@ -112,15 +112,15 @@ exactly match those of ScatNet <a class="reference internal" href="#anden2014sca
 <div class="section" id="id11">
 <h3>1-D<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p>If the input <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/> is a Tensor of size <img class="math" src="_images/math/8e30b6756aaa09b2abb6285b224d8081daec6928.png" alt="(B, 1, T)"/>, the output of the
-1D scattering transform is of size <img class="math" src="_images/math/37766bc81d37aa144bc34c9d28ccd95a8842e6e4.png" alt="(B, P, T/2**J)"/>, where <img class="math" src="_images/math/9dcbbef8e0f76051d388013b90a95bec3069e484.png" alt="P"/> is
-the number of scattering coefficients and <cite>2**J</cite> is the maximum scale of the
+1D scattering transform is of size <img class="math" src="_images/math/cf8f32bf55769644e7bae63d930d195db5530b10.png" alt="(B, P, T/2^J)"/>, where <img class="math" src="_images/math/9dcbbef8e0f76051d388013b90a95bec3069e484.png" alt="P"/> is
+the number of scattering coefficients and <img class="math" src="_images/math/ade970465d3b3ca70ec2a2f9c64e1f33ae005fe5.png" alt="2^J"/> is the maximum scale of the
 transform. The value of <img class="math" src="_images/math/9dcbbef8e0f76051d388013b90a95bec3069e484.png" alt="P"/> depends on the maximum order of the scattering
 transform and the parameters <img class="math" src="_images/math/331157c6afbd113256867fd408d80277d1a24756.png" alt="Q"/> and <img class="math" src="_images/math/ca54d3a4a8a221da5f7a13a28ec6a45b4abcc5a5.png" alt="J"/>. It is roughly proportional
 to <img class="math" src="_images/math/faf9232af1705f967a7576c6cc6366df24751590.png" alt="1 + J Q + J (J-1) Q / 2"/>.</p>
 </div>
 <div class="section" id="id12">
 <h3>2-D<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<p>Let us assume that <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/> is a tensor of size <img class="math" src="_images/math/674895174f438ddc4eea926c4293cf857e8ba2c1.png" alt="(B,C,N_1,N_2)"/>. Then, if the
+<p>Let us assume that <img class="math" src="_images/math/a59f68a4202623bb859a7093f0316bf466e6f75d.png" alt="x"/> is a tensor of size <img class="math" src="_images/math/674895174f438ddc4eea926c4293cf857e8ba2c1.png" alt="(B,C,N_1,N_2)"/>. Then the
 output <img class="math" src="_images/math/ea5ff52ba3b9b8063bb31d1b44fd226ff675b8dd.png" alt="Sx"/> via a Scattering Transform with scale <img class="math" src="_images/math/ca54d3a4a8a221da5f7a13a28ec6a45b4abcc5a5.png" alt="J"/> and <img class="math" src="_images/math/ae2b750f71e1fc0daaa3de9a85d42794d7cd1326.png" alt="L"/> angles will have
 size:</p>
 <div class="math">
@@ -128,6 +128,7 @@ size:</p>
 </div></div>
 <div class="section" id="id13">
 <h3>3-D<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>…</p>
 </div>
 </div>
 <div class="section" id="switching-from-cpu-to-gpu">
@@ -408,7 +409,7 @@ numbers to improve in the near future.</p>
     
 
 <p>
-<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
+<a href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -458,14 +459,6 @@ numbers to improve in the near future.</p>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -474,8 +467,8 @@ numbers to improve in the near future.</p>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/userguide.rst.txt"

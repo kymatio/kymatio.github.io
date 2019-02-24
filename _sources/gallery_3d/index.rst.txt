@@ -61,13 +61,13 @@ class, ``HarmonicScattering3D``.
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: gallery_3d_python.zip <//mnt/home/janden/projects/kymatio/doc/source/gallery_3d/gallery_3d_python.zip>`
+    :download:`Download all examples in Python source code: gallery_3d_python.zip <//Users/oyallon/kymatio/doc/source/gallery_3d/gallery_3d_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: gallery_3d_jupyter.zip <//mnt/home/janden/projects/kymatio/doc/source/gallery_3d/gallery_3d_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: gallery_3d_jupyter.zip <//Users/oyallon/kymatio/doc/source/gallery_3d/gallery_3d_jupyter.zip>`
 
 
 .. only:: html

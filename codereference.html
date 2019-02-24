@@ -6,15 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Documentation &#8212; kymatio 0.1.0-dev documentation</title>
+    <title>Documentation &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/kymatio.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -133,199 +132,95 @@ may be modified after object creation. Defaults to True.</li>
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.J">
 <code class="descname">J</code><a class="headerlink" href="#kymatio.Scattering1D.J" title="Permalink to this definition">¶</a></dt>
-<dd><p>The maximum log-scale of the scattering transform. In other words,
+<dd><p><em>int</em> – The maximum log-scale of the scattering transform. In other words,
 the maximum scale is given by <cite>2**J</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.shape">
 <code class="descname">shape</code><a class="headerlink" href="#kymatio.Scattering1D.shape" title="Permalink to this definition">¶</a></dt>
-<dd><p>The length of the input signals.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – The length of the input signals.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.Q">
 <code class="descname">Q</code><a class="headerlink" href="#kymatio.Scattering1D.Q" title="Permalink to this definition">¶</a></dt>
-<dd><p>The number of first-order wavelets per octave (second-order wavelets
+<dd><p><em>int</em> – The number of first-order wavelets per octave (second-order wavelets
 are fixed to one wavelet per octave).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.J_pad">
 <code class="descname">J_pad</code><a class="headerlink" href="#kymatio.Scattering1D.J_pad" title="Permalink to this definition">¶</a></dt>
-<dd><p>The logarithm of the padded length of the signals.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – The logarithm of the padded length of the signals.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.pad_left">
 <code class="descname">pad_left</code><a class="headerlink" href="#kymatio.Scattering1D.pad_left" title="Permalink to this definition">¶</a></dt>
-<dd><p>The amount of padding to the left of the signal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – The amount of padding to the left of the signal.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.pad_right">
 <code class="descname">pad_right</code><a class="headerlink" href="#kymatio.Scattering1D.pad_right" title="Permalink to this definition">¶</a></dt>
-<dd><p>The amount of padding to the right of the signal.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – The amount of padding to the right of the signal.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.phi_f">
 <code class="descname">phi_f</code><a class="headerlink" href="#kymatio.Scattering1D.phi_f" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary containing the lowpass filter at all resolutions. See
+<dd><p><em>dictionary</em> – A dictionary containing the lowpass filter at all resolutions. See
 <cite>filter_bank.scattering_filter_factory</cite> for an exact description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dictionary</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.psi1_f">
 <code class="descname">psi1_f</code><a class="headerlink" href="#kymatio.Scattering1D.psi1_f" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary containing all the first-order wavelet filters, each
+<dd><p><em>dictionary</em> – A dictionary containing all the first-order wavelet filters, each
 represented as a dictionary containing that filter at all
 resolutions. See <cite>filter_bank.scattering_filter_factory</cite> for an exact
 description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dictionary</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.psi2_f">
 <code class="descname">psi2_f</code><a class="headerlink" href="#kymatio.Scattering1D.psi2_f" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary containing all the second-order wavelet filters, each
+<dd><p><em>dictionary</em> – A dictionary containing all the second-order wavelet filters, each
 represented as a dictionary containing that filter at all
 resolutions. See <cite>filter_bank.scattering_filter_factory</cite> for an exact
 description.
 description</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dictionary</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.max_order">
 <code class="descname">max_order</code><a class="headerlink" href="#kymatio.Scattering1D.max_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>The maximum scattering order of the transform.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – The maximum scattering order of the transform.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.average">
 <code class="descname">average</code><a class="headerlink" href="#kymatio.Scattering1D.average" title="Permalink to this definition">¶</a></dt>
-<dd><p>Controls whether the output should be averaged (the standard
+<dd><p><em>boolean</em> – Controls whether the output should be averaged (the standard
 scattering transform) or not (resulting in wavelet modulus
 coefficients). Note that to obtain unaveraged output, the <cite>vectorize</cite>
 flag must be set to <cite>False</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">boolean</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.oversampling">
 <code class="descname">oversampling</code><a class="headerlink" href="#kymatio.Scattering1D.oversampling" title="Permalink to this definition">¶</a></dt>
-<dd><p>The number of powers of two to oversample the output compared to the
+<dd><p><em>int</em> – The number of powers of two to oversample the output compared to the
 default subsampling rate determined from the filters.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.vectorize">
 <code class="descname">vectorize</code><a class="headerlink" href="#kymatio.Scattering1D.vectorize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Controls whether the output should be vectorized into a single Tensor
+<dd><p><em>boolean</em> – Controls whether the output should be vectorized into a single Tensor
 or collected into a dictionary. For more details, see the
 documentation for <cite>forward()</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">boolean</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -568,116 +463,52 @@ padded externally.</li>
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.J">
 <code class="descname">J</code><a class="headerlink" href="#kymatio.Scattering2D.J" title="Permalink to this definition">¶</a></dt>
-<dd><p>logscale of the scattering</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – logscale of the scattering</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.shape">
 <code class="descname">shape</code><a class="headerlink" href="#kymatio.Scattering2D.shape" title="Permalink to this definition">¶</a></dt>
-<dd><p>spatial support (M, N) of the input</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">tuple of int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>tuple of int</em> – spatial support (M, N) of the input</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.L">
 <code class="descname">L</code><a class="headerlink" href="#kymatio.Scattering2D.L" title="Permalink to this definition">¶</a></dt>
-<dd><p>number of angles used for the wavelet transform</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int, optional</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int, optional</em> – number of angles used for the wavelet transform</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.max_order">
 <code class="descname">max_order</code><a class="headerlink" href="#kymatio.Scattering2D.max_order" title="Permalink to this definition">¶</a></dt>
-<dd><p>The maximum order of scattering coefficients to compute.
+<dd><p><em>int, optional</em> – The maximum order of scattering coefficients to compute.
 Must be either equal to <cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int, optional</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.pre_pad">
 <code class="descname">pre_pad</code><a class="headerlink" href="#kymatio.Scattering2D.pre_pad" title="Permalink to this definition">¶</a></dt>
-<dd><p>controls the padding</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">boolean</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>boolean</em> – controls the padding</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.Psi">
 <code class="descname">Psi</code><a class="headerlink" href="#kymatio.Scattering2D.Psi" title="Permalink to this definition">¶</a></dt>
-<dd><p>containing the wavelets filters at all resolutions. See
+<dd><p><em>dictionary</em> – containing the wavelets filters at all resolutions. See
 filter_bank.filter_bank for an exact description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dictionary</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.Phi">
 <code class="descname">Phi</code><a class="headerlink" href="#kymatio.Scattering2D.Phi" title="Permalink to this definition">¶</a></dt>
-<dd><p>containing the low-pass filters at all resolutions. See
+<dd><p><em>dictionary</em> – containing the low-pass filters at all resolutions. See
 filter_bank.filter_bank for an exact description.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dictionary</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt>
 <code class="descname">M_padded, N_padded</code></dt>
-<dd><p>spatial support of the padded input</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
+<dd><p><em>int</em> – spatial support of the padded input</p>
 </dd></dl>
 
 <p class="rubric">Notes</p>
@@ -805,7 +636,7 @@ concatenated along the feature axis</td>
     
 
 <p>
-<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
+<a href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -846,14 +677,6 @@ concatenated along the feature axis</td>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -862,8 +685,8 @@ concatenated along the feature axis</td>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/codereference.rst.txt"

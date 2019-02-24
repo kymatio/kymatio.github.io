@@ -100,7 +100,7 @@ This uses the 3D scattering on a standard dataset.
         """
             Loads the positions and charges of the molecules of the QM7 dataset.
             QM7 is a dataset of 7165 organic molecules with up to 7 non-hydrogen
-            atoms, whose energies were computed with a quantun chemistry
+            atoms, whose energies were computed with a quantum chemistry
             computational method named Density Functional Theory.
             This dataset has been made available to train machine learning models
             to predict these energies.
@@ -190,7 +190,7 @@ This uses the 3D scattering on a standard dataset.
             valence_charges = valence_charges.cuda()
             scattering.cuda()
 
-        order_0, order_1, order_2 = [], [], []
+        order_0, orders_1_and_2 = [], []
         print('Computing solid harmonic scattering coefficients of {} molecules '
             'of QM7 database on {}'.format(pos.size(0), 'GPU' if cuda else 'CPU'))
         print('sigma: {}, L: {}, J: {}, integral powers: {}'.format(sigma, L, J, integral_powers))

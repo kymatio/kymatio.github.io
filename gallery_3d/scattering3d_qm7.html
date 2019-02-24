@@ -6,15 +6,14 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>3D scattering quantum chemistry regression &#8212; kymatio 0.1.0-dev documentation</title>
+    <title>3D scattering quantum chemistry regression &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/kymatio.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -128,7 +127,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the positions and charges of the molecules of the QM7 dataset.</span>
 <span class="sd">        QM7 is a dataset of 7165 organic molecules with up to 7 non-hydrogen</span>
-<span class="sd">        atoms, whose energies were computed with a quantun chemistry</span>
+<span class="sd">        atoms, whose energies were computed with a quantum chemistry</span>
 <span class="sd">        computational method named Density Functional Theory.</span>
 <span class="sd">        This dataset has been made available to train machine learning models</span>
 <span class="sd">        to predict these energies.</span>
@@ -218,7 +217,7 @@
         <span class="n">valence_charges</span> <span class="o">=</span> <span class="n">valence_charges</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
         <span class="n">scattering</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
-    <span class="n">order_0</span><span class="p">,</span> <span class="n">order_1</span><span class="p">,</span> <span class="n">order_2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">order_0</span><span class="p">,</span> <span class="n">orders_1_and_2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Computing solid harmonic scattering coefficients of {} molecules &#39;</span>
         <span class="s1">&#39;of QM7 database on {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;GPU&#39;</span> <span class="k">if</span> <span class="n">cuda</span> <span class="k">else</span> <span class="s1">&#39;CPU&#39;</span><span class="p">))</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;sigma: {}, L: {}, J: {}, integral powers: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">integral_powers</span><span class="p">))</span>
@@ -302,9 +301,9 @@
 <p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-3d-scattering3d-qm7-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/bcea4a04b530d3cb0124a2cd5688dc49/scattering3d_qm7.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">scattering3d_qm7.py</span></code></a></div>
+<a class="reference download internal" href="../_downloads/scattering3d_qm7.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">scattering3d_qm7.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/04a9e81fead9439a7d942b7708bfe5b3/scattering3d_qm7.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">scattering3d_qm7.ipynb</span></code></a></div>
+<a class="reference download internal" href="../_downloads/scattering3d_qm7.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">scattering3d_qm7.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -342,7 +341,7 @@
     
 
 <p>
-<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
+<a href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -388,14 +387,6 @@
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
@@ -404,8 +395,8 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="../_sources/gallery_3d/scattering3d_qm7.rst.txt"
