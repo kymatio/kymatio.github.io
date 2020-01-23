@@ -14,14 +14,12 @@ We compute scattering transforms for signals of length `T = 2**16`, with scale
 of size `batch_size = 64` and the transform is computed `10` times to get an
 average running time.
 
-
 Preliminaries
 -------------
 Since kymatio handles PyTorch arrays, we first import `torch`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import torch
@@ -30,8 +28,7 @@ Since kymatio handles PyTorch arrays, we first import `torch`.
 To measure the running time of the implementation, we use the `time` package.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import time
@@ -43,8 +40,7 @@ Certain backends are also GPU-only, we we want to detect that before running
 the benchmark.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import kymatio.scattering1d.backend as backend
@@ -54,8 +50,7 @@ Finally, we import the `Scattering1D` class that computes the scattering
 transform.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     from kymatio import Scattering1D
 
@@ -71,8 +66,7 @@ wavelets per octave ensures that we are able to resolve isolated sinusoids
 without sacrificing too much temporal resolution.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     T = 2**16
@@ -85,8 +79,7 @@ a batch of `64` signals. Larger batch sizes do not yield increased efficiency,
 but smaller values increases the influence of overhead on the running time.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     batch_size = 64
@@ -96,8 +89,7 @@ We repeat the benchmark `10` times and compute the average running time to
 get a reasonable estimate.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     times = 10
@@ -107,8 +99,7 @@ Determine which devices (CPU or GPU) that are supported by the current
 backend.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     devices = []
@@ -124,8 +115,7 @@ Create the `Scattering1D` object using the given parameters and generate
 some compatible test data with the specified batch size.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     scattering = Scattering1D(J, T, Q)
@@ -145,8 +135,7 @@ and after the benchmark to make sure that all CUDA kernels have finished
 executing.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     for device in devices:
@@ -188,7 +177,9 @@ The resulting output should be something like
   Elapsed time: 8.083082 [s / 10 evals], avg: 0.81 (s/batch)
 
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_compute_speed.py:

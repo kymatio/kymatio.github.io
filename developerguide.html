@@ -1,24 +1,23 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Information for developers &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/kymatio.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Documentation" href="codereference.html" />
-    <link rel="prev" title="User Guide" href="userguide.html" />
+    <link rel="prev" title="User guide" href="userguide.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -39,37 +38,33 @@
             
   <div class="section" id="information-for-developers">
 <span id="dev-guide"></span><h1>Information for developers<a class="headerlink" href="#information-for-developers" title="Permalink to this headline">¶</a></h1>
-<p>Something something how the code works</p>
+<p>Kymatio implements the scattering transform for different architectures (currently <code class="docutils literal notranslate"><span class="pre">torch</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code>/<code class="docutils literal notranslate"><span class="pre">cupy</span></code>) through backends. This way, the generic algorithm can be written in an architecture-agnostic manner, since all low-level operations are relegated to the backend.</p>
 <div class="section" id="backend-core-of-the-algorithm">
 <h2>Backend: core of the algorithm<a class="headerlink" href="#backend-core-of-the-algorithm" title="Permalink to this headline">¶</a></h2>
-<p>Common to the 1-2-3-D routines of the Scattering Transform, four low-level functions
-must be optimized:</p>
+<p>Common to the 1D, 2D and 3D scattering transform routine are four low-level functions which must be optimized:</p>
 <ol class="arabic simple">
-<li>FFT/iFFT</li>
-<li>SubsamplingFourier</li>
-<li>Non-linearity (e.g. modulus for 1-2D)</li>
-<li>Dotwise complex multiplication</li>
-<li>Padding/unpadding</li>
+<li><p>Fast Fourier transform (FFT) and its inverse (IFFT)</p></li>
+<li><p>Subsampling in the Fourier domain (periodization)</p></li>
+<li><p>Non-linearity (modulus in 1D and 2D, quadratic mean in 3D)</p></li>
+<li><p>Dotwise complex multiplication (<code class="docutils literal notranslate"><span class="pre">cdgmm</span></code>)</p></li>
+<li><p>Padding and unpadding</p></li>
 </ol>
 </div>
 <div class="section" id="unit-tests">
 <h2>Unit tests<a class="headerlink" href="#unit-tests" title="Permalink to this headline">¶</a></h2>
-<p>For running all the unit tests and avoiding bugs, please simply run from the
-main folder:</p>
+<p>For running all the unit tests and avoiding bugs, please run (in the root directory):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
 </pre></div>
 </div>
-<p>If all the tests pass, then you might be able to submit your Pull Request as explained
-in the next section!</p>
+<p>If all the tests pass, you may submit your pull request as explained below.</p>
 </div>
 <div class="section" id="checking-speed">
 <h2>Checking speed<a class="headerlink" href="#checking-speed" title="Permalink to this headline">¶</a></h2>
-<p>Please check <cite>examples/.d/compute_speed.py</cite> to benchmark your modification of backend.</p>
+<p>Please check out the <cite>examples/*d/compute_speed.py</cite> scripts to benchmark your modifications.</p>
 </div>
-<div class="section" id="proposing-a-pull-request-pr">
-<h2>Proposing a Pull Request(PR)<a class="headerlink" href="#proposing-a-pull-request-pr" title="Permalink to this headline">¶</a></h2>
-<p>Each PR must be documented using docstings, illustrated with an example and must run the
-unit tests.</p>
+<div class="section" id="proposing-a-pull-request">
+<h2>Proposing a pull request<a class="headerlink" href="#proposing-a-pull-request" title="Permalink to this headline">¶</a></h2>
+<p>Each pull request (PR) must be documented using docstrings, illustrated with an example and must pass the unit tests.</p>
 </div>
 </div>
 
@@ -106,7 +101,7 @@ unit tests.</p>
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -118,12 +113,12 @@ unit tests.</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Information for developers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#backend-core-of-the-algorithm">Backend: core of the algorithm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#unit-tests">Unit tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#checking-speed">Checking speed</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#proposing-a-pull-request-pr">Proposing a Pull Request(PR)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposing-a-pull-request">Proposing a pull request</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="codereference.html">Documentation</a></li>
@@ -136,23 +131,29 @@ unit tests.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="userguide.html" title="previous chapter">User Guide</a></li>
+      <li>Previous: <a href="userguide.html" title="previous chapter">User guide</a></li>
       <li>Next: <a href="codereference.html" title="next chapter">Documentation</a></li>
   </ul></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -161,8 +162,8 @@ unit tests.</p>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/developerguide.rst.txt"

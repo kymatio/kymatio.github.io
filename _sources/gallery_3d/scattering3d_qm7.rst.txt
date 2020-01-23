@@ -12,8 +12,7 @@
 This uses the 3D scattering on a standard dataset.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import numpy as np
@@ -270,7 +269,10 @@ This uses the 3D scattering on a standard dataset.
 
     evaluate_linear_regression(scattering_coef, target)
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_gallery_3d_scattering3d_qm7.py:

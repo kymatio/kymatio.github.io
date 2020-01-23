@@ -1,19 +1,18 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Documentation &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/kymatio.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -41,31 +40,32 @@
 <span id="documentation"></span><h1>Documentation<a class="headerlink" href="#module-kymatio" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="kymatio.Scattering1D">
-<em class="property">class </em><code class="descclassname">kymatio.</code><code class="descname">Scattering1D</code><span class="sig-paren">(</span><em>J</em>, <em>shape</em>, <em>Q=1</em>, <em>max_order=2</em>, <em>average=True</em>, <em>oversampling=0</em>, <em>vectorize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">kymatio.</code><code class="sig-name descname">Scattering1D</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">shape</em>, <em class="sig-param">Q=1</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">average=True</em>, <em class="sig-param">oversampling=0</em>, <em class="sig-param">vectorize=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The 1D scattering transform</p>
 <p>The scattering transform computes a cascade of wavelet transforms
 alternated with a complex modulus non-linearity. The scattering transform
-of a 1D signal <img class="math" src="_images/math/7854a4b2875dd614f1735c2ad17262fb97d129b7.png" alt="x(t)"/> may be written as</p>
+of a 1D signal <img class="math" src="_images/math/0320e21dcbafc775ae7502bdb9587a09e8ec0fb7.png" alt="x(t)"/> may be written as</p>
 <blockquote>
-<div><img class="math" src="_images/math/7252fb5e68fb40fd3cc78456dfc6f242a9c07e68.png" alt="S_J x = [S_J^{(0)} x, S_J^{(1)} x, S_J^{(2)} x]"/></div></blockquote>
+<div><p><img class="math" src="_images/math/42f506d10b119ee1c2a579bbb0d3feb9f7577051.png" alt="S_J x = [S_J^{(0)} x, S_J^{(1)} x, S_J^{(2)} x]"/></p>
+</div></blockquote>
 <p>where</p>
 <blockquote>
-<div><p><img class="math" src="_images/math/675cdc8112313d1e8aa55e1ff0348eb3f77e4e16.png" alt="S_J^{(0)} x(t) = x \star \phi_J(t)"/>,</p>
-<p><img class="math" src="_images/math/7f86289c32b3d127cfaccea5a9e58357e36062ba.png" alt="S_J^{(1)} x(t, \lambda) =|x \star \psi_\lambda^{(1)}| \star \phi_J"/>, and</p>
-<p><img class="math" src="_images/math/7296131e9538294ce6c960fa4d83092d90d123c7.png" alt="S_J^{(2)} x(t, \lambda, \mu) = |\,| x \star \psi_\lambda^{(1)}| \star \psi_\mu^{(2)} | \star \phi_J"/>.</p>
+<div><p><img class="math" src="_images/math/c7774a2dc3e4eaf59d58398058d4438b3b0de2de.png" alt="S_J^{(0)} x(t) = x \star \phi_J(t)"/>,</p>
+<p><img class="math" src="_images/math/b74fbc584939082c420a141e41b31bf248446ccc.png" alt="S_J^{(1)} x(t, \lambda) =|x \star \psi_\lambda^{(1)}| \star \phi_J"/>, and</p>
+<p><img class="math" src="_images/math/d431586db7d098b34316bcbc70915e3675098b1b.png" alt="S_J^{(2)} x(t, \lambda, \mu) = |\,| x \star \psi_\lambda^{(1)}| \star \psi_\mu^{(2)} | \star \phi_J"/>.</p>
 </div></blockquote>
-<p>In the above formulas, <img class="math" src="_images/math/23f2807d8c011a9555ecb7dbd5f7e2cae71ce325.png" alt="\star"/> denotes convolution in time. The
-filters <img class="math" src="_images/math/150a069a3125b5dfc842238b20a788ec9f4b1660.png" alt="\psi_\lambda^{(1)}(t)"/> and <img class="math" src="_images/math/545fe6ee0192131741e99b671fb91403ce08b11f.png" alt="\psi_\mu^{(2)}(t)"/>
-are analytic wavelets with center frequencies <img class="math" src="_images/math/76f1d8ace30435987c01a00ca53a71cba1f40e6c.png" alt="\lambda"/> and
-<img class="math" src="_images/math/d79e8a2c7ce54906c2b25549da38bdbe02cf40d6.png" alt="\mu"/>, while <img class="math" src="_images/math/2880e88ec4dfefe37eced5d6d17e0199d5cec33d.png" alt="\phi_J(t)"/> is a real lowpass filter centered
+<p>In the above formulas, <img class="math" src="_images/math/2fca8a9c76b722af50cba036820b68e36c46a4db.png" alt="\star"/> denotes convolution in time. The
+filters <img class="math" src="_images/math/476d140a86e62b7ef05ae31226a0a10f480b01be.png" alt="\psi_\lambda^{(1)}(t)"/> and <img class="math" src="_images/math/3aa4e2c681f40e09ed0d0ff67e737b01d92257b9.png" alt="\psi_\mu^{(2)}(t)"/>
+are analytic wavelets with center frequencies <img class="math" src="_images/math/cefc603e5658facb747581f9567192993f21c7ab.png" alt="\lambda"/> and
+<img class="math" src="_images/math/4a3598141469c2555591e66606a1b86d4ec6dca9.png" alt="\mu"/>, while <img class="math" src="_images/math/b3ab04fd427dca664d89da98346ee7a125f92783.png" alt="\phi_J(t)"/> is a real lowpass filter centered
 at the zero frequency.</p>
 <p>The <cite>Scattering1D</cite> class implements the 1D scattering transform for a
 given set of filters whose parameters are specified at initialization.
 While the wavelets are fixed, other parameters may be changed after the
-object is created, such as whether to compute all of <img class="math" src="_images/math/4bb9ab737395e33e51137f5e103b7a82481c49f3.png" alt="S_J^{(0)} x"/>,
-<img class="math" src="_images/math/568aed78b56ebdee32bf35e36f7fb0934214c63a.png" alt="S_J^{(1)} x"/>, and <img class="math" src="_images/math/a2b6c2b9b0d329cd41853bf5f92119a87e4fbb4c.png" alt="S_J^{(2)} x"/> or just <img class="math" src="_images/math/4bb9ab737395e33e51137f5e103b7a82481c49f3.png" alt="S_J^{(0)} x"/>
-and <img class="math" src="_images/math/568aed78b56ebdee32bf35e36f7fb0934214c63a.png" alt="S_J^{(1)} x"/>.</p>
+object is created, such as whether to compute all of <img class="math" src="_images/math/f9b5b64dd8b96fa2fd7614b4bde3ef3c46b2c778.png" alt="S_J^{(0)} x"/>,
+<img class="math" src="_images/math/c2764cb1e88b19464a867871e34c4a56f400d4ac.png" alt="S_J^{(1)} x"/>, and <img class="math" src="_images/math/7c533cebd887f623c392a04a686dddb58747488e.png" alt="S_J^{(2)} x"/> or just <img class="math" src="_images/math/f9b5b64dd8b96fa2fd7614b4bde3ef3c46b2c778.png" alt="S_J^{(0)} x"/>
+and <img class="math" src="_images/math/c2764cb1e88b19464a867871e34c4a56f400d4ac.png" alt="S_J^{(1)} x"/>.</p>
 <p>The scattering transform may be computed on the CPU (the default) or a
 GPU, if available. A <cite>Scattering1D</cite> object may be transferred from one
 to the other using the <cite>cuda()</cite> and <cite>cpu()</cite> methods.</p>
@@ -92,140 +92,201 @@ method.</p>
 <p>Above, the length of the signal is <cite>T = 2**13 = 8192</cite>, while the maximum
 scale of the scattering transform is set to <cite>2**J = 2**6 = 64</cite>. The
 time-frequency resolution of the first-order wavelets
-<img class="math" src="_images/math/150a069a3125b5dfc842238b20a788ec9f4b1660.png" alt="\psi_\lambda^{(1)}(t)"/> is set to <cite>Q = 8</cite> wavelets per octave.
-The second-order wavelets <img class="math" src="_images/math/545fe6ee0192131741e99b671fb91403ce08b11f.png" alt="\psi_\mu^{(2)}(t)"/> always have one
+<img class="math" src="_images/math/476d140a86e62b7ef05ae31226a0a10f480b01be.png" alt="\psi_\lambda^{(1)}(t)"/> is set to <cite>Q = 8</cite> wavelets per octave.
+The second-order wavelets <img class="math" src="_images/math/3aa4e2c681f40e09ed0d0ff67e737b01d92257b9.png" alt="\psi_\mu^{(2)}(t)"/> always have one
 wavelet per octave.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>J</strong> (<em>int</em>) – The maximum log-scale of the scattering transform. In other words,
-the maximum scale is given by <cite>2**J</cite>.</li>
-<li><strong>T</strong> (<em>int</em>) – The length of the input signals.</li>
-<li><strong>Q</strong> (<em>int &gt;= 1</em>) – The number of first-order wavelets per octave (second-order wavelets
-are fixed to one wavelet per octave). Defaults to <cite>1</cite>.</li>
-<li><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute. Must be either
-<cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</li>
-<li><strong>average</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Determines whether the output is averaged in time or not. The averaged
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>int</em>) – The maximum log-scale of the scattering transform. In other words,
+the maximum scale is given by <cite>2**J</cite>.</p></li>
+<li><p><strong>T</strong> (<em>int</em>) – The length of the input signals.</p></li>
+<li><p><strong>Q</strong> (<em>int &gt;= 1</em>) – The number of first-order wavelets per octave (second-order wavelets
+are fixed to one wavelet per octave). Defaults to <cite>1</cite>.</p></li>
+<li><p><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute. Must be either
+<cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</p></li>
+<li><p><strong>average</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Determines whether the output is averaged in time or not. The averaged
 output corresponds to the standard scattering transform, while the
-un-averaged output skips the last convolution by <img class="math" src="_images/math/2880e88ec4dfefe37eced5d6d17e0199d5cec33d.png" alt="\phi_J(t)"/>.
+un-averaged output skips the last convolution by <img class="math" src="_images/math/b3ab04fd427dca664d89da98346ee7a125f92783.png" alt="\phi_J(t)"/>.
 This parameter may be modified after object creation.
-Defaults to <cite>True</cite>.</li>
-<li><strong>oversampling</strong> (<em>integer &gt;= 0</em><em>, </em><em>optional</em>) – Controls the oversampling factor relative to the default as a power
+Defaults to <cite>True</cite>.</p></li>
+<li><p><strong>oversampling</strong> (<em>integer &gt;= 0</em><em>, </em><em>optional</em>) – Controls the oversampling factor relative to the default as a power
 of two. Since the convolving by wavelets (or lowpass filters) and
 taking the modulus reduces the high-frequency content of the signal,
 we can subsample to save space and improve performance. However, this
 may reduce precision in the calculation. If this is not desirable,
 <cite>oversampling</cite> can be set to a large value to prevent too much
 subsampling. This parameter may be modified after object creation.
-Defaults to <cite>0</cite>.</li>
-<li><strong>vectorize</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Determines wheter to return a vectorized scattering transform (that
+Defaults to <cite>0</cite>.</p></li>
+<li><p><strong>vectorize</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Determines wheter to return a vectorized scattering transform (that
 is, a large array containing the output) or a dictionary (where each
 entry corresponds to a separate scattering coefficient). This parameter
-may be modified after object creation. Defaults to True.</li>
+may be modified after object creation. Defaults to True.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.J">
-<code class="descname">J</code><a class="headerlink" href="#kymatio.Scattering1D.J" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The maximum log-scale of the scattering transform. In other words,
+<code class="sig-name descname">J</code><a class="headerlink" href="#kymatio.Scattering1D.J" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum log-scale of the scattering transform. In other words,
 the maximum scale is given by <cite>2**J</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.shape">
-<code class="descname">shape</code><a class="headerlink" href="#kymatio.Scattering1D.shape" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The length of the input signals.</p>
+<code class="sig-name descname">shape</code><a class="headerlink" href="#kymatio.Scattering1D.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the input signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.Q">
-<code class="descname">Q</code><a class="headerlink" href="#kymatio.Scattering1D.Q" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The number of first-order wavelets per octave (second-order wavelets
+<code class="sig-name descname">Q</code><a class="headerlink" href="#kymatio.Scattering1D.Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of first-order wavelets per octave (second-order wavelets
 are fixed to one wavelet per octave).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.J_pad">
-<code class="descname">J_pad</code><a class="headerlink" href="#kymatio.Scattering1D.J_pad" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The logarithm of the padded length of the signals.</p>
+<code class="sig-name descname">J_pad</code><a class="headerlink" href="#kymatio.Scattering1D.J_pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logarithm of the padded length of the signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.pad_left">
-<code class="descname">pad_left</code><a class="headerlink" href="#kymatio.Scattering1D.pad_left" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The amount of padding to the left of the signal.</p>
+<code class="sig-name descname">pad_left</code><a class="headerlink" href="#kymatio.Scattering1D.pad_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>The amount of padding to the left of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.pad_right">
-<code class="descname">pad_right</code><a class="headerlink" href="#kymatio.Scattering1D.pad_right" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The amount of padding to the right of the signal.</p>
+<code class="sig-name descname">pad_right</code><a class="headerlink" href="#kymatio.Scattering1D.pad_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>The amount of padding to the right of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.phi_f">
-<code class="descname">phi_f</code><a class="headerlink" href="#kymatio.Scattering1D.phi_f" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dictionary</em> – A dictionary containing the lowpass filter at all resolutions. See
+<code class="sig-name descname">phi_f</code><a class="headerlink" href="#kymatio.Scattering1D.phi_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary containing the lowpass filter at all resolutions. See
 <cite>filter_bank.scattering_filter_factory</cite> for an exact description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.psi1_f">
-<code class="descname">psi1_f</code><a class="headerlink" href="#kymatio.Scattering1D.psi1_f" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dictionary</em> – A dictionary containing all the first-order wavelet filters, each
+<code class="sig-name descname">psi1_f</code><a class="headerlink" href="#kymatio.Scattering1D.psi1_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary containing all the first-order wavelet filters, each
 represented as a dictionary containing that filter at all
 resolutions. See <cite>filter_bank.scattering_filter_factory</cite> for an exact
 description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.psi2_f">
-<code class="descname">psi2_f</code><a class="headerlink" href="#kymatio.Scattering1D.psi2_f" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dictionary</em> – A dictionary containing all the second-order wavelet filters, each
+<code class="sig-name descname">psi2_f</code><a class="headerlink" href="#kymatio.Scattering1D.psi2_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary containing all the second-order wavelet filters, each
 represented as a dictionary containing that filter at all
 resolutions. See <cite>filter_bank.scattering_filter_factory</cite> for an exact
 description.
 description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.max_order">
-<code class="descname">max_order</code><a class="headerlink" href="#kymatio.Scattering1D.max_order" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The maximum scattering order of the transform.</p>
+<code class="sig-name descname">max_order</code><a class="headerlink" href="#kymatio.Scattering1D.max_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum scattering order of the transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.average">
-<code class="descname">average</code><a class="headerlink" href="#kymatio.Scattering1D.average" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>boolean</em> – Controls whether the output should be averaged (the standard
+<code class="sig-name descname">average</code><a class="headerlink" href="#kymatio.Scattering1D.average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controls whether the output should be averaged (the standard
 scattering transform) or not (resulting in wavelet modulus
 coefficients). Note that to obtain unaveraged output, the <cite>vectorize</cite>
 flag must be set to <cite>False</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.oversampling">
-<code class="descname">oversampling</code><a class="headerlink" href="#kymatio.Scattering1D.oversampling" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – The number of powers of two to oversample the output compared to the
+<code class="sig-name descname">oversampling</code><a class="headerlink" href="#kymatio.Scattering1D.oversampling" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of powers of two to oversample the output compared to the
 default subsampling rate determined from the filters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering1D.vectorize">
-<code class="descname">vectorize</code><a class="headerlink" href="#kymatio.Scattering1D.vectorize" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>boolean</em> – Controls whether the output should be vectorized into a single Tensor
+<code class="sig-name descname">vectorize</code><a class="headerlink" href="#kymatio.Scattering1D.vectorize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controls whether the output should be vectorized into a single Tensor
 or collected into a dictionary. For more details, see the
 documentation for <cite>forward()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="kymatio.Scattering1D.build">
-<code class="descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set up padding and filters</p>
 <p>Certain internal data, such as the amount of padding and the wavelet
 filters to be used in the scattering transform, need to be computed
@@ -234,78 +295,74 @@ automatically during object creation and no subsequent calls are
 therefore needed.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="kymatio.Scattering1D.compute_meta_scattering">
-<em class="property">static </em><code class="descname">compute_meta_scattering</code><span class="sig-paren">(</span><em>J</em>, <em>Q</em>, <em>max_order=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.compute_meta_scattering"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.compute_meta_scattering" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">compute_meta_scattering</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">Q</em>, <em class="sig-param">max_order=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.compute_meta_scattering"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.compute_meta_scattering" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get metadata on the transform.</p>
 <p>This information specifies the content of each scattering coefficient,
 which order, which frequencies, which filters were used, and so on.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>J</strong> (<em>int</em>) – The maximum log-scale of the scattering transform.
-In other words, the maximum scale is given by <cite>2**J</cite>.</li>
-<li><strong>Q</strong> (<em>int &gt;= 1</em>) – The number of first-order wavelets per octave.
-Second-order wavelets are fixed to one wavelet per octave.</li>
-<li><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute.
-Must be either equal to <cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>int</em>) – The maximum log-scale of the scattering transform.
+In other words, the maximum scale is given by <cite>2**J</cite>.</p></li>
+<li><p><strong>Q</strong> (<em>int &gt;= 1</em>) – The number of first-order wavelets per octave.
+Second-order wavelets are fixed to one wavelet per octave.</p></li>
+<li><p><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute.
+Must be either equal to <cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p><strong>meta</strong> – A dictionary with the following keys:</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>meta</strong> – A dictionary with the following keys:</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt><cite>’order</cite>’ <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span></dt>
-<dd>A Tensor of length <cite>C</cite>, the total number of scattering
-coefficients, specifying the scattering order.</dd>
+<li><dl class="simple">
+<dt><cite>’order</cite>’<span class="classifier">tensor</span></dt><dd><p>A Tensor of length <cite>C</cite>, the total number of scattering
+coefficients, specifying the scattering order.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><cite>’xi’</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span></dt>
-<dd>A Tensor of size <cite>(C, max_order)</cite>, specifying the center
-frequency of the filter used at each order (padded with NaNs).</dd>
+<li><dl class="simple">
+<dt><cite>’xi’</cite><span class="classifier">tensor</span></dt><dd><p>A Tensor of size <cite>(C, max_order)</cite>, specifying the center
+frequency of the filter used at each order (padded with NaNs).</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><cite>’sigma’</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span></dt>
-<dd>A Tensor of size <cite>(C, max_order)</cite>, specifying the frequency
-bandwidth of the filter used at each order (padded with NaNs).</dd>
+<li><dl class="simple">
+<dt><cite>’sigma’</cite><span class="classifier">tensor</span></dt><dd><p>A Tensor of size <cite>(C, max_order)</cite>, specifying the frequency
+bandwidth of the filter used at each order (padded with NaNs).</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><cite>’j’</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span></dt>
-<dd>A Tensor of size <cite>(C, max_order)</cite>, specifying the dyadic scale
-of the filter used at each order (padded with NaNs).</dd>
+<li><dl class="simple">
+<dt><cite>’j’</cite><span class="classifier">tensor</span></dt><dd><p>A Tensor of size <cite>(C, max_order)</cite>, specifying the dyadic scale
+of the filter used at each order (padded with NaNs).</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><cite>’n’</cite> <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span></dt>
-<dd>A Tensor of size <cite>(C, max_order)</cite>, specifying the indices of
-the filters used at each order (padded with NaNs).</dd>
+<li><dl class="simple">
+<dt><cite>’n’</cite><span class="classifier">tensor</span></dt><dd><p>A Tensor of size <cite>(C, max_order)</cite>, specifying the indices of
+the filters used at each order (padded with NaNs).</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><cite>’key’</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
-<dd>The tuples indexing the corresponding scattering coefficient
-in the non-vectorized output.</dd>
+<li><dl class="simple">
+<dt><cite>’key’</cite><span class="classifier">list</span></dt><dd><p>The tuples indexing the corresponding scattering coefficient
+in the non-vectorized output.</p>
+</dd>
 </dl>
 </li>
 </ul>
 </p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dictionary</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="kymatio.Scattering1D.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply the scattering transform</p>
 <p>Given an input Tensor of size <cite>(B, T0)</cite>, where <cite>B</cite> is the batch
 size and <cite>T0</cite> is the length of the individual signals, this function
@@ -320,101 +377,99 @@ elements are the sequence of filter indices used.</p>
 <p>Furthermore, if the <cite>average</cite> flag is set to <cite>False</cite>, these outputs
 are not averaged, but are simply the wavelet modulus coefficients of
 the filters.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>tensor</em>) – An input Tensor of size <cite>(B, T0)</cite>.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>S</strong> – If the <cite>vectorize</cite> flag is <cite>True</cite>, the output is a Tensor
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>tensor</em>) – An input Tensor of size <cite>(B, T0)</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>S</strong> – If the <cite>vectorize</cite> flag is <cite>True</cite>, the output is a Tensor
 containing the scattering coefficients, while if <cite>vectorize</cite>
-is <cite>False</cite>, it is a dictionary indexed by tuples of filter indices.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tensor or dictionary</td>
-</tr>
-</tbody>
-</table>
+is <cite>False</cite>, it is a dictionary indexed by tuples of filter indices.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tensor or dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="kymatio.Scattering1D.meta">
-<code class="descname">meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.meta" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">meta</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get meta information on the transform</p>
 <p>Calls the static method <cite>compute_meta_scattering()</cite> with the
 parameters of the transform object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>meta</strong> – See the documentation for <cite>compute_meta_scattering()</cite>.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>meta</strong> – See the documentation for <cite>compute_meta_scattering()</cite>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="kymatio.Scattering1D.output_size">
-<code class="descname">output_size</code><span class="sig-paren">(</span><em>detail=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.output_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.output_size" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">output_size</code><span class="sig-paren">(</span><em class="sig-param">detail=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.output_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.output_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get size of the scattering transform</p>
 <p>Calls the static method <cite>precompute_size_scattering()</cite> with the
 parameters of the transform object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>detail</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Specifies whether to provide a detailed size (number of coefficient
-per order) or an aggregate size (total number of coefficients).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>size</strong> – See the documentation for <cite>precompute_size_scattering()</cite>.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int or tuple</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>detail</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Specifies whether to provide a detailed size (number of coefficient
+per order) or an aggregate size (total number of coefficients).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>size</strong> – See the documentation for <cite>precompute_size_scattering()</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int or tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="kymatio.Scattering1D.precompute_size_scattering">
-<em class="property">static </em><code class="descname">precompute_size_scattering</code><span class="sig-paren">(</span><em>J</em>, <em>Q</em>, <em>max_order=2</em>, <em>detail=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.precompute_size_scattering"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.precompute_size_scattering" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">precompute_size_scattering</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">Q</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">detail=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.precompute_size_scattering"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.precompute_size_scattering" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get size of the scattering transform</p>
 <p>The number of scattering coefficients depends on the filter
 configuration and so can be calculated using a few of the scattering
 transform parameters.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>J</strong> (<em>int</em>) – The maximum log-scale of the scattering transform.
-In other words, the maximum scale is given by <cite>2**J</cite>.</li>
-<li><strong>Q</strong> (<em>int &gt;= 1</em>) – The number of first-order wavelets per octave.
-Second-order wavelets are fixed to one wavelet per octave.</li>
-<li><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute.
-Must be either equal to <cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</li>
-<li><strong>detail</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Specifies whether to provide a detailed size (number of coefficient
-per order) or an aggregate size (total number of coefficients).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>int</em>) – The maximum log-scale of the scattering transform.
+In other words, the maximum scale is given by <cite>2**J</cite>.</p></li>
+<li><p><strong>Q</strong> (<em>int &gt;= 1</em>) – The number of first-order wavelets per octave.
+Second-order wavelets are fixed to one wavelet per octave.</p></li>
+<li><p><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute.
+Must be either equal to <cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</p></li>
+<li><p><strong>detail</strong> (<em>boolean</em><em>, </em><em>optional</em>) – Specifies whether to provide a detailed size (number of coefficient
+per order) or an aggregate size (total number of coefficients).</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>size</strong> – If <cite>detail</cite> is <cite>False</cite>, returns the number of coefficients as an
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>size</strong> – If <cite>detail</cite> is <cite>False</cite>, returns the number of coefficients as an
 integer. If <cite>True</cite>, returns a tuple of size <cite>max_order</cite> containing
 the number of coefficients in each order.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int or tuple</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int or tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kymatio.Scattering1D.to">
+<code class="sig-name descname">to</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering1d/scattering1d.html#Scattering1D.to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering1D.to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mimics the behavior of the function to() of a nn.Module()</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="kymatio.Scattering2D">
-<em class="property">class </em><code class="descclassname">kymatio.</code><code class="descname">Scattering2D</code><span class="sig-paren">(</span><em>J</em>, <em>shape</em>, <em>L=8</em>, <em>max_order=2</em>, <em>pre_pad=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering2d/scattering2d.html#Scattering2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering2D" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">kymatio.</code><code class="sig-name descname">Scattering2D</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">shape</em>, <em class="sig-param">L=8</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">pre_pad=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering2d/scattering2d.html#Scattering2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering2D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Main module implementing the scattering transform in 2D.
 The scattering transform computes two wavelet transform followed
@@ -442,161 +497,203 @@ s = Scattering2D(J, shape=(M, N))
 # 2) Forward on an input Tensor x of shape B x M x N,
 #     where B is the batch size.
 result_s = s(x)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>J</strong> (<em>int</em>) – logscale of the scattering</li>
-<li><strong>shape</strong> (<em>tuple of int</em>) – spatial support (M, N) of the input</li>
-<li><strong>L</strong> (<em>int</em><em>, </em><em>optional</em>) – number of angles used for the wavelet transform</li>
-<li><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute. Must be either
-<cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</li>
-<li><strong>pre_pad</strong> (<em>boolean</em><em>, </em><em>optional</em>) – controls the padding: if set to False, a symmetric padding is applied
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>int</em>) – logscale of the scattering</p></li>
+<li><p><strong>shape</strong> (<em>tuple of int</em>) – spatial support (M, N) of the input</p></li>
+<li><p><strong>L</strong> (<em>int</em><em>, </em><em>optional</em>) – number of angles used for the wavelet transform</p></li>
+<li><p><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute. Must be either
+<cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</p></li>
+<li><p><strong>pre_pad</strong> (<em>boolean</em><em>, </em><em>optional</em>) – controls the padding: if set to False, a symmetric padding is applied
 on the signal. If set to true, the software will assume the signal was
-padded externally.</li>
+padded externally.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.J">
-<code class="descname">J</code><a class="headerlink" href="#kymatio.Scattering2D.J" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – logscale of the scattering</p>
+<code class="sig-name descname">J</code><a class="headerlink" href="#kymatio.Scattering2D.J" title="Permalink to this definition">¶</a></dt>
+<dd><p>logscale of the scattering</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.shape">
-<code class="descname">shape</code><a class="headerlink" href="#kymatio.Scattering2D.shape" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>tuple of int</em> – spatial support (M, N) of the input</p>
+<code class="sig-name descname">shape</code><a class="headerlink" href="#kymatio.Scattering2D.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>spatial support (M, N) of the input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple of int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.L">
-<code class="descname">L</code><a class="headerlink" href="#kymatio.Scattering2D.L" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int, optional</em> – number of angles used for the wavelet transform</p>
+<code class="sig-name descname">L</code><a class="headerlink" href="#kymatio.Scattering2D.L" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of angles used for the wavelet transform</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int, optional</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.max_order">
-<code class="descname">max_order</code><a class="headerlink" href="#kymatio.Scattering2D.max_order" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int, optional</em> – The maximum order of scattering coefficients to compute.
+<code class="sig-name descname">max_order</code><a class="headerlink" href="#kymatio.Scattering2D.max_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum order of scattering coefficients to compute.
 Must be either equal to <cite>1</cite> or <cite>2</cite>. Defaults to <cite>2</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int, optional</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.pre_pad">
-<code class="descname">pre_pad</code><a class="headerlink" href="#kymatio.Scattering2D.pre_pad" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>boolean</em> – controls the padding</p>
+<code class="sig-name descname">pre_pad</code><a class="headerlink" href="#kymatio.Scattering2D.pre_pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>controls the padding</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>boolean</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.Psi">
-<code class="descname">Psi</code><a class="headerlink" href="#kymatio.Scattering2D.Psi" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dictionary</em> – containing the wavelets filters at all resolutions. See
+<code class="sig-name descname">Psi</code><a class="headerlink" href="#kymatio.Scattering2D.Psi" title="Permalink to this definition">¶</a></dt>
+<dd><p>containing the wavelets filters at all resolutions. See
 filter_bank.filter_bank for an exact description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="kymatio.Scattering2D.Phi">
-<code class="descname">Phi</code><a class="headerlink" href="#kymatio.Scattering2D.Phi" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dictionary</em> – containing the low-pass filters at all resolutions. See
+<code class="sig-name descname">Phi</code><a class="headerlink" href="#kymatio.Scattering2D.Phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>containing the low-pass filters at all resolutions. See
 filter_bank.filter_bank for an exact description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt>
-<code class="descname">M_padded, N_padded</code></dt>
-<dd><p><em>int</em> – spatial support of the padded input</p>
+<code class="sig-name descname">M_padded, N_padded</code></dt>
+<dd><p>spatial support of the padded input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <p class="rubric">Notes</p>
 <p>The design of the filters is optimized for the value L = 8</p>
-<dl class="docutils">
-<dt>pre_pad is particularly useful when doing crops of a bigger</dt>
-<dd>image because the padding is then extremely accurate. Defaults
-to False.</dd>
+<dl class="simple">
+<dt>pre_pad is particularly useful when doing crops of a bigger</dt><dd><p>image because the padding is then extremely accurate. Defaults
+to False.</p>
+</dd>
 </dl>
 <dl class="method">
 <dt id="kymatio.Scattering2D.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering2d/scattering2d.html#Scattering2D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering2D.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering2d/scattering2d.html#Scattering2D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering2D.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forward pass of the scattering.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input</strong> (<em>tensor</em>) – tensor with 3 dimensions <img class="math" src="_images/math/4f786358f1c8e07944b57de88deb72e260cf560b.png" alt="(B, C, M, N)"/> where <img class="math" src="_images/math/5f2e47d976ce74039cf8a2184edcec92b6a17310.png" alt="(B, C)"/> are arbitrary.
-<img class="math" src="_images/math/9805f44feec6f81d376d09e88b8236635edbb3c8.png" alt="B"/> typically is the batch size, whereas <img class="math" src="_images/math/afce44aa7c55836ca9345404c22fc7b599d2ed84.png" alt="C"/> is the number of input channels.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>S</strong> – scattering of the input, a 4D tensor <img class="math" src="_images/math/5700a1f9031a54b6a0caa148b3a6cac6303ac3d7.png" alt="(B, C, D, Md, Nd)"/> where <img class="math" src="_images/math/3cf5aa5abe312e6fd4996975341a43aa566e8d8d.png" alt="D"/> corresponds
-to a new channel dimension and <img class="math" src="_images/math/17b82c224975690750c6b9eedf6bec9925f27c8a.png" alt="(Md, Nd)"/> are downsampled sizes by a factor <img class="math" src="_images/math/ade970465d3b3ca70ec2a2f9c64e1f33ae005fe5.png" alt="2^J"/>.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tensor</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input</strong> (<em>tensor</em>) – tensor with 3 dimensions <img class="math" src="_images/math/fa2d715cd444c5f5fa3f61c3a5780ab4d279e393.png" alt="(B, C, M, N)"/> where <img class="math" src="_images/math/062f188251be08ff65e3de2ff8a3f08c6b57df6b.png" alt="(B, C)"/> are arbitrary.
+<img class="math" src="_images/math/4bc3e94a67870b41b7c20179693e889251e2c136.png" alt="B"/> typically is the batch size, whereas <img class="math" src="_images/math/4db5b6e16e06f929ce3f675c5e535d06ffb02ff7.png" alt="C"/> is the number of input channels.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>S</strong> – scattering of the input, a 4D tensor <img class="math" src="_images/math/694a78b09b67d50e338f210dc7eeeac275bf0155.png" alt="(B, C, D, Md, Nd)"/> where <img class="math" src="_images/math/0fcab9067b50b87e868c4fd70f213a086addb964.png" alt="D"/> corresponds
+to a new channel dimension and <img class="math" src="_images/math/98dcd36fda101cab8710d972ae630022c1137998.png" alt="(Md, Nd)"/> are downsampled sizes by a factor <img class="math" src="_images/math/cb7a36ead3b5db81747c3b11422311f65f6aa1c2.png" alt="2^J"/>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kymatio.Scattering2D.to">
+<code class="sig-name descname">to</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering2d/scattering2d.html#Scattering2D.to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.Scattering2D.to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mimics the behavior of the function to() of a nn.Module()</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="kymatio.HarmonicScattering3D">
-<em class="property">class </em><code class="descclassname">kymatio.</code><code class="descname">HarmonicScattering3D</code><span class="sig-paren">(</span><em>J</em>, <em>shape</em>, <em>L=3</em>, <em>sigma_0=1</em>, <em>max_order=2</em>, <em>rotation_covariant=True</em>, <em>method='standard'</em>, <em>points=None</em>, <em>integral_powers=(0.5</em>, <em>1.0</em>, <em>2.0)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering3d/scattering3d.html#HarmonicScattering3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.HarmonicScattering3D" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">kymatio.</code><code class="sig-name descname">HarmonicScattering3D</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">shape</em>, <em class="sig-param">L=3</em>, <em class="sig-param">sigma_0=1</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">rotation_covariant=True</em>, <em class="sig-param">method='standard'</em>, <em class="sig-param">points=None</em>, <em class="sig-param">integral_powers=(0.5</em>, <em class="sig-param">1.0</em>, <em class="sig-param">2.0)</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering3d/scattering3d.html#HarmonicScattering3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.HarmonicScattering3D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>3D Solid Harmonic scattering .</p>
 <p>This class implements solid harmonic scattering on an input 3D image.
 For details see <a class="reference external" href="https://arxiv.org/abs/1805.00571">https://arxiv.org/abs/1805.00571</a>.</p>
 <p>Instantiates and initializes a 3d solid harmonic scattering object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>J</strong> (<em>int</em>) – number of scales</li>
-<li><strong>shape</strong> (<em>tuple of int</em>) – shape (M, N, O) of the input signal</li>
-<li><strong>L</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of l values. Defaults to 3.</li>
-<li><strong>sigma_0</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth of mother wavelet. Defaults to 1.</li>
-<li><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute. Must be
-either 1 or 2. Defaults to 2.</li>
-<li><strong>rotation_covariant</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>if set to True the first order moduli take the form:</p>
-<p><img class="math" src="_images/math/cae059a88f2956fd7a09f95d33c233027940a073.png" alt="\sqrt{\sum_m (x \star \psi_{j,l,m})^2)}"/></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>J</strong> (<em>int</em>) – number of scales</p></li>
+<li><p><strong>shape</strong> (<em>tuple of int</em>) – shape (M, N, O) of the input signal</p></li>
+<li><p><strong>L</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of l values. Defaults to 3.</p></li>
+<li><p><strong>sigma_0</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth of mother wavelet. Defaults to 1.</p></li>
+<li><p><strong>max_order</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum order of scattering coefficients to compute. Must be
+either 1 or 2. Defaults to 2.</p></li>
+<li><p><strong>rotation_covariant</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>if set to True the first order moduli take the form:</p>
+<p><img class="math" src="_images/math/ba86738bef77deb95f541358154af6d773734088.png" alt="\sqrt{\sum_m (x \star \psi_{j,l,m})^2)}"/></p>
 <p>if set to False the first order moduli take the form:</p>
-<p><img class="math" src="_images/math/b200347a65fced45d13c0ce7a30fe07e864b7a70.png" alt="x \star \psi_{j,l,m}"/></p>
+<p><img class="math" src="_images/math/6c7a91fb20db552a1573e936bc0e7a129088a523.png" alt="x \star \psi_{j,l,m}"/></p>
 <p>The second order moduli change analogously
 Defaut: True</p>
-</li>
-<li><strong>method</strong> (<em>string</em><em>, </em><em>optional</em>) – specifies the method for obtaining scattering coefficients
-(“standard”,”local”,”integral”). Default: “standard”</li>
-<li><strong>points</strong> (<em>array-like</em><em>, </em><em>optional</em>) – List of locations in which to sample wavelet moduli. Used when
-method == ‘local’</li>
-<li><strong>integral_powers</strong> (<em>array-like</em>) – List of exponents to the power of which moduli are raised before
-integration. Used with method == ‘standard’, method == ‘integral’</li>
+</p></li>
+<li><p><strong>method</strong> (<em>string</em><em>, </em><em>optional</em>) – specifies the method for obtaining scattering coefficients
+(“standard”,”local”,”integral”). Default: “standard”</p></li>
+<li><p><strong>points</strong> (<em>array-like</em><em>, </em><em>optional</em>) – List of locations in which to sample wavelet moduli. Used when
+method == ‘local’</p></li>
+<li><p><strong>integral_powers</strong> (<em>array-like</em>) – List of exponents to the power of which moduli are raised before
+integration. Used with method == ‘standard’, method == ‘integral’</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="kymatio.HarmonicScattering3D.forward">
-<code class="descname">forward</code><span class="sig-paren">(</span><em>input_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering3d/scattering3d.html#HarmonicScattering3D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.HarmonicScattering3D.forward" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">input_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering3d/scattering3d.html#HarmonicScattering3D.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.HarmonicScattering3D.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>The forward pass of 3D solid harmonic scattering</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_array</strong> (<em>torch tensor</em>) – input of size (batchsize, M, N, O)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>output</strong> – if max_order is 1 it returns a torch tensor with the
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_array</strong> (<em>torch tensor</em>) – input of size (batchsize, M, N, O)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>output</strong> – if max_order is 1 it returns a torch tensor with the
 first order scattering coefficients
 if max_order is 2 it returns a torch tensor with the
 first and second order scattering coefficients,
-concatenated along the feature axis</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple | torch tensor</td>
-</tr>
-</tbody>
-</table>
+concatenated along the feature axis</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple | torch tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kymatio.HarmonicScattering3D.to">
+<code class="sig-name descname">to</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kymatio/scattering3d/scattering3d.html#HarmonicScattering3D.to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kymatio.HarmonicScattering3D.to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mimics the behavior of the function to() of a nn.Module()</p>
 </dd></dl>
 
 </dd></dl>
@@ -636,7 +733,7 @@ concatenated along the feature axis</td>
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -648,7 +745,7 @@ concatenated along the feature axis</td>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developerguide.html">Information for developers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery_1d/index.html">1D examples</a></li>
@@ -666,17 +763,23 @@ concatenated along the feature axis</td>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -685,8 +788,8 @@ concatenated along the feature axis</td>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/codereference.rst.txt"

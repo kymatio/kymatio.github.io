@@ -14,14 +14,12 @@ We compute scattering transforms for volume maps of size `128`-by-`128`-by-
 order `L = 2`. The volumes are stacked into batches of size `batch_size = 8`
 and the transforms are computed `10` times to get an average running time.
 
-
 Preliminaries
 -------------
 Since kymatio handles PyTorch arrays, we first import `torch`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import torch
@@ -30,8 +28,7 @@ Since kymatio handles PyTorch arrays, we first import `torch`.
 To measure the running time of the implementation, we use the `time` package.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import time
@@ -43,8 +40,7 @@ Certain backends are also GPU-only, we we want to detect that before running
 the benchmark.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import kymatio.scattering3d.backend as backend
@@ -54,8 +50,7 @@ Finally, we import the `HarmonicScattering3D` class that computes the scattering
 transform.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     from kymatio import HarmonicScattering3D
@@ -68,8 +63,7 @@ maximum scale `2**J`. Here, we consider cubic volumes of size `128`, with
 a maximum scale of `2**2 = 4` and maximum spherical harmonic order of `2`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     M, N, O = 128, 128, 128
@@ -85,8 +79,7 @@ a batch of `8` volumes. Larger batch sizes do not yield increased efficiency,
 but smaller values increases the influence of overhead on the running time.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     batch_size = 8
@@ -96,8 +89,7 @@ We repeat the benchmark `10` times and compute the average running time to
 get a reasonable estimate.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     times = 10
@@ -107,8 +99,7 @@ Determine which devices (CPU or GPU) that are supported by the current
 backend.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     if backend.NAME == 'torch':
@@ -120,13 +111,11 @@ backend.
 Set up the scattering object and the test data
 ----------------------------------------------
 
-
 Create the `HarmonicScattering3D` object using the given parameters and generate
 some compatible test data with the specified batch size.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     scattering = HarmonicScattering3D(J, shape=(M, N, O), L=L, sigma_0=sigma_0)
@@ -145,8 +134,7 @@ need to call `torch.cuda.synchronize()` before and after the benchmark to
 make sure that all CUDA kernels have finished executing.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     for device in devices:
@@ -191,7 +179,9 @@ The resulting output should be something like
   Elapsed time: 60.476041 [s / 10 evals], avg: 6.05 (s/batch)
 
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_gallery_3d_compute_speed.py:

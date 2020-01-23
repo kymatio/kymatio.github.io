@@ -13,13 +13,11 @@ Compute the scattering transform of a synthetic signal
 In this example we generate a harmonic signal of a few different frequencies
 and analyze it with the 1D scattering transform.
 
-
 Import the necessary packages
 -----------------------------
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     import torch
     from kymatio import Scattering1D
@@ -45,8 +43,7 @@ base frequencies and phases, generates sinusoidal sounds and harmonics,
 and then adds a windowed version to the output signal.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     def generate_harmonic_signal(T, num_intervals=4, gamma=0.9, random_state=42):
         """
@@ -85,8 +82,7 @@ Let's take a look at what such a signal could look like
 -------------------------------------------------------
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     T = 2 ** 13
     x = generate_harmonic_signal(T)
@@ -108,8 +104,7 @@ Spectrogram
 Let's take a look at the signal spectrogram
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     plt.figure(figsize=(10, 10))
     plt.specgram(x.numpy().ravel(), Fs=1024)
@@ -128,8 +123,7 @@ Doing the scattering transform
 ------------------------------
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     J = 6
     Q = 16
@@ -165,7 +159,10 @@ Doing the scattering transform
 
 
 
-**Total running time of the script:** ( 0 minutes  0.686 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  2.381 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_plot_synthetic.py:

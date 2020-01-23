@@ -1,19 +1,18 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>kymatio.scattering1d.scattering1d &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../../_static/kymatio.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -48,7 +47,7 @@
     <span class="n">subsample_fourier</span><span class="p">,</span> <span class="n">unpad</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.filter_bank</span> <span class="k">import</span> <span class="p">(</span><span class="n">calibrate_scattering_filters</span><span class="p">,</span>
     <span class="n">scattering_filter_factory</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">cast_phi</span><span class="p">,</span> <span class="n">cast_psi</span><span class="p">,</span> <span class="n">compute_border_indices</span><span class="p">,</span> <span class="n">compute_padding</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">_apply_phi</span><span class="p">,</span> <span class="n">_apply_psi</span><span class="p">,</span> <span class="n">compute_border_indices</span><span class="p">,</span> <span class="n">compute_padding</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Scattering1D&#39;</span><span class="p">]</span>
@@ -263,44 +262,70 @@
         <span class="c1"># Finally, precompute the filters</span>
         <span class="n">phi_f</span><span class="p">,</span> <span class="n">psi1_f</span><span class="p">,</span> <span class="n">psi2_f</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">scattering_filter_factory</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">J_pad</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">J</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">,</span>
-            <span class="n">to_torch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">criterion_amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">criterion_amplitude</span><span class="p">,</span>
+            <span class="n">criterion_amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">criterion_amplitude</span><span class="p">,</span>
             <span class="n">r_psi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r_psi</span><span class="p">,</span> <span class="n">sigma0</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
             <span class="n">P_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">P_max</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+
+        <span class="c1"># prepare for pytorch</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">phi_f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="c1"># view(-1, 1).repeat(1, 2) because real numbers!</span>
+                <span class="n">phi_f</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                    <span class="n">phi_f</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">psi_f</span> <span class="ow">in</span> <span class="n">psi1_f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sub_k</span> <span class="ow">in</span> <span class="n">psi_f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sub_k</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="c1"># view(-1, 1).repeat(1, 2) because real numbers!</span>
+                    <span class="n">psi_f</span><span class="p">[</span><span class="n">sub_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                        <span class="n">psi_f</span><span class="p">[</span><span class="n">sub_k</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">psi_f</span> <span class="ow">in</span> <span class="n">psi2_f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sub_k</span> <span class="ow">in</span> <span class="n">psi_f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">sub_k</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="c1"># view(-1, 1).repeat(1, 2) because real numbers!</span>
+                    <span class="n">psi_f</span><span class="p">[</span><span class="n">sub_k</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
+                        <span class="n">psi_f</span><span class="p">[</span><span class="n">sub_k</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">psi1_f</span> <span class="o">=</span> <span class="n">psi1_f</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psi2_f</span> <span class="o">=</span> <span class="n">psi2_f</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phi_f</span> <span class="o">=</span> <span class="n">phi_f</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Change the datatype of the filters</span>
-
-<span class="sd">        This function is used internally to convert the filters. It does not</span>
-<span class="sd">        need to be called explicitly.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        target_type : type</span>
-<span class="sd">            The desired type of the filters, typically `torch.FloatTensor`</span>
-<span class="sd">            or `torch.cuda.FloatTensor`.</span>
+    <span class="k">def</span> <span class="nf">_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Mimics the behavior of the function _apply() of a nn.Module()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cast_psi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi1_f</span><span class="p">,</span> <span class="n">target_type</span><span class="p">)</span>
-        <span class="n">cast_psi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi2_f</span><span class="p">,</span> <span class="n">target_type</span><span class="p">)</span>
-        <span class="n">cast_phi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi_f</span><span class="p">,</span> <span class="n">target_type</span><span class="p">)</span>
+        <span class="n">_apply_psi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi1_f</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="n">_apply_psi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psi2_f</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="n">_apply_phi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phi_f</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
+    <span class="k">def</span> <span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Mimics the behavior of the function cuda() of a nn.Module()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Scattering1D.to"><a class="viewcode-back" href="../../../codereference.html#kymatio.Scattering1D.to">[docs]</a>    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Mimics the behavior of the function to() of a nn.Module()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">non_blocking</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">_C</span><span class="o">.</span><span class="n">_nn</span><span class="o">.</span><span class="n">_parse_to</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dtype</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;nn.Module.to only accepts floating point &#39;</span>
+                                <span class="s1">&#39;dtypes, but got desired dtype=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">non_blocking</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">convert</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Move to the CPU</span>
-
-<span class="sd">        This function prepares the object to accept input Tensors on the CPU.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Mimics the behavior of the function cpu() of a nn.Module()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Move to the GPU</span>
-
-<span class="sd">        This function prepares the object to accept input Tensors on the GPU.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Scattering1D.meta"><a class="viewcode-back" href="../../../codereference.html#kymatio.Scattering1D.meta">[docs]</a>    <span class="k">def</span> <span class="nf">meta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get meta information on the transform</span>
@@ -801,7 +826,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -813,7 +838,7 @@
 <h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../developerguide.html">Information for developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../codereference.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../gallery_1d/index.html">1D examples</a></li>
@@ -831,17 +856,23 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -850,8 +881,8 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

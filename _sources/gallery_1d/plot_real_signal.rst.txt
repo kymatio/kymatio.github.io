@@ -13,15 +13,13 @@ This script loads a speech signal from the free spoken digit dataset (FSDD)
 of a man pronouncing the word "zero," computes its scattering transform, and
 displays the zeroth-, first-, and second-order scattering coefficients.
 
-
 Preliminaries
 -------------
 
 Since kymatio handles PyTorch arrays, we first import `torch`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import torch
@@ -35,8 +33,7 @@ Since kymatio handles PyTorch arrays, we first import `torch`.
 To handle audio file I/O, we import `os` and `scipy.io.wavfile`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import os
@@ -51,8 +48,7 @@ To handle audio file I/O, we import `os` and `scipy.io.wavfile`.
 We import `matplotlib` to plot the calculated scattering coefficients.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import matplotlib.pyplot as plt
@@ -69,8 +65,7 @@ class is what lets us calculate the scattering transform, while the
 `fetch_fsdd` function downloads the FSDD, if needed.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     from kymatio import Scattering1D
@@ -88,8 +83,7 @@ First, we make download the FSDD (if not already downloaded) and read in the
 recording `0_jackson_0.wav` of a man pronouncing the word "zero".
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     info_dataset = fetch_fsdd(verbose=True)
@@ -112,8 +106,7 @@ a single channel, so `C = 1`. Note that `C` is almost always `1`, for input
 Tensors as this axis indexes the different scattering coefficients.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     x = torch.from_numpy(x).float()
@@ -134,8 +127,7 @@ samples. Finally, we set the number of wavelets per octave, `Q`, to `16`.
 This lets us resolve frequencies at a resolution of `1/16` octaves.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     T = x.shape[-1]
@@ -152,8 +144,7 @@ Finally, we are able to create the object which computes our scattering
 transform, `scattering`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     scattering = Scattering1D(J, T, Q)
@@ -175,8 +166,7 @@ of input samples since the scattering transform performs an average in time
 and subsamples the result to save memory.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     Sx = scattering.forward(x)
@@ -192,8 +182,7 @@ to each order (zeroth, first, or second). We do this by extracting the `meta`
 information from the scattering object and constructing masks for each order.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     meta = Scattering1D.compute_meta_scattering(J, Q)
@@ -213,8 +202,7 @@ First, we plot the original signal `x`. Note that we have to index it as
 numpy array using the `numpy()` method.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.figure(figsize=(8, 2))
@@ -234,8 +222,7 @@ We now plot the zeroth-order scattering coefficient, which is simply an
 average of the original signal at the scale `2**J`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.figure(figsize=(8, 2))
@@ -255,8 +242,7 @@ We then plot the first-order coefficients, which are arranged along time
 and log-frequency.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.figure(figsize=(8, 2))
@@ -278,8 +264,7 @@ frequency and one second-order frequency. Here, both indices are mixed along
 the vertical axis.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.figure(figsize=(8, 2))
@@ -298,8 +283,7 @@ the vertical axis.
 Display the plots!
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.show()
@@ -309,7 +293,10 @@ Display the plots!
 
 
 
-**Total running time of the script:** ( 0 minutes  0.658 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.922 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_plot_real_signal.py:

@@ -14,14 +14,12 @@ averaging scale `2**3 = 8` and `L = 8` angular directions. The images are
 stacked into batches of size `batch_size = 128` and the transforms are
 computed `10` times to get an average running time.
 
-
 Preliminaries
 -------------
 Since kymatio handles PyTorch arrays, we first import `torch`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import torch
@@ -30,8 +28,7 @@ Since kymatio handles PyTorch arrays, we first import `torch`.
 To measure the running time of the implementation, we use the `time` package.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import time
@@ -43,8 +40,7 @@ Certain backends are also GPU-only, we we want to detect that before running
 the benchmark.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import kymatio.scattering2d.backend as backend
@@ -54,8 +50,7 @@ Finally, we import the `Scattering2D` class that computes the scattering
 transform.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     from kymatio import Scattering2D
@@ -70,8 +65,7 @@ Here, we consider square images of size `256` with an averaging scale
 for scattering transforms of natural images.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     M = 256
@@ -84,8 +78,7 @@ To squeeze the maximum performance out of the implementation, we apply it to
 a batch of `128` images.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     batch_size = 128
@@ -95,8 +88,7 @@ We repeat the benchmark `10` times and compute the average running time to
 get a reasonable estimate.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     times = 10
@@ -106,8 +98,7 @@ Determine which devices (CPU or GPU) that are supported by the current
 backend.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     if backend.NAME == 'torch':
@@ -122,8 +113,7 @@ channels in the test data here is set to `3`, corresponding to the three
 colors channels in an RGB image.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     scattering = Scattering2D(J, shape=(M, N), L=L)
@@ -143,8 +133,7 @@ and after the benchmark to make sure that all CUDA kernels have finished
 executing.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     for device in devices:
@@ -186,7 +175,9 @@ The resulting output should be something like
   Elapsed time: 130.580992 [s / 10 evals], avg: 13.06 (s/batch)
 
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_gallery_2d_compute_speed.py:

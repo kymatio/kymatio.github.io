@@ -1,5 +1,9 @@
 :orphan:
 
+
+
+.. _sphx_glr_gallery_2d:
+
 2D examples
 ===========
 
@@ -50,13 +54,13 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Inverting scattering via mse">
 
 .. only:: html
 
-    .. figure:: /gallery_2d/images/thumb/sphx_glr_mnist_thumb.png
+    .. figure:: /gallery_2d/images/thumb/sphx_glr_plot_invert_scattering_thumb.png
 
-        :ref:`sphx_glr_gallery_2d_mnist.py`
+        :ref:`sphx_glr_gallery_2d_plot_invert_scattering.py`
 
 .. raw:: html
 
@@ -66,7 +70,47 @@ class, ``Scattering2D``.
 .. toctree::
    :hidden:
 
-   /gallery_2d/mnist
+   /gallery_2d/plot_invert_scattering
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Author: https://github.com/Jonas1312 Edited by: Edouard Oyallon ">
+
+.. only:: html
+
+    .. figure:: /gallery_2d/images/thumb/sphx_glr_plot_scattering_disk_thumb.png
+
+        :ref:`sphx_glr_gallery_2d_plot_scattering_disk.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/plot_scattering_disk
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Classification of Few Sample MNIST with Scattering">
+
+.. only:: html
+
+    .. figure:: /gallery_2d/images/thumb/sphx_glr_plot_mnist_classify_thumb.png
+
+        :ref:`sphx_glr_gallery_2d_plot_mnist_classify.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/plot_mnist_classify
 
 .. raw:: html
 
@@ -141,13 +185,13 @@ class, ``Scattering2D``.
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: gallery_2d_python.zip <//Users/oyallon/kymatio/doc/source/gallery_2d/gallery_2d_python.zip>`
+    :download:`Download all examples in Python source code: gallery_2d_python.zip <//Users/ebelilov/kym/kymatio/doc/source/gallery_2d/gallery_2d_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: gallery_2d_jupyter.zip <//Users/oyallon/kymatio/doc/source/gallery_2d/gallery_2d_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: gallery_2d_jupyter.zip <//Users/ebelilov/kym/kymatio/doc/source/gallery_2d/gallery_2d_jupyter.zip>`
 
 
 .. only:: html

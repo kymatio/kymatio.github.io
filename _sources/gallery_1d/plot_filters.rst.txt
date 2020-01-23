@@ -14,15 +14,13 @@ transforms. Filters are generated using the
 :meth:`kymatio.scattering1d.filter_bank.scattering_filter_factory` method,
 which creates both the first- and second-order filter banks.
 
-
 Preliminaries
 -------------
 First, we import the `scattering_filter_factory` method, which we will use
 to generate the filters.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     from kymatio.scattering1d.filter_bank import scattering_filter_factory
@@ -36,8 +34,7 @@ to generate the filters.
 We then import `numpy` and `matplotlib` to display the filters.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import numpy as np
@@ -58,8 +55,7 @@ power of two. Since we are not computing any scattering transforms here, we
 may pick any power of two for `T`. Here, we choose `2**13 = 8192`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     T = 2**13
@@ -75,8 +71,7 @@ two. In other words, the largest filter will be concentrated in a time
 interval of size `2**J`.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     J = 5
@@ -96,8 +91,7 @@ to `Q`). For audio signals, it is often beneficial to have a large value for
 are better localized in frequency than they are in time. We therefore set:
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     Q = 8
@@ -118,8 +112,7 @@ first-order wavelet filters (`psi1_f`), and the second-order filters
 (`psi2_f`).
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     phi_f, psi1_f, psi2_f, _ = scattering_filter_factory(np.log2(T), J, Q)
@@ -139,7 +132,6 @@ While `phi_f` only contains a single filter (at different resolutions),
 the `psi1_f` and `psi2_f` outputs are lists of filters, one for each wavelet
 bandpass filter in the filter bank.
 
-
 Plot the filters
 ================
 We are now ready to plot the filters. We first display the lowpass filter
@@ -149,8 +141,7 @@ plot to the frequency interval :math:`[0, 0.5]`. Finally, we add some
 explanatory labels and title.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.figure()
@@ -178,8 +169,7 @@ Do the same plot for the second-order filters. Note that since here `Q = 1`,
 we obtain wavelets that have higher frequency bandwidth.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.figure()
@@ -204,8 +194,7 @@ we obtain wavelets that have higher frequency bandwidth.
 Display the plots!
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     plt.show()
@@ -215,7 +204,10 @@ Display the plots!
 
 
 
-**Total running time of the script:** ( 0 minutes  0.258 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.572 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_plot_filters.py:

@@ -13,8 +13,7 @@ Classification on CIFAR10 (ResNet)
 Based on pytorch example for CIFAR10
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
 
@@ -221,7 +220,10 @@ Based on pytorch example for CIFAR10
     if __name__ == '__main__':
         main()
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_gallery_2d_cifar_resnet.py:

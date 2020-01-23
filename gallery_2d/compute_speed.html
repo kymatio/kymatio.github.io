@@ -1,19 +1,18 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>2D scattering transform benchmark &#8212; kymatio 0.2.0-dev documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../_static/kymatio.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -38,8 +37,8 @@
           <div class="body" role="main">
             
   <div class="sphx-glr-download-link-note admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Click <a class="reference internal" href="#sphx-glr-download-gallery-2d-compute-speed-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-2d-compute-speed-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="d-scattering-transform-benchmark">
 <span id="sphx-glr-gallery-2d-compute-speed-py"></span><h1>2D scattering transform benchmark<a class="headerlink" href="#d-scattering-transform-benchmark" title="Permalink to this headline">¶</a></h1>
@@ -50,23 +49,23 @@ computed <cite>10</cite> times to get an average running time.</p>
 <div class="section" id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h2>
 <p>Since kymatio handles PyTorch arrays, we first import <cite>torch</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 </pre></div>
 </div>
 <p>To measure the running time of the implementation, we use the <cite>time</cite> package.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 </pre></div>
 </div>
 <p>The performance of the implementation depends on which “backend” is used. We
 therefore want to report the name of the backend when presenting the results.
 Certain backends are also GPU-only, we we want to detect that before running
 the benchmark.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kymatio.scattering2d.backend</span> <span class="kn">as</span> <span class="nn">backend</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">kymatio.scattering2d.backend</span> <span class="k">as</span> <span class="nn">backend</span>
 </pre></div>
 </div>
 <p>Finally, we import the <cite>Scattering2D</cite> class that computes the scattering
 transform.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
 </pre></div>
 </div>
 </div>
@@ -77,7 +76,7 @@ the averaging scale, <cite>2**J</cite>, and the number of angular directions <ci
 Here, we consider square images of size <cite>256</cite> with an averaging scale
 <cite>2**3 = 8</cite> and <cite>L = 8</cite> angular directions. These are all typical parameter
 for scattering transforms of natural images.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="mi">256</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="mi">256</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">256</span>
 <span class="n">J</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">L</span> <span class="o">=</span> <span class="mi">8</span>
@@ -85,17 +84,17 @@ for scattering transforms of natural images.</p>
 </div>
 <p>To squeeze the maximum performance out of the implementation, we apply it to
 a batch of <cite>128</cite> images.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
 </pre></div>
 </div>
 <p>We repeat the benchmark <cite>10</cite> times and compute the average running time to
 get a reasonable estimate.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">times</span> <span class="o">=</span> <span class="mi">10</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">times</span> <span class="o">=</span> <span class="mi">10</span>
 </pre></div>
 </div>
 <p>Determine which devices (CPU or GPU) that are supported by the current
 backend.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s1">&#39;torch&#39;</span><span class="p">:</span>
     <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="s1">&#39;gpu&#39;</span><span class="p">]</span>
 <span class="k">elif</span> <span class="n">backend</span><span class="o">.</span><span class="n">NAME</span> <span class="o">==</span> <span class="s1">&#39;skcuda&#39;</span><span class="p">:</span>
     <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gpu&#39;</span><span class="p">]</span>
@@ -105,7 +104,7 @@ backend.</p>
 some compatible test data with the specified batch size. The number of
 channels in the test data here is set to <cite>3</cite>, corresponding to the three
 colors channels in an RGB image.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">)</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 </pre></div>
@@ -121,9 +120,9 @@ allocation and CUDA kernel compilation, is not counted. If the benchmark is
 running on the GPU, we also need to call <cite>torch.cuda.synchronize()</cite> before
 and after the benchmark to make sure that all CUDA kernels have finished
 executing.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
-    <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">&#39;==&gt; Testing Float32 with {} backend, on {}, forward&#39;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">fmt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+    <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">&#39;==&gt; Testing Float32 with </span><span class="si">{}</span><span class="s1"> backend, on </span><span class="si">{}</span><span class="s1">, forward&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fmt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">backend</span><span class="o">.</span><span class="n">NAME</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">upper</span><span class="p">()))</span>
 
     <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;gpu&#39;</span><span class="p">:</span>
         <span class="n">scattering</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
@@ -146,8 +145,8 @@ executing.</p>
 
     <span class="n">t_elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
 
-    <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">&#39;Elapsed time: {:2f} [s / {:d} evals], avg: {:.2f} (s/batch)&#39;</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">fmt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t_elapsed</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">t_elapsed</span><span class="o">/</span><span class="n">times</span><span class="p">))</span>
+    <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">&#39;Elapsed time: </span><span class="si">{:2f}</span><span class="s1"> [s / </span><span class="si">{:d}</span><span class="s1"> evals], avg: </span><span class="si">{:.2f}</span><span class="s1"> (s/batch)&#39;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fmt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t_elapsed</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">t_elapsed</span><span class="o">/</span><span class="n">times</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The resulting output should be something like</p>
@@ -157,12 +156,14 @@ Elapsed time: 624.910853 [s / 10 evals], avg: 62.49 (s/batch)
 Elapsed time: 130.580992 [s / 10 evals], avg: 13.06 (s/batch)
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-compute-speed-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/compute_speed1.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">compute_speed.py</span></code></a></div>
+<p><a class="reference download internal" download="" href="../_downloads/3020b50305e315d5a720e15c8276d8bd/compute_speed.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">compute_speed.py</span></code></a></p>
+</div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/compute_speed1.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compute_speed.ipynb</span></code></a></div>
+<p><a class="reference download internal" download="" href="../_downloads/de1618b5a814d315b42bf58ae23f1b6b/compute_speed.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">compute_speed.ipynb</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -201,7 +202,7 @@ Elapsed time: 130.580992 [s / 10 evals], avg: 13.06 (s/batch)
     
 
 <p>
-<a href="https://travis-ci.org/kymatio/kymatio">
+<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
     <img
         alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
         src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
@@ -213,14 +214,16 @@ Elapsed time: 130.580992 [s / 10 evals], avg: 13.06 (s/batch)
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">2D examples</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">2D scattering transform benchmark</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mnist.html">Classification of handwritten digits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering.html">Inverting scattering via mse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_mnist_classify.html">Classification of Few Sample MNIST with Scattering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST.html">Regularized inverse of a scattering transform on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar.html">Classification on CIFAR10</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar_resnet.html">Classification on CIFAR10 (ResNet)</a></li>
@@ -241,17 +244,23 @@ Elapsed time: 130.580992 [s / 10 evals], avg: 13.06 (s/batch)
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -260,8 +269,8 @@ Elapsed time: 130.580992 [s / 10 evals], avg: 13.06 (s/batch)
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/gallery_2d/compute_speed.rst.txt"
