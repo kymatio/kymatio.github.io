@@ -158,7 +158,7 @@ Main loop
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  14.578 seconds)
+   **Total running time of the script:** ( 3 minutes  13.684 seconds)
 
 
 .. _sphx_glr_download_gallery_2d_plot_invert_scattering.py:

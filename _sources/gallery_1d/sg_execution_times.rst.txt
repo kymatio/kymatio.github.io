@@ -5,16 +5,16 @@
 
 Computation times
 =================
-**01:30.164** total execution time for **gallery_1d** files:
+**00:57.469** total execution time for **gallery_1d** files:
 
 +--------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_classif.py` (``plot_classif.py``)         | 01:20.897 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_classif.py` (``plot_classif.py``)         | 00:52.092 | 0.0 MB |
 +--------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_synthetic.py` (``plot_synthetic.py``)     | 00:05.203 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_real_signal.py` (``plot_real_signal.py``) | 00:02.636 | 0.0 MB |
 +--------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_real_signal.py` (``plot_real_signal.py``) | 00:03.342 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_synthetic.py` (``plot_synthetic.py``)     | 00:02.217 | 0.0 MB |
 +--------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_filters.py` (``plot_filters.py``)         | 00:00.722 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_filters.py` (``plot_filters.py``)         | 00:00.524 | 0.0 MB |
 +--------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_gallery_1d_compute_speed.py` (``compute_speed.py``)       | 00:00.000 | 0.0 MB |
 +--------------------------------------------------------------------------+-----------+--------+
