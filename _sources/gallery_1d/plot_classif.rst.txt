@@ -199,7 +199,7 @@ For reproducibility, we fix the seed of the random number generator.
  .. code-block:: none
 
 
-    <torch._C.Generator object at 0x7fe65d4e7090>
+    <torch._C.Generator object at 0x7f0d74451f90>
 
 
 
@@ -542,56 +542,56 @@ Now we're ready to train the classifier.
 
  .. code-block:: none
 
-    Epoch 0, average loss = 0.807, accuracy = 0.826
-    Epoch 1, average loss = 0.555, accuracy = 0.892
-    Epoch 2, average loss = 0.438, accuracy = 0.918
-    Epoch 3, average loss = 0.372, accuracy = 0.933
-    Epoch 4, average loss = 0.322, accuracy = 0.941
-    Epoch 5, average loss = 0.286, accuracy = 0.944
-    Epoch 6, average loss = 0.262, accuracy = 0.951
-    Epoch 7, average loss = 0.239, accuracy = 0.953
-    Epoch 8, average loss = 0.224, accuracy = 0.957
-    Epoch 9, average loss = 0.201, accuracy = 0.968
-    Epoch 10, average loss = 0.192, accuracy = 0.968
-    Epoch 11, average loss = 0.179, accuracy = 0.968
-    Epoch 12, average loss = 0.168, accuracy = 0.973
-    Epoch 13, average loss = 0.163, accuracy = 0.973
-    Epoch 14, average loss = 0.154, accuracy = 0.972
-    Epoch 15, average loss = 0.148, accuracy = 0.975
-    Epoch 16, average loss = 0.141, accuracy = 0.977
-    Epoch 17, average loss = 0.133, accuracy = 0.976
-    Epoch 18, average loss = 0.128, accuracy = 0.977
-    Epoch 19, average loss = 0.122, accuracy = 0.979
-    Epoch 20, average loss = 0.118, accuracy = 0.978
-    Epoch 21, average loss = 0.114, accuracy = 0.981
-    Epoch 22, average loss = 0.110, accuracy = 0.981
-    Epoch 23, average loss = 0.107, accuracy = 0.981
-    Epoch 24, average loss = 0.102, accuracy = 0.982
-    Epoch 25, average loss = 0.101, accuracy = 0.984
-    Epoch 26, average loss = 0.097, accuracy = 0.981
-    Epoch 27, average loss = 0.093, accuracy = 0.987
-    Epoch 28, average loss = 0.091, accuracy = 0.988
-    Epoch 29, average loss = 0.088, accuracy = 0.984
-    Epoch 30, average loss = 0.085, accuracy = 0.988
-    Epoch 31, average loss = 0.087, accuracy = 0.983
-    Epoch 32, average loss = 0.081, accuracy = 0.988
-    Epoch 33, average loss = 0.077, accuracy = 0.989
-    Epoch 34, average loss = 0.077, accuracy = 0.988
-    Epoch 35, average loss = 0.074, accuracy = 0.989
-    Epoch 36, average loss = 0.072, accuracy = 0.990
-    Epoch 37, average loss = 0.072, accuracy = 0.987
-    Epoch 38, average loss = 0.073, accuracy = 0.987
-    Epoch 39, average loss = 0.068, accuracy = 0.990
-    Epoch 40, average loss = 0.066, accuracy = 0.989
-    Epoch 41, average loss = 0.065, accuracy = 0.991
-    Epoch 42, average loss = 0.064, accuracy = 0.989
-    Epoch 43, average loss = 0.062, accuracy = 0.990
-    Epoch 44, average loss = 0.061, accuracy = 0.991
-    Epoch 45, average loss = 0.059, accuracy = 0.991
-    Epoch 46, average loss = 0.058, accuracy = 0.991
-    Epoch 47, average loss = 0.058, accuracy = 0.991
-    Epoch 48, average loss = 0.056, accuracy = 0.991
-    Epoch 49, average loss = 0.054, accuracy = 0.993
+    Epoch 0, average loss = 0.807, accuracy = 0.816
+    Epoch 1, average loss = 0.557, accuracy = 0.890
+    Epoch 2, average loss = 0.436, accuracy = 0.919
+    Epoch 3, average loss = 0.368, accuracy = 0.930
+    Epoch 4, average loss = 0.320, accuracy = 0.942
+    Epoch 5, average loss = 0.284, accuracy = 0.949
+    Epoch 6, average loss = 0.257, accuracy = 0.956
+    Epoch 7, average loss = 0.237, accuracy = 0.962
+    Epoch 8, average loss = 0.220, accuracy = 0.961
+    Epoch 9, average loss = 0.202, accuracy = 0.963
+    Epoch 10, average loss = 0.191, accuracy = 0.966
+    Epoch 11, average loss = 0.178, accuracy = 0.971
+    Epoch 12, average loss = 0.167, accuracy = 0.971
+    Epoch 13, average loss = 0.163, accuracy = 0.971
+    Epoch 14, average loss = 0.152, accuracy = 0.974
+    Epoch 15, average loss = 0.146, accuracy = 0.972
+    Epoch 16, average loss = 0.138, accuracy = 0.975
+    Epoch 17, average loss = 0.131, accuracy = 0.978
+    Epoch 18, average loss = 0.126, accuracy = 0.978
+    Epoch 19, average loss = 0.124, accuracy = 0.977
+    Epoch 20, average loss = 0.119, accuracy = 0.979
+    Epoch 21, average loss = 0.115, accuracy = 0.978
+    Epoch 22, average loss = 0.111, accuracy = 0.980
+    Epoch 23, average loss = 0.106, accuracy = 0.983
+    Epoch 24, average loss = 0.102, accuracy = 0.984
+    Epoch 25, average loss = 0.099, accuracy = 0.982
+    Epoch 26, average loss = 0.097, accuracy = 0.983
+    Epoch 27, average loss = 0.094, accuracy = 0.983
+    Epoch 28, average loss = 0.090, accuracy = 0.986
+    Epoch 29, average loss = 0.087, accuracy = 0.986
+    Epoch 30, average loss = 0.086, accuracy = 0.989
+    Epoch 31, average loss = 0.083, accuracy = 0.986
+    Epoch 32, average loss = 0.080, accuracy = 0.987
+    Epoch 33, average loss = 0.078, accuracy = 0.987
+    Epoch 34, average loss = 0.077, accuracy = 0.987
+    Epoch 35, average loss = 0.074, accuracy = 0.992
+    Epoch 36, average loss = 0.072, accuracy = 0.988
+    Epoch 37, average loss = 0.070, accuracy = 0.990
+    Epoch 38, average loss = 0.068, accuracy = 0.989
+    Epoch 39, average loss = 0.067, accuracy = 0.993
+    Epoch 40, average loss = 0.067, accuracy = 0.989
+    Epoch 41, average loss = 0.065, accuracy = 0.992
+    Epoch 42, average loss = 0.062, accuracy = 0.993
+    Epoch 43, average loss = 0.061, accuracy = 0.991
+    Epoch 44, average loss = 0.060, accuracy = 0.991
+    Epoch 45, average loss = 0.059, accuracy = 0.993
+    Epoch 46, average loss = 0.056, accuracy = 0.991
+    Epoch 47, average loss = 0.057, accuracy = 0.993
+    Epoch 48, average loss = 0.055, accuracy = 0.994
+    Epoch 49, average loss = 0.054, accuracy = 0.992
 
 
 
@@ -655,7 +655,7 @@ loss.
 
  .. code-block:: none
 
-    TEST, average loss = 0.111, accuracy = 0.965
+    TEST, average loss = 0.109, accuracy = 0.965
 
 
 
@@ -697,7 +697,7 @@ classified, anything off the diagonal is wrong).
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  50.797 seconds)
+   **Total running time of the script:** ( 0 minutes  48.695 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_plot_classif.py:

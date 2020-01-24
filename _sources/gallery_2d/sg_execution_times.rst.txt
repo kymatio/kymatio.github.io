@@ -5,14 +5,14 @@
 
 Computation times
 =================
-**02:02.184** total execution time for **gallery_2d** files:
+**01:54.130** total execution time for **gallery_2d** files:
 
 +------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_2d_plot_invert_scattering.py` (``plot_invert_scattering.py``)                             | 01:57.659 | 0.0 MB |
+| :ref:`sphx_glr_gallery_2d_plot_invert_scattering.py` (``plot_invert_scattering.py``)                             | 01:49.994 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_2d_plot_filters.py` (``plot_filters.py``)                                                 | 00:02.699 | 0.0 MB |
+| :ref:`sphx_glr_gallery_2d_plot_filters.py` (``plot_filters.py``)                                                 | 00:02.342 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_2d_plot_scattering_disk.py` (``plot_scattering_disk.py``)                                 | 00:01.826 | 0.0 MB |
+| :ref:`sphx_glr_gallery_2d_plot_scattering_disk.py` (``plot_scattering_disk.py``)                                 | 00:01.794 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_gallery_2d_cifar.py` (``cifar.py``)                                                               | 00:00.000 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------+-----------+--------+
