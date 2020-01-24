@@ -41,6 +41,7 @@ Since kymatio handles PyTorch arrays, we first import `torch`.
 
 
 
+
 We will be constructing a logistic regression classifier on top of the
 scattering coefficients, so we need some of the neural network tools from
 `torch.nn` and the Adam optimizer from `torch.optim`.
@@ -51,6 +52,7 @@ scattering coefficients, so we need some of the neural network tools from
 
     from torch.nn import Linear, NLLLoss, LogSoftmax, Sequential
     from torch.optim import Adam
+
 
 
 
@@ -75,6 +77,7 @@ To handle audio file I/O, we import `os` and `scipy.io.wavfile`. We also need
 
 
 
+
 To evaluate our results, we need to form a confusion matrix using
 scikit-learn and display them using `matplotlib`.
 
@@ -84,6 +87,7 @@ scikit-learn and display them using `matplotlib`.
 
     from sklearn.metrics import confusion_matrix
     import matplotlib.pyplot as plt
+
 
 
 
@@ -102,6 +106,7 @@ class is what lets us calculate the scattering transform, while the
 
     from kymatio import Scattering1D
     from kymatio.datasets import fetch_fsdd
+
 
 
 
@@ -129,6 +134,7 @@ little over a second.
 
 
 
+
 Maximum scale 2**J of the scattering transform (here, about 30 milliseconds)
 and the number of wavelets per octave.
 
@@ -137,6 +143,7 @@ and the number of wavelets per octave.
 
     J = 8
     Q = 12
+
 
 
 
@@ -159,12 +166,14 @@ coefficients are very close to zero.
 
 
 
+
 If a GPU is available, let's use it!
 
 
 .. code-block:: default
 
     use_cuda = torch.cuda.is_available()
+
 
 
 
@@ -182,6 +191,15 @@ For reproducibility, we fix the seed of the random number generator.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <torch._C.Generator object at 0x7f7fec7a0f50>
 
 
 
@@ -208,6 +226,7 @@ on disk.
 
 
 
+
 Set up Tensors to hold the audio signals (`x_all`), the labels (`y_all`), and
 whether the signal is in the train or test set (`subset`).
 
@@ -217,6 +236,7 @@ whether the signal is in the train or test set (`subset`).
     x_all = torch.zeros(len(files), T, dtype=torch.float32)
     y_all = torch.zeros(len(files), dtype=torch.int64)
     subset = torch.zeros(len(files), dtype=torch.int64)
+
 
 
 
@@ -270,6 +290,7 @@ their labels are in `y_all`.
 
 
 
+
 Log-scattering transform
 ------------------------
 We now create the `Scattering1D` object that will be used to calculate the
@@ -279,6 +300,7 @@ scattering coefficients.
 .. code-block:: default
 
     scattering = Scattering1D(J, T, Q)
+
 
 
 
@@ -303,12 +325,14 @@ the GPU by calling its `cuda()` method. The data is similarly transferred.
 
 
 
+
 Compute the scattering transform for all signals in the dataset.
 
 
 .. code-block:: default
 
     Sx_all = scattering.forward(x_all)
+
 
 
 
@@ -331,6 +355,7 @@ the scattering Tensor.
 
 
 
+
 To increase discriminability, we take the logarithm of the scattering
 coefficients (after adding a small constant to make sure nothing blows up
 when scattering coefficients are close to zero).
@@ -346,6 +371,7 @@ when scattering coefficients are close to zero).
 
 
 
+
 Finally, we average along the last dimension (time) to get a time-shift
 invariant representation.
 
@@ -353,6 +379,7 @@ invariant representation.
 .. code-block:: default
 
     Sx_all = torch.mean(Sx_all, dim=-1)
+
 
 
 
@@ -379,6 +406,7 @@ and the associated labels.
 
 
 
+
 Standardize the data to have mean zero and unit variance. Note that we need
 to apply the same transformation to the test data later, so we save the
 mean and standard deviation Tensors.
@@ -389,6 +417,7 @@ mean and standard deviation Tensors.
     mu_tr = Sx_tr.mean(dim=0)
     std_tr = Sx_tr.std(dim=0)
     Sx_tr = (Sx_tr - mu_tr) / std_tr
+
 
 
 
@@ -414,6 +443,7 @@ Adam with a negative log-likelihood loss.
 
 
 
+
 As before, if we're on a GPU, transfer the model and the loss function onto
 the device.
 
@@ -423,6 +453,7 @@ the device.
     if use_cuda:
         model = model.cuda()
         criterion = criterion.cuda()
+
 
 
 
@@ -450,6 +481,7 @@ procedure.
 
 
 
+
 Given these parameters, we compute the total number of batches.
 
 
@@ -457,6 +489,7 @@ Given these parameters, we compute the total number of batches.
 
     nsamples = Sx_tr.shape[0]
     nbatches = nsamples // batch_size
+
 
 
 
@@ -509,56 +542,58 @@ Now we're ready to train the classifier.
 
  .. code-block:: none
 
-    Epoch 0, average loss = 0.819, accuracy = 0.803
-    Epoch 1, average loss = 0.554, accuracy = 0.898
-    Epoch 2, average loss = 0.435, accuracy = 0.924
-    Epoch 3, average loss = 0.370, accuracy = 0.930
-    Epoch 4, average loss = 0.322, accuracy = 0.943
-    Epoch 5, average loss = 0.281, accuracy = 0.952
-    Epoch 6, average loss = 0.262, accuracy = 0.951
-    Epoch 7, average loss = 0.248, accuracy = 0.951
-    Epoch 8, average loss = 0.225, accuracy = 0.957
-    Epoch 9, average loss = 0.207, accuracy = 0.959
-    Epoch 10, average loss = 0.191, accuracy = 0.966
-    Epoch 11, average loss = 0.179, accuracy = 0.968
-    Epoch 12, average loss = 0.175, accuracy = 0.964
-    Epoch 13, average loss = 0.161, accuracy = 0.974
-    Epoch 14, average loss = 0.150, accuracy = 0.974
-    Epoch 15, average loss = 0.147, accuracy = 0.974
-    Epoch 16, average loss = 0.141, accuracy = 0.973
-    Epoch 17, average loss = 0.134, accuracy = 0.974
-    Epoch 18, average loss = 0.129, accuracy = 0.977
-    Epoch 19, average loss = 0.123, accuracy = 0.978
-    Epoch 20, average loss = 0.119, accuracy = 0.979
-    Epoch 21, average loss = 0.114, accuracy = 0.981
-    Epoch 22, average loss = 0.110, accuracy = 0.979
-    Epoch 23, average loss = 0.105, accuracy = 0.983
+    Epoch 0, average loss = 0.801, accuracy = 0.824
+    Epoch 1, average loss = 0.550, accuracy = 0.897
+    Epoch 2, average loss = 0.438, accuracy = 0.924
+    Epoch 3, average loss = 0.371, accuracy = 0.928
+    Epoch 4, average loss = 0.322, accuracy = 0.941
+    Epoch 5, average loss = 0.284, accuracy = 0.945
+    Epoch 6, average loss = 0.257, accuracy = 0.953
+    Epoch 7, average loss = 0.242, accuracy = 0.949
+    Epoch 8, average loss = 0.215, accuracy = 0.959
+    Epoch 9, average loss = 0.203, accuracy = 0.964
+    Epoch 10, average loss = 0.191, accuracy = 0.967
+    Epoch 11, average loss = 0.178, accuracy = 0.969
+    Epoch 12, average loss = 0.169, accuracy = 0.971
+    Epoch 13, average loss = 0.159, accuracy = 0.972
+    Epoch 14, average loss = 0.151, accuracy = 0.975
+    Epoch 15, average loss = 0.144, accuracy = 0.973
+    Epoch 16, average loss = 0.139, accuracy = 0.977
+    Epoch 17, average loss = 0.132, accuracy = 0.978
+    Epoch 18, average loss = 0.127, accuracy = 0.977
+    Epoch 19, average loss = 0.125, accuracy = 0.977
+    Epoch 20, average loss = 0.118, accuracy = 0.978
+    Epoch 21, average loss = 0.116, accuracy = 0.980
+    Epoch 22, average loss = 0.109, accuracy = 0.981
+    Epoch 23, average loss = 0.104, accuracy = 0.984
     Epoch 24, average loss = 0.103, accuracy = 0.982
-    Epoch 25, average loss = 0.100, accuracy = 0.983
-    Epoch 26, average loss = 0.097, accuracy = 0.984
-    Epoch 27, average loss = 0.094, accuracy = 0.983
-    Epoch 28, average loss = 0.090, accuracy = 0.986
-    Epoch 29, average loss = 0.089, accuracy = 0.984
-    Epoch 30, average loss = 0.085, accuracy = 0.986
-    Epoch 31, average loss = 0.083, accuracy = 0.987
-    Epoch 32, average loss = 0.081, accuracy = 0.988
-    Epoch 33, average loss = 0.079, accuracy = 0.990
-    Epoch 34, average loss = 0.079, accuracy = 0.986
-    Epoch 35, average loss = 0.075, accuracy = 0.989
-    Epoch 36, average loss = 0.072, accuracy = 0.989
-    Epoch 37, average loss = 0.071, accuracy = 0.990
-    Epoch 38, average loss = 0.069, accuracy = 0.991
-    Epoch 39, average loss = 0.068, accuracy = 0.988
-    Epoch 40, average loss = 0.067, accuracy = 0.989
-    Epoch 41, average loss = 0.066, accuracy = 0.992
-    Epoch 42, average loss = 0.065, accuracy = 0.990
-    Epoch 43, average loss = 0.061, accuracy = 0.993
-    Epoch 44, average loss = 0.062, accuracy = 0.994
+    Epoch 25, average loss = 0.097, accuracy = 0.983
+    Epoch 26, average loss = 0.095, accuracy = 0.983
+    Epoch 27, average loss = 0.094, accuracy = 0.982
+    Epoch 28, average loss = 0.091, accuracy = 0.986
+    Epoch 29, average loss = 0.088, accuracy = 0.988
+    Epoch 30, average loss = 0.089, accuracy = 0.984
+    Epoch 31, average loss = 0.085, accuracy = 0.988
+    Epoch 32, average loss = 0.080, accuracy = 0.988
+    Epoch 33, average loss = 0.079, accuracy = 0.987
+    Epoch 34, average loss = 0.076, accuracy = 0.989
+    Epoch 35, average loss = 0.075, accuracy = 0.988
+    Epoch 36, average loss = 0.074, accuracy = 0.987
+    Epoch 37, average loss = 0.070, accuracy = 0.991
+    Epoch 38, average loss = 0.071, accuracy = 0.990
+    Epoch 39, average loss = 0.068, accuracy = 0.990
+    Epoch 40, average loss = 0.066, accuracy = 0.991
+    Epoch 41, average loss = 0.064, accuracy = 0.989
+    Epoch 42, average loss = 0.062, accuracy = 0.991
+    Epoch 43, average loss = 0.061, accuracy = 0.992
+    Epoch 44, average loss = 0.060, accuracy = 0.991
     Epoch 45, average loss = 0.060, accuracy = 0.991
-    Epoch 46, average loss = 0.060, accuracy = 0.991
-    Epoch 47, average loss = 0.058, accuracy = 0.991
-    Epoch 48, average loss = 0.056, accuracy = 0.993
-    Epoch 49, average loss = 0.057, accuracy = 0.992
+    Epoch 46, average loss = 0.057, accuracy = 0.992
+    Epoch 47, average loss = 0.057, accuracy = 0.992
+    Epoch 48, average loss = 0.055, accuracy = 0.991
+    Epoch 49, average loss = 0.053, accuracy = 0.993
+
+
 
 
 Now that our network is trained, let's test it!
@@ -577,6 +612,7 @@ associated labels.
 
 
 
+
 Use the mean and standard deviation calculated on the training data to 
 standardize the testing data, as well.
 
@@ -584,6 +620,7 @@ standardize the testing data, as well.
 .. code-block:: default
 
     Sx_te = (Sx_te - mu_tr) / std_tr
+
 
 
 
@@ -618,7 +655,9 @@ loss.
 
  .. code-block:: none
 
-    TEST, average loss = 0.123, accuracy = 0.955
+    TEST, average loss = 0.111, accuracy = 0.970
+
+
 
 
 Plotting the classification accuracy as a confusion matrix
@@ -655,9 +694,10 @@ classified, anything off the diagonal is wrong).
 
 
 
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  39.705 seconds)
+   **Total running time of the script:** ( 0 minutes  33.357 seconds)
 
 
 .. _sphx_glr_download_gallery_1d_plot_classif.py:
@@ -685,4 +725,4 @@ classified, anything off the diagonal is wrong).
 
  .. rst-class:: sphx-glr-signature
 
-    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.readthedocs.io>`_
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

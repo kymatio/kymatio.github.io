@@ -44,9 +44,9 @@
 <span id="sphx-glr-gallery-2d-cifar-resnet-py"></span><h1>Classification on CIFAR10 (ResNet)<a class="headerlink" href="#classification-on-cifar10-resnet" title="Permalink to this headline">¶</a></h1>
 <p>Based on pytorch example for CIFAR10</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.optim</span>
-<span class="kn">from</span> <span class="nn">torchvision</span> <span class="k">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
-<span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">kymatio.datasets</span> <span class="k">as</span> <span class="nn">scattering_datasets</span>
@@ -60,7 +60,7 @@
 
 
 <span class="k">class</span> <span class="nc">BasicBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplanes</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplanes</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BasicBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">conv3x3</span><span class="p">(</span><span class="n">inplanes</span><span class="p">,</span> <span class="n">planes</span><span class="p">,</span> <span class="n">stride</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">planes</span><span class="p">)</span>
@@ -90,7 +90,7 @@
 
 
 <span class="k">class</span> <span class="nc">Scattering2dResNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span>  <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span>  <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Scattering2dResNet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inplanes</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">k</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ichannels</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">k</span>
@@ -250,13 +250,13 @@
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-cifar-resnet-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/6994024abc9ac764dadd2cadbc4349d7/cifar_resnet.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cifar_resnet.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/a91fae9711a96c7f001caf7e5494e9c9/cifar_resnet.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cifar_resnet.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/61cb36eb547f372067c4f991cb822f44/cifar_resnet.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cifar_resnet.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/91bd86a3bee7579b17ac8b07fabb5da5/cifar_resnet.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cifar_resnet.ipynb</span></code></a></p>
 </div>
 </div>
-<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 
 
@@ -313,7 +313,7 @@
 <li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering.html">Inverting scattering via mse</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_mnist_classify.html">Classification of Few Sample MNIST with Scattering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mnist_classify.html">Classification of Few Sample MNIST with Scattering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST.html">Regularized inverse of a scattering transform on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar.html">Classification on CIFAR10</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Classification on CIFAR10 (ResNet)</a></li>
@@ -359,7 +359,7 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

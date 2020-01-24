@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Classification on CIFAR10" href="cifar.html" />
-    <link rel="prev" title="Classification of Few Sample MNIST with Scattering" href="plot_mnist_classify.html" />
+    <link rel="prev" title="Classification of Few Sample MNIST with Scattering" href="mnist_classify.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -59,18 +59,18 @@ The two epochs take roughly 5 minutes in a Quadro M6000.</p>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
-<span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
-<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="k">import</span> <span class="n">Variable</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">torchvision</span> <span class="k">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">torch.autograd</span> <span class="kn">import</span> <span class="n">Variable</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
 
-<span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span> <span class="k">as</span> <span class="n">Scattering</span>
-<span class="kn">from</span> <span class="nn">kymatio.caching</span> <span class="k">import</span> <span class="n">get_cache_dir</span>
-<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="k">import</span> <span class="n">get_dataset_dir</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span> <span class="k">as</span> <span class="n">Scattering</span>
+<span class="kn">from</span> <span class="nn">kymatio.caching</span> <span class="kn">import</span> <span class="n">get_cache_dir</span>
+<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">get_dataset_dir</span>
 
 
 <span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_input_channels</span><span class="p">,</span> <span class="n">num_hidden_channels</span><span class="p">,</span> <span class="n">num_output_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">filter_size</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_input_channels</span><span class="p">,</span> <span class="n">num_hidden_channels</span><span class="p">,</span> <span class="n">num_output_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">filter_size</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Generator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_input_channels</span> <span class="o">=</span> <span class="n">num_input_channels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_hidden_channels</span> <span class="o">=</span> <span class="n">num_hidden_channels</span>
@@ -207,13 +207,13 @@ The two epochs take roughly 5 minutes in a Quadro M6000.</p>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-regularized-inverse-scattering-mnist-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/f661b752ed7ea43567db9fbe25dcec45/regularized_inverse_scattering_MNIST.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">regularized_inverse_scattering_MNIST.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/0228440201dc1ea278599753115e3bc4/regularized_inverse_scattering_MNIST.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">regularized_inverse_scattering_MNIST.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/6a17a0df055e10123e6dd72808fe742c/regularized_inverse_scattering_MNIST.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">regularized_inverse_scattering_MNIST.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/7985bdb000f0b6d6e82ec31f1dfd4ec9/regularized_inverse_scattering_MNIST.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">regularized_inverse_scattering_MNIST.ipynb</span></code></a></p>
 </div>
 </div>
-<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 
 
@@ -270,7 +270,7 @@ The two epochs take roughly 5 minutes in a Quadro M6000.</p>
 <li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering.html">Inverting scattering via mse</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_mnist_classify.html">Classification of Few Sample MNIST with Scattering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mnist_classify.html">Classification of Few Sample MNIST with Scattering</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Regularized inverse of a scattering transform on MNIST</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar.html">Classification on CIFAR10</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar_resnet.html">Classification on CIFAR10 (ResNet)</a></li>
@@ -284,7 +284,7 @@ The two epochs take roughly 5 minutes in a Quadro M6000.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">2D examples</a><ul>
-      <li>Previous: <a href="plot_mnist_classify.html" title="previous chapter">Classification of Few Sample MNIST with Scattering</a></li>
+      <li>Previous: <a href="mnist_classify.html" title="previous chapter">Classification of Few Sample MNIST with Scattering</a></li>
       <li>Next: <a href="cifar.html" title="next chapter">Classification on CIFAR10</a></li>
   </ul></li>
   </ul></li>
@@ -316,7 +316,7 @@ The two epochs take roughly 5 minutes in a Quadro M6000.</p>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

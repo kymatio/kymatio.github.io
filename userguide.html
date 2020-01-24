@@ -69,13 +69,13 @@ there exists some <img class="math" src="_images/math/0ad7b30534898f253002222f99
 <div class="math">
 <p><img src="_images/math/48d7ebcfe310122138a6e3cdd29ace4284d7dfb6.png" alt="Sx[\lambda_1,...,\lambda_k] = |\psi_{\lambda_k} \star ...| \psi_{\lambda_1} \star x|...|"/></p>
 </div><p>For a general treatment of the scattering transform, see
-<a class="reference internal" href="#mallat2012group" id="id2">[Mal12]</a>. More specific descriptions of the scattering transform
-are found in <a class="reference internal" href="#anden2014deep" id="id3">[AndenM14]</a> for 1D, <a class="reference internal" href="#bruna2013invariant" id="id4">[BM13]</a> for 2D,
-and <a class="reference internal" href="#eickenberg2017solid" id="id5">[EEHM17]</a> for 3D.</p>
+<a class="bibtex reference internal" href="#mallat2012group" id="id2">[Mal12]</a>. More specific descriptions of the scattering transform
+are found in <a class="bibtex reference internal" href="#anden2014deep" id="id3">[AndenM14]</a> for 1D, <a class="bibtex reference internal" href="#bruna2013invariant" id="id4">[BM13]</a> for 2D,
+and <a class="bibtex reference internal" href="#eickenberg2017solid" id="id5">[EEHM17]</a> for 3D.</p>
 </div>
 <div class="section" id="practical-implementation">
 <h2>Practical implementation<a class="headerlink" href="#practical-implementation" title="Permalink to this headline">¶</a></h2>
-<p>Previous implementations, such as ScatNet <a class="reference internal" href="#anden2014scatnet" id="id6">[AndenSM+14]</a>, of the
+<p>Previous implementations, such as ScatNet <a class="bibtex reference internal" href="#anden2014scatnet" id="id6">[AndenSM+14]</a>, of the
 scattering transform relied on computing the scattering coefficients layer by
 layer. In Kymatio, we instead traverse the scattering transform tree in a
 depth-first fashion. This limits memory usage and makes the implementation
@@ -91,7 +91,7 @@ by layer), Kymatio performs a depth-first traversal.</span><a class="headerlink"
 <div class="section" id="d">
 <h3>1-D<a class="headerlink" href="#d" title="Permalink to this headline">¶</a></h3>
 <p>The 1D scattering coefficients computed by Kymatio are similar to those of
-ScatNet <a class="reference internal" href="#anden2014scatnet" id="id7">[AndenSM+14]</a>, but do not coincide exactly. This is due to a
+ScatNet <a class="bibtex reference internal" href="#anden2014scatnet" id="id7">[AndenSM+14]</a>, but do not coincide exactly. This is due to a
 slightly different choice of filters, subsampling rules, and coefficient
 selection criteria. The resulting coefficients, however, have a comparable
 performance for classification and regression tasks.</p>
@@ -99,7 +99,7 @@ performance for classification and regression tasks.</p>
 <div class="section" id="id8">
 <h3>2-D<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <p>The 2D implementation in this package provides scattering coefficients that
-exactly match those of ScatNet <a class="reference internal" href="#anden2014scatnet" id="id9">[AndenSM+14]</a>.</p>
+exactly match those of ScatNet <a class="bibtex reference internal" href="#anden2014scatnet" id="id9">[AndenSM+14]</a>.</p>
 </div>
 <div class="section" id="id10">
 <h3>3-D<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
@@ -134,7 +134,7 @@ size:</p>
 <h2>Switching from CPU to GPU<a class="headerlink" href="#switching-from-cpu-to-gpu" title="Permalink to this headline">¶</a></h2>
 <p>When initialized, a scattering transform object is stored on the CPU:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
 
 <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
 </pre></div>
@@ -208,7 +208,7 @@ optimize this backend.</p></li>
 <div class="section" id="d-backend">
 <h3>1D backend<a class="headerlink" href="#d-backend" title="Permalink to this headline">¶</a></h3>
 <p>We compared our implementation with that of the ScatNet MATLAB package
-<a class="reference internal" href="#anden2014scatnet" id="id14">[AndenSM+14]</a> with similar settings. The following table shows the
+<a class="bibtex reference internal" href="#anden2014scatnet" id="id14">[AndenSM+14]</a> with similar settings. The following table shows the
 average computation time for a batch of size <img class="math" src="_images/math/1788c3bee7a7b9fa56ba0fb3c20a1b08b2edff21.png" alt="64 \times 65536"/>. This
 corresponds to <img class="math" src="_images/math/f85e137e59f95c4ef5b9d6da574312deef7cd57a.png" alt="64"/> signals containing <img class="math" src="_images/math/9571d4adc27712022c9dda75e5cb9aa6cac3cc9f.png" alt="65536"/>, or a total of about
 <img class="math" src="_images/math/6fffb65400fe63ee2a0c1cdb010af4fcb9917f5e.png" alt="95"/> seconds of audio sampled at <img class="math" src="_images/math/56a594d65dd24bb104ffaaa500146979f65467e6.png" alt="44.1~\mathrm{kHz}"/>.</p>
@@ -223,7 +223,7 @@ corresponds to <img class="math" src="_images/math/f85e137e59f95c4ef5b9d6da57431
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>ScatNet <a class="reference internal" href="#anden2014scatnet" id="id15">[AndenSM+14]</a></p></td>
+<tr class="row-even"><td><p>ScatNet <a class="bibtex reference internal" href="#anden2014scatnet" id="id15">[AndenSM+14]</a></p></td>
 <td><p>1.65</p></td>
 </tr>
 <tr class="row-odd"><td><p>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</p></td>
@@ -250,8 +250,8 @@ numbers to improve in the near future.</p>
 <div class="section" id="id16">
 <h3>2D backend<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <p>We compared our implementation the ScatNetLight MATLAB package
-<a class="reference internal" href="#oyallon-2015-cvpr" id="id17">[OM15]</a> and a previous PyTorch implementation, <em>PyScatWave</em>
-<a class="reference internal" href="#id21" id="id18">[OZH+18]</a>. The following table shows the average computation time for a
+<a class="bibtex reference internal" href="#oyallon-2015-cvpr" id="id17">[OM15]</a> and a previous PyTorch implementation, <em>PyScatWave</em>
+<a class="bibtex reference internal" href="#id21" id="id18">[OZH+18]</a>. The following table shows the average computation time for a
 batch of size <img class="math" src="_images/math/1f95f941438cb78f46e50e58bbe8c2325c88a7af.png" alt="128 \times 3 \times 256 \times 256"/>. This corresponds to
 <img class="math" src="_images/math/c4293dcefeb893a0916cec458131373fdeb8f758.png" alt="128"/> three-channel (e.g., RGB) images of size <img class="math" src="_images/math/343aa0d15ca79bd1c1b7837e6b3a5828812dbe77.png" alt="256 \times 256"/>.</p>
 <table class="docutils align-default">
@@ -265,7 +265,7 @@ batch of size <img class="math" src="_images/math/1f95f941438cb78f46e50e58bbe8c2
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>MATLAB <a class="reference internal" href="#oyallon-2015-cvpr" id="id19">[OM15]</a></p></td>
+<tr class="row-even"><td><p>MATLAB <a class="bibtex reference internal" href="#oyallon-2015-cvpr" id="id19">[OM15]</a></p></td>
 <td><p>&gt;200</p></td>
 </tr>
 <tr class="row-odd"><td><p>Kymatio (<code class="docutils literal notranslate"><span class="pre">torch</span></code> backend, CPU)</p></td>
@@ -330,25 +330,25 @@ numbers to improve in the near future.</p>
 <p>Andreux M., Angles T., Exarchakis G., Leonarduzzi R., Rochette G., Thiry L., Zarka J., Mallat S., Andén J., Belilovsky E., Bruna J., Lostanlen V., Hirn M. J., Oyallon E., Zhang S., Cella C., Eickenberg M. (2019). Kymatio: Scattering Transforms in Python. arXiv preprint arXiv:1812.11214. <a class="reference external" href="https://arxiv.org/abs/1812.11214">(paper)</a></p>
 <p class="rubric">References</p>
 <p id="bibtex-bibliography-userguide-0"><dl class="citation">
-<dt class="label" id="anden2014deep"><span class="brackets"><a class="fn-backref" href="#id3">AndenM14</a></span></dt>
+<dt class="bibtex label" id="anden2014deep"><span class="brackets"><a class="fn-backref" href="#id3">AndenM14</a></span></dt>
 <dd><p>J. Andén and S. Mallat. Deep scattering spectrum. <em>IEEE Trans. Signal Process.</em>, 62:4114–4128, 2014.</p>
 </dd>
-<dt class="label" id="anden2014scatnet"><span class="brackets">AndenSM+14</span><span class="fn-backref">(<a href="#id6">1</a>,<a href="#id7">2</a>,<a href="#id9">3</a>,<a href="#id14">4</a>,<a href="#id15">5</a>)</span></dt>
+<dt class="bibtex label" id="anden2014scatnet"><span class="brackets">AndenSM+14</span><span class="fn-backref">(<a href="#id6">1</a>,<a href="#id7">2</a>,<a href="#id9">3</a>,<a href="#id14">4</a>,<a href="#id15">5</a>)</span></dt>
 <dd><p>J Andén, L Sifre, S Mallat, M Kapoko, V Lostanlen, and E Oyallon. Scatnet. <em><span>Computer Software. Available: <a class="reference external" href="#"></a></span>http://www.di.ens.fr/data/software/scatnet</em>, 2014.</p>
 </dd>
-<dt class="label" id="bruna2013invariant"><span class="brackets"><a class="fn-backref" href="#id4">BM13</a></span></dt>
+<dt class="bibtex label" id="bruna2013invariant"><span class="brackets"><a class="fn-backref" href="#id4">BM13</a></span></dt>
 <dd><p>J. Bruna and S. Mallat. Invariant scattering convolution networks. <em>IEEE Trans. Pattern Anal. Mach. Intell.</em>, 35(8):1872–1886, 2013.</p>
 </dd>
-<dt class="label" id="eickenberg2017solid"><span class="brackets"><a class="fn-backref" href="#id5">EEHM17</a></span></dt>
+<dt class="bibtex label" id="eickenberg2017solid"><span class="brackets"><a class="fn-backref" href="#id5">EEHM17</a></span></dt>
 <dd><p>Michael Eickenberg, Georgios Exarchakis, Matthew Hirn, and Stéphane Mallat. Solid harmonic wavelet scattering: predicting quantum molecular energy from invariant descriptors of 3d electronic densities. In <em>Advances in Neural Information Processing Systems</em>, 6540–6549. 2017.</p>
 </dd>
-<dt class="label" id="mallat2012group"><span class="brackets"><a class="fn-backref" href="#id2">Mal12</a></span></dt>
+<dt class="bibtex label" id="mallat2012group"><span class="brackets"><a class="fn-backref" href="#id2">Mal12</a></span></dt>
 <dd><p>Stéphane Mallat. Group invariant scattering. <em>Communications on Pure and Applied Mathematics</em>, 65(10):1331–1398, 2012.</p>
 </dd>
-<dt class="label" id="id21"><span class="brackets"><a class="fn-backref" href="#id18">OZH+18</a></span></dt>
+<dt class="bibtex label" id="id21"><span class="brackets"><a class="fn-backref" href="#id18">OZH+18</a></span></dt>
 <dd><p>E. Oyallon, S. Zagoruyko, G. Huang, N. Komodakis, S. Lacoste-Julien, M. B. Blaschko, and E. Belilovsky. Scattering networks for hybrid representation learning. <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em>, ():1–1, 2018. <a class="reference external" href="https://doi.org/10.1109/TPAMI.2018.2855738">doi:10.1109/TPAMI.2018.2855738</a>.</p>
 </dd>
-<dt class="label" id="oyallon-2015-cvpr"><span class="brackets">OM15</span><span class="fn-backref">(<a href="#id17">1</a>,<a href="#id19">2</a>)</span></dt>
+<dt class="bibtex label" id="oyallon-2015-cvpr"><span class="brackets">OM15</span><span class="fn-backref">(<a href="#id17">1</a>,<a href="#id19">2</a>)</span></dt>
 <dd><p>Edouard Oyallon and Stephane Mallat. Deep roto-translation scattering for object classification. In <em>The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)</em>. June 2015.</p>
 </dd>
 </dl>
@@ -453,7 +453,7 @@ numbers to improve in the near future.</p>
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

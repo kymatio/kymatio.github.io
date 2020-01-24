@@ -75,7 +75,7 @@ implements the 2D scattering transform. It then creates an instance of this
 class to compute the scattering transform at scale <code class="docutils literal notranslate"><span class="pre">J</span> <span class="pre">=</span> <span class="pre">2</span></code> of a 32x32 image
 consisting of Gaussian white noise:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">kymatio</span> <span class="k">import</span> <span class="n">Scattering2D</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
 <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
 <span class="n">Sx</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -221,7 +221,7 @@ performance, see the <a class="reference internal" href="userguide.html#backend-
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -41,10 +41,10 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HarmonicScattering3D&#39;</span><span class="p">]</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">compute_integrals</span><span class="p">,</span> <span class="n">subsample</span><span class="p">,</span> <span class="n">_apply_filters</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">compute_integrals</span><span class="p">,</span> <span class="n">subsample</span><span class="p">,</span> <span class="n">_apply_filters</span>
 
-<span class="kn">from</span> <span class="nn">.backend</span> <span class="k">import</span> <span class="n">cdgmm3d</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">complex_modulus</span><span class="p">,</span> <span class="n">to_complex</span>
-<span class="kn">from</span> <span class="nn">.filter_bank</span> <span class="k">import</span> <span class="n">solid_harmonic_filter_bank</span><span class="p">,</span> <span class="n">gaussian_filter_bank</span>
+<span class="kn">from</span> <span class="nn">.backend</span> <span class="kn">import</span> <span class="n">cdgmm3d</span><span class="p">,</span> <span class="n">fft</span><span class="p">,</span> <span class="n">complex_modulus</span><span class="p">,</span> <span class="n">to_complex</span>
+<span class="kn">from</span> <span class="nn">.filter_bank</span> <span class="kn">import</span> <span class="n">solid_harmonic_filter_bank</span><span class="p">,</span> <span class="n">gaussian_filter_bank</span>
 
 
 <div class="viewcode-block" id="HarmonicScattering3D"><a class="viewcode-back" href="../../../codereference.html#kymatio.HarmonicScattering3D">[docs]</a><span class="k">class</span> <span class="nc">HarmonicScattering3D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -90,7 +90,7 @@
 <span class="sd">        integration. Used with method == &#39;standard&#39;, method == &#39;integral&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sigma_0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                  <span class="n">rotation_covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">integral_powers</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">)):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">HarmonicScattering3D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -509,7 +509,7 @@
       &copy;2018, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
