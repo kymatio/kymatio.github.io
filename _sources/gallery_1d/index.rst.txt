@@ -14,26 +14,6 @@ class, ``Scattering1D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Plot the 1D wavelet filters">
-
-.. only:: html
-
- .. figure:: /gallery_1d/images/thumb/sphx_glr_plot_filters_thumb.png
-
-     :ref:`sphx_glr_gallery_1d_plot_filters.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /gallery_1d/plot_filters
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Compute the scattering transform of a speech recording">
 
 .. only:: html
