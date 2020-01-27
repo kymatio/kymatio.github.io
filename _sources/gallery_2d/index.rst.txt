@@ -151,6 +151,26 @@ class, ``Scattering2D``.
    :hidden:
 
    /gallery_2d/cifar_resnet
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10 ">
+
+.. only:: html
+
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_cifar_small_sample_thumb.png
+
+     :ref:`sphx_glr_gallery_2d_cifar_small_sample.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/cifar_small_sample
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

@@ -108,7 +108,8 @@ Based on pytorch example for MNIST
             test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset)))
 
-    def main():
+    if __name__ == '__main__':
+
         """Train a simple Hybrid Scattering + CNN model on CIFAR.
 
             Three models are demoed:
@@ -189,8 +190,6 @@ Based on pytorch example for MNIST
 
 
 
-    if __name__ == '__main__':
-        main()
 
 
 .. rst-class:: sphx-glr-timing
