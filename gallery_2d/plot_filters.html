@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Plot the 2D wavelet filters &#8212; kymatio 0.2.0-dev documentation</title>
+    <title>Plot the 2D wavelet filters &#8212; kymatio 0.2.a0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -16,8 +16,8 @@
     <link rel="shortcut icon" href="../_static/kymatio.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Inverting scattering via mse" href="plot_invert_scattering.html" />
-    <link rel="prev" title="2D scattering transform benchmark" href="compute_speed.html" />
+    <link rel="next" title="Scattering disk display" href="plot_scattering_disk.html" />
+    <link rel="prev" title="Scikit-learn transformer example" href="plot_sklearn.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -87,7 +87,7 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">)</span>
 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="k">for</span> <span class="nb">filter</span> <span class="ow">in</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;psi&#39;</span><span class="p">]:</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">filter_c</span> <span class="o">=</span> <span class="n">fft2</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">filter_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">filter_c</span><span class="p">)</span>
     <span class="n">axs</span><span class="p">[</span><span class="n">i</span> <span class="o">//</span> <span class="n">L</span><span class="p">,</span> <span class="n">i</span> <span class="o">%</span> <span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">colorize</span><span class="p">(</span><span class="n">filter_c</span><span class="p">))</span>
@@ -113,7 +113,7 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="s1">&#39;gray_r&#39;</span><span class="p">)</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">filters_set</span><span class="p">[</span><span class="s1">&#39;phi&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="n">filter_c</span> <span class="o">=</span> <span class="n">fft2</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 <span class="n">filter_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">filter_c</span><span class="p">)</span>
@@ -127,7 +127,7 @@
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_plot_filters_0021.png" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_filters_0021.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.264 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.268 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-plot-filters-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/267f2ee30128808ce0f42cdf3c264901/plot_filters.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_filters.py</span></code></a></p>
@@ -156,7 +156,7 @@
 
 
 
-<p class="blurb">Wavelet Scattering in PyTorch</p>
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
 
 
 
@@ -170,33 +170,27 @@
 
 
 
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
-    <img
-        alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
-        src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
-    />
-</a>
-</p>
-
-
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">2D examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="compute_speed.html">2D scattering transform benchmark</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Plot the 2D wavelet filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering.html">Inverting scattering via mse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mnist_keras.html">Classification of MNIST with scattering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sklearn.html">Scikit-learn transformer example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Plot the 2D wavelet filters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#initial-parameters-of-the-filter-bank">Initial parameters of the filter bank</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#imshow-complex-images">Imshow complex images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bandpass-filters">Bandpass filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lowpass-filter">Lowpass filter</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
-<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST.html">Regularized inverse of a scattering transform on MNIST</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cifar.html">Classification on CIFAR10</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cifar_resnet.html">Classification on CIFAR10 (ResNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering_torch.html">Inverting scattering via mse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST_torch.html">Regularized inverse of a scattering transform on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_torch.html">Classification on CIFAR10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_resnet_torch.html">Classification on CIFAR10 (ResNet)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar_small_sample.html">Classification on CIFAR10 (ResNet)</a></li>
 </ul>
 </li>
@@ -208,8 +202,8 @@
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="index.html">2D examples</a><ul>
-      <li>Previous: <a href="compute_speed.html" title="previous chapter">2D scattering transform benchmark</a></li>
-      <li>Next: <a href="plot_invert_scattering.html" title="next chapter">Inverting scattering via mse</a></li>
+      <li>Previous: <a href="plot_sklearn.html" title="previous chapter">Scikit-learn transformer example</a></li>
+      <li>Next: <a href="plot_scattering_disk.html" title="next chapter">Scattering disk display</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -237,10 +231,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, The Kymatio Developers.
+      &copy;2018–2020, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

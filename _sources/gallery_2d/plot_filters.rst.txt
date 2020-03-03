@@ -90,7 +90,7 @@ First, we display each wavelet according to its scale and orientation.
     plt.rc('font', family='serif')
     i = 0
     for filter in filters_set['psi']:
-        f = filter[0][..., 0]
+        f = filter[0]
         filter_c = fft2(f)
         filter_c = np.fft.fftshift(filter_c)
         axs[i // L, i % L].imshow(colorize(filter_c))
@@ -127,7 +127,7 @@ We finally display the low-pass filter.
     plt.axis('off')
     plt.set_cmap('gray_r')
 
-    f = filters_set['phi'][0][..., 0]
+    f = filters_set['phi'][0]
 
     filter_c = fft2(f)
     filter_c = np.fft.fftshift(filter_c)
@@ -151,7 +151,7 @@ We finally display the low-pass filter.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.264 seconds)
+   **Total running time of the script:** ( 0 minutes  2.268 seconds)
 
 
 .. _sphx_glr_download_gallery_2d_plot_filters.py:

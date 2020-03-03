@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>2D examples &#8212; kymatio 0.2.0-dev documentation</title>
+    <title>2D examples &#8212; kymatio 0.2.a0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -16,8 +16,8 @@
     <link rel="shortcut icon" href="../_static/kymatio.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2D scattering transform benchmark" href="compute_speed.html" />
-    <link rel="prev" title="Classification of spoken digit recordings" href="../gallery_1d/plot_classif.html" />
+    <link rel="next" title="Classification of MNIST with scattering" href="mnist_keras.html" />
+    <link rel="prev" title="Classification of spoken digit recordings" href="../gallery_1d/plot_classif_torch.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -40,21 +40,21 @@
 <span id="sphx-glr-gallery-2d"></span><h1>2D examples<a class="headerlink" href="#d-examples" title="Permalink to this headline">¶</a></h1>
 <p>These scripts demonstrate the capabilities of the 2D scattering transform
 class, <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code>.</p>
-<div class="sphx-glr-thumbcontainer" tooltip="2D scattering transform benchmark"><div class="figure align-default" id="id1">
-<img alt="../_images/sphx_glr_compute_speed_thumb1.png" src="../_images/sphx_glr_compute_speed_thumb1.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="compute_speed.html#sphx-glr-gallery-2d-compute-speed-py"><span class="std std-ref">2D scattering transform benchmark</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="Classification of MNIST with scattering"><div class="figure align-default" id="id1">
+<img alt="../_images/sphx_glr_mnist_keras_thumb.png" src="../_images/sphx_glr_mnist_keras_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="mnist_keras.html#sphx-glr-gallery-2d-mnist-keras-py"><span class="std std-ref">Classification of MNIST with scattering</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Plot the 2D wavelet filters"><div class="figure align-default" id="id2">
+<div class="sphx-glr-thumbcontainer" tooltip="Scikit-learn transformer example"><div class="figure align-default" id="id2">
+<img alt="../_images/sphx_glr_plot_sklearn_thumb.png" src="../_images/sphx_glr_plot_sklearn_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_sklearn.html#sphx-glr-gallery-2d-plot-sklearn-py"><span class="std std-ref">Scikit-learn transformer example</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Plot the 2D wavelet filters"><div class="figure align-default" id="id3">
 <img alt="../_images/sphx_glr_plot_filters_thumb1.png" src="../_images/sphx_glr_plot_filters_thumb1.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_filters.html#sphx-glr-gallery-2d-plot-filters-py"><span class="std std-ref">Plot the 2D wavelet filters</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="Inverting scattering via mse"><div class="figure align-default" id="id3">
-<img alt="../_images/sphx_glr_plot_invert_scattering_thumb.png" src="../_images/sphx_glr_plot_invert_scattering_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_invert_scattering.html#sphx-glr-gallery-2d-plot-invert-scattering-py"><span class="std std-ref">Inverting scattering via mse</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_filters.html#sphx-glr-gallery-2d-plot-filters-py"><span class="std std-ref">Plot the 2D wavelet filters</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -64,27 +64,33 @@ class, <code class="docutils literal notranslate"><span class="pre">Scattering2D
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a convolutional network to invert the scattering transform at ..."><div class="figure align-default" id="id5">
-<img alt="../_images/sphx_glr_regularized_inverse_scattering_MNIST_thumb.png" src="../_images/sphx_glr_regularized_inverse_scattering_MNIST_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="regularized_inverse_scattering_MNIST.html#sphx-glr-gallery-2d-regularized-inverse-scattering-mnist-py"><span class="std std-ref">Regularized inverse of a scattering transform on MNIST</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="Inverting scattering via mse"><div class="figure align-default" id="id5">
+<img alt="../_images/sphx_glr_plot_invert_scattering_torch_thumb.png" src="../_images/sphx_glr_plot_invert_scattering_torch_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="plot_invert_scattering_torch.html#sphx-glr-gallery-2d-plot-invert-scattering-torch-py"><span class="std std-ref">Inverting scattering via mse</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST "><div class="figure align-default" id="id6">
-<img alt="../_images/sphx_glr_cifar_thumb.png" src="../_images/sphx_glr_cifar_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="cifar.html#sphx-glr-gallery-2d-cifar-py"><span class="std std-ref">Classification on CIFAR10</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a convolutional network to invert the scattering transform at ..."><div class="figure align-default" id="id6">
+<img alt="../_images/sphx_glr_regularized_inverse_scattering_MNIST_torch_thumb.png" src="../_images/sphx_glr_regularized_inverse_scattering_MNIST_torch_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="regularized_inverse_scattering_MNIST_torch.html#sphx-glr-gallery-2d-regularized-inverse-scattering-mnist-torch-py"><span class="std std-ref">Regularized inverse of a scattering transform on MNIST</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10 "><div class="figure align-default" id="id7">
-<img alt="../_images/sphx_glr_cifar_resnet_thumb.png" src="../_images/sphx_glr_cifar_resnet_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="cifar_resnet.html#sphx-glr-gallery-2d-cifar-resnet-py"><span class="std std-ref">Classification on CIFAR10 (ResNet)</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST "><div class="figure align-default" id="id7">
+<img alt="../_images/sphx_glr_cifar_torch_thumb.png" src="../_images/sphx_glr_cifar_torch_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="cifar_torch.html#sphx-glr-gallery-2d-cifar-torch-py"><span class="std std-ref">Classification on CIFAR10</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
 <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10 "><div class="figure align-default" id="id8">
+<img alt="../_images/sphx_glr_cifar_resnet_torch_thumb.png" src="../_images/sphx_glr_cifar_resnet_torch_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="cifar_resnet_torch.html#sphx-glr-gallery-2d-cifar-resnet-torch-py"><span class="std std-ref">Classification on CIFAR10 (ResNet)</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10 "><div class="figure align-default" id="id9">
 <img alt="../_images/sphx_glr_cifar_small_sample_thumb.png" src="../_images/sphx_glr_cifar_small_sample_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="cifar_small_sample.html#sphx-glr-gallery-2d-cifar-small-sample-py"><span class="std std-ref">Classification on CIFAR10 (ResNet)</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="cifar_small_sample.html#sphx-glr-gallery-2d-cifar-small-sample-py"><span class="std std-ref">Classification on CIFAR10 (ResNet)</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -115,7 +121,7 @@ class, <code class="docutils literal notranslate"><span class="pre">Scattering2D
 
 
 
-<p class="blurb">Wavelet Scattering in PyTorch</p>
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
 
 
 
@@ -129,33 +135,21 @@ class, <code class="docutils literal notranslate"><span class="pre">Scattering2D
 
 
 
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/kymatio/kymatio">
-    <img
-        alt="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
-        src="https://secure.travis-ci.org/kymatio/kymatio.svg?branch=master"
-    />
-</a>
-</p>
-
-
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">2D examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="compute_speed.html">2D scattering transform benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mnist_keras.html">Classification of MNIST with scattering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sklearn.html">Scikit-learn transformer example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering.html">Inverting scattering via mse</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
-<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST.html">Regularized inverse of a scattering transform on MNIST</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cifar.html">Classification on CIFAR10</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cifar_resnet.html">Classification on CIFAR10 (ResNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering_torch.html">Inverting scattering via mse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST_torch.html">Regularized inverse of a scattering transform on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_torch.html">Classification on CIFAR10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_resnet_torch.html">Classification on CIFAR10 (ResNet)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cifar_small_sample.html">Classification on CIFAR10 (ResNet)</a></li>
 </ul>
 </li>
@@ -166,8 +160,8 @@ class, <code class="docutils literal notranslate"><span class="pre">Scattering2D
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../gallery_1d/plot_classif.html" title="previous chapter">Classification of spoken digit recordings</a></li>
-      <li>Next: <a href="compute_speed.html" title="next chapter">2D scattering transform benchmark</a></li>
+      <li>Previous: <a href="../gallery_1d/plot_classif_torch.html" title="previous chapter">Classification of spoken digit recordings</a></li>
+      <li>Next: <a href="mnist_keras.html" title="next chapter">Classification of MNIST with scattering</a></li>
   </ul></li>
 </ul>
 </div>
@@ -194,10 +188,10 @@ class, <code class="docutils literal notranslate"><span class="pre">Scattering2D
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, The Kymatio Developers.
+      &copy;2018–2020, The Kymatio Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

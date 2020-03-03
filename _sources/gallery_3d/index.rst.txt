@@ -14,13 +14,13 @@ class, ``HarmonicScattering3D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="3D scattering transform benchmark">
+    <div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a classifier combined with a scattering transform to regress m...">
 
 .. only:: html
 
- .. figure:: /gallery_3d/images/thumb/sphx_glr_compute_speed_thumb.png
+ .. figure:: /gallery_3d/images/thumb/sphx_glr_scattering3d_qm7_torch_thumb.png
 
-     :ref:`sphx_glr_gallery_3d_compute_speed.py`
+     :ref:`sphx_glr_gallery_3d_scattering3d_qm7_torch.py`
 
 .. raw:: html
 
@@ -30,27 +30,7 @@ class, ``HarmonicScattering3D``.
 .. toctree::
    :hidden:
 
-   /gallery_3d/compute_speed
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="3D scattering quantum chemistry regression">
-
-.. only:: html
-
- .. figure:: /gallery_3d/images/thumb/sphx_glr_scattering3d_qm7_thumb.png
-
-     :ref:`sphx_glr_gallery_3d_scattering3d_qm7.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /gallery_3d/scattering3d_qm7
+   /gallery_3d/scattering3d_qm7_torch
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

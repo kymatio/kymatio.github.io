@@ -14,13 +14,13 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="2D scattering transform benchmark">
+    <div class="sphx-glr-thumbcontainer" tooltip="Classification of MNIST with scattering">
 
 .. only:: html
 
- .. figure:: /gallery_2d/images/thumb/sphx_glr_compute_speed_thumb.png
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_mnist_keras_thumb.png
 
-     :ref:`sphx_glr_gallery_2d_compute_speed.py`
+     :ref:`sphx_glr_gallery_2d_mnist_keras.py`
 
 .. raw:: html
 
@@ -30,7 +30,27 @@ class, ``Scattering2D``.
 .. toctree::
    :hidden:
 
-   /gallery_2d/compute_speed
+   /gallery_2d/mnist_keras
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Scikit-learn transformer example">
+
+.. only:: html
+
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_plot_sklearn_thumb.png
+
+     :ref:`sphx_glr_gallery_2d_plot_sklearn.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/plot_sklearn
 
 .. raw:: html
 
@@ -54,26 +74,6 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Inverting scattering via mse">
-
-.. only:: html
-
- .. figure:: /gallery_2d/images/thumb/sphx_glr_plot_invert_scattering_thumb.png
-
-     :ref:`sphx_glr_gallery_2d_plot_invert_scattering.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /gallery_2d/plot_invert_scattering
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Author: https://github.com/Jonas1312 Edited by: Edouard Oyallon ">
 
 .. only:: html
@@ -94,13 +94,13 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a convolutional network to invert the scattering transform at ...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Inverting scattering via mse">
 
 .. only:: html
 
- .. figure:: /gallery_2d/images/thumb/sphx_glr_regularized_inverse_scattering_MNIST_thumb.png
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_plot_invert_scattering_torch_thumb.png
 
-     :ref:`sphx_glr_gallery_2d_regularized_inverse_scattering_MNIST.py`
+     :ref:`sphx_glr_gallery_2d_plot_invert_scattering_torch.py`
 
 .. raw:: html
 
@@ -110,7 +110,27 @@ class, ``Scattering2D``.
 .. toctree::
    :hidden:
 
-   /gallery_2d/regularized_inverse_scattering_MNIST
+   /gallery_2d/plot_invert_scattering_torch
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a convolutional network to invert the scattering transform at ...">
+
+.. only:: html
+
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_regularized_inverse_scattering_MNIST_torch_thumb.png
+
+     :ref:`sphx_glr_gallery_2d_regularized_inverse_scattering_MNIST_torch.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/regularized_inverse_scattering_MNIST_torch
 
 .. raw:: html
 
@@ -118,9 +138,9 @@ class, ``Scattering2D``.
 
 .. only:: html
 
- .. figure:: /gallery_2d/images/thumb/sphx_glr_cifar_thumb.png
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_cifar_torch_thumb.png
 
-     :ref:`sphx_glr_gallery_2d_cifar.py`
+     :ref:`sphx_glr_gallery_2d_cifar_torch.py`
 
 .. raw:: html
 
@@ -130,7 +150,7 @@ class, ``Scattering2D``.
 .. toctree::
    :hidden:
 
-   /gallery_2d/cifar
+   /gallery_2d/cifar_torch
 
 .. raw:: html
 
@@ -138,9 +158,9 @@ class, ``Scattering2D``.
 
 .. only:: html
 
- .. figure:: /gallery_2d/images/thumb/sphx_glr_cifar_resnet_thumb.png
+ .. figure:: /gallery_2d/images/thumb/sphx_glr_cifar_resnet_torch_thumb.png
 
-     :ref:`sphx_glr_gallery_2d_cifar_resnet.py`
+     :ref:`sphx_glr_gallery_2d_cifar_resnet_torch.py`
 
 .. raw:: html
 
@@ -150,7 +170,7 @@ class, ``Scattering2D``.
 .. toctree::
    :hidden:
 
-   /gallery_2d/cifar_resnet
+   /gallery_2d/cifar_resnet_torch
 
 .. raw:: html
 

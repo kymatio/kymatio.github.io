@@ -54,26 +54,6 @@ class, ``Scattering1D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="1D scattering transform benchmark">
-
-.. only:: html
-
- .. figure:: /gallery_1d/images/thumb/sphx_glr_compute_speed_thumb.png
-
-     :ref:`sphx_glr_gallery_1d_compute_speed.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /gallery_1d/compute_speed
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="In this example we generate a harmonic signal of a few different frequencies and analyze it wit...">
 
 .. only:: html
@@ -98,9 +78,9 @@ class, ``Scattering1D``.
 
 .. only:: html
 
- .. figure:: /gallery_1d/images/thumb/sphx_glr_plot_classif_thumb.png
+ .. figure:: /gallery_1d/images/thumb/sphx_glr_classif_keras_thumb.png
 
-     :ref:`sphx_glr_gallery_1d_plot_classif.py`
+     :ref:`sphx_glr_gallery_1d_classif_keras.py`
 
 .. raw:: html
 
@@ -110,7 +90,47 @@ class, ``Scattering1D``.
 .. toctree::
    :hidden:
 
-   /gallery_1d/plot_classif
+   /gallery_1d/classif_keras
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Reconstruct a synthetic signal from its scattering transform">
+
+.. only:: html
+
+ .. figure:: /gallery_1d/images/thumb/sphx_glr_reconstruct_torch_thumb.png
+
+     :ref:`sphx_glr_gallery_1d_reconstruct_torch.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_1d/reconstruct_torch
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example we use the 1D scattering transform to represent spoken digits, which we then cl...">
+
+.. only:: html
+
+ .. figure:: /gallery_1d/images/thumb/sphx_glr_plot_classif_torch_thumb.png
+
+     :ref:`sphx_glr_gallery_1d_plot_classif_torch.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_1d/plot_classif_torch
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>
