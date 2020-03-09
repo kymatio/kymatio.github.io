@@ -65,12 +65,12 @@ as PyTorch and TensorFlow.</p></li>
 <p>Each algorithm comes packaged with a frontend and backend. The frontend takes care of
 interfacing with the user. The backend defines functions necessary for
 computation of the scattering transform.</p>
-<p>Currently, there are four available frontend-backends, PyTorch (CPU and GPU), PyTorch+scikit-cuda (GPU only), TensorFlow (CPU and GPU) and NumPy (CPU).</p>
+<p>Currently, there are six available frontend–backend pairs, NumPy (CPU), scikit-learn (CPU), pure PyTorch (CPU and GPU), PyTorch+scikit-cuda (GPU), TensorFlow (CPU and GPU), and Keras (CPU and GPU).</p>
 </div>
 <div class="section" id="scalability">
 <h2>Scalability<a class="headerlink" href="#scalability" title="Permalink to this headline">¶</a></h2>
 <p>Kymatio integrates the construction of wavelet filter banks in 1D, 2D, and 3D, as well as memory-efficient algorithms for extracting wavelet scattering coefficients, under a common application programming interface.</p>
-<p>Running Kymatio on a graphics processing unit (GPU) rather than a multi-core conventional computer processing unit (CPU) allows for significant speedups in computing the scattering transform.
+<p>Running Kymatio on a graphics processing unit (GPU) rather than a multi-core conventional central processing unit (CPU) allows for significant speedups in computing the scattering transform.
 The current speedup with respect to CPU-based MATLAB code is of the order of 10 in 1D and 3D and of the order of 100 in 2D.</p>
 <p>We refer to our <a class="reference external" href="https://www.kymat.io/userguide.html#benchmarks">official benchmarks</a> for further details.</p>
 </div>
@@ -111,36 +111,41 @@ scattering = Scattering2D(J=2, shape=(32, 32))
 </pre></div>
 </div>
 </div>
+<div class="section" id="scikit-learn">
+<h2>Scikit-learn<a class="headerlink" href="#scikit-learn" title="Permalink to this headline">¶</a></h2>
+<p>After installing the latest version of scikit-learn, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a <code class="docutils literal notranslate"><span class="pre">Transformer</span></code> using:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from kymatio.sklearn import Scattering2D
+
+scattering_transformer = Scattering2D(2, (32, 32))
+</pre></div>
+</div>
+</div>
 <div class="section" id="pytorch">
 <h2>PyTorch<a class="headerlink" href="#pytorch" title="Permalink to this headline">¶</a></h2>
-<p>After installing the latest version of <code class="docutils literal notranslate"><span class="pre">torch</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> via for instance:</p>
+<p>After installing the latest version of PyTorch, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a <code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code> using:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from kymatio.torch import Scattering2D
+
 scattering = Scattering2D(J=2, shape=(32, 32))
 </pre></div>
 </div>
 </div>
 <div class="section" id="tensorflow">
 <h2>TensorFlow<a class="headerlink" href="#tensorflow" title="Permalink to this headline">¶</a></h2>
-<p>After installing the latest version of <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a <code class="docutils literal notranslate"><span class="pre">tf.Module</span></code> via for instance:</p>
+<p>After installing the latest version of TensorFlow, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a <code class="docutils literal notranslate"><span class="pre">tf.Module</span></code> using:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from kymatio.tensorflow import Scattering2D
+
 scattering = Scattering2D(J=2, shape=(32, 32))
 </pre></div>
 </div>
 </div>
 <div class="section" id="keras">
 <h2>Keras<a class="headerlink" href="#keras" title="Permalink to this headline">¶</a></h2>
-<p>After installing the latest version of <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a Keras <code class="docutils literal notranslate"><span class="pre">Layer</span></code> via for instance:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from kymatio.keras import Scattering2D
-inputs = Input(shape=(3, 32, 32))
-scat = Scattering2D(J=2)(inputs)
-</pre></div>
-</div>
-</div>
-<div class="section" id="scikit-learn">
-<h2>Scikit-learn<a class="headerlink" href="#scikit-learn" title="Permalink to this headline">¶</a></h2>
-<p>After installing the latest version of <code class="docutils literal notranslate"><span class="pre">sklearn</span></code>, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a <code class="docutils literal notranslate"><span class="pre">Transformer</span></code> via for instance:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from kymatio.sklearn import Scattering2D
-scat = Scattering2D(2, (32, 32))
+<p>Alternatively, with TensorFlow installed, you can call <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> as a Keras <code class="docutils literal notranslate"><span class="pre">Layer</span></code> using:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from tensorflow.keras.layers import Input
+from kymatio.keras import Scattering2D
+
+inputs = Input(shape=(32, 32))
+scattering = Scattering2D(J=2)(inputs)
 </pre></div>
 </div>
 </div>
@@ -159,11 +164,13 @@ python setup.py develop
 </div>
 <div class="section" id="gpu-acceleration">
 <h2>GPU acceleration<a class="headerlink" href="#gpu-acceleration" title="Permalink to this headline">¶</a></h2>
-<p>The available frontends are PyTorch (provided with the backends <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">torch_skcuda</span></code>), TensorFlow (with the backend
-<code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>), and NumPy (with the backend <code class="docutils literal notranslate"><span class="pre">numpy</span></code>).</p>
-<p>NumPy is the default frontend in 1D, 2D, and 3D scattering. For applications of the 2D scattering transform to large
-images (e.g. ImageNet, of size 224x224), however, we recommend the <code class="docutils literal notranslate"><span class="pre">torch_skcuda</span></code> backend, which is substantially faster
-than NumPy.</p>
+<p>Certain frontends, <code class="docutils literal notranslate"><span class="pre">numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">sklearn</span></code>, only allow processing on the CPU and are therefore slower. The <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, and <code class="docutils literal notranslate"><span class="pre">keras</span></code> frontends, however, also support GPU processing, which can significantly accelerate computations. Additionally, the <code class="docutils literal notranslate"><span class="pre">torch</span></code> backend supports an optimized <code class="docutils literal notranslate"><span class="pre">skcuda</span></code> backend which currently provides the fastest performance in computing scattering transforms. In 2D, it may be instantiated using:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>from kymatio.torch import Scattering2D
+
+scattering = Scattering2D(J=2, shape=(32, 32), backend=&#39;torch_skcuda&#39;)
+</pre></div>
+</div>
+<p>This is particularly useful when working with large images, such as those in ImageNet, which are of size 224×224.</p>
 </div>
 <div class="section" id="pytorch-and-scikit-cuda">
 <h2>PyTorch and scikit-cuda<a class="headerlink" href="#pytorch-and-scikit-cuda" title="Permalink to this headline">¶</a></h2>
@@ -205,7 +212,7 @@ cd doc; make clean; make html
 <div class="section" id="support">
 <h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
 <p>We wish to thank the Scientific Computing Core at the Flatiron Institute for the use of their computing resources for testing.</p>
-<p><cite>:raw-html-m2r:`&lt;img src=”https://itensor.org/flatiron_logo.png” height=”100” /&gt;</cite> &lt;<a class="reference external" href="https://www.flatironinstitute.org/">https://www.flatironinstitute.org/</a>&gt;`_</p>
+<p><span class="raw-html-m2r"><a href="https://www.flatironinstitute.org/"><img src="https://itensor.org/flatiron_logo.png" height="100"></a></span></p>
 <p>We would also like to thank École Normale Supérieure for their support.</p>
 <a class="reference external image-reference" href="https://www.ens.fr/"><img alt="ENS" src="https://www.ens.fr/sites/default/files/inline-images/logo.jpg" /></a>
 </div>
@@ -228,22 +235,24 @@ cd doc; make clean; make html
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#output-size">Output size</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="userguide.html#id11">1-D</a></li>
-<li class="toctree-l3"><a class="reference internal" href="userguide.html#id12">2-D</a></li>
-<li class="toctree-l3"><a class="reference internal" href="userguide.html#id13">3-D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#id12">1-D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#id13">2-D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#id14">3-D</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#frontends">Frontends</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="userguide.html#numpy">NumPy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#scikit-learn">Scikit-learn</a></li>
 <li class="toctree-l3"><a class="reference internal" href="userguide.html#pytorch">PyTorch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="userguide.html#tensorflow">TensorFlow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#keras">Keras</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#backend">Backend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#benchmarks">Benchmarks</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="userguide.html#id14">1D</a></li>
-<li class="toctree-l3"><a class="reference internal" href="userguide.html#id17">2D</a></li>
-<li class="toctree-l3"><a class="reference internal" href="userguide.html#id21">3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#id16">1D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#id19">2D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="userguide.html#id23">3D</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="userguide.html#how-to-cite">How to cite</a></li>
@@ -259,9 +268,9 @@ cd doc; make clean; make html
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="codereference.html">Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="codereference.html#numpy">NumPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="codereference.html#scikit-learn">Scikit-learn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="codereference.html#pytorch">PyTorch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codereference.html#module-kymatio.numpy">NumPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codereference.html#module-kymatio.sklearn">Scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codereference.html#module-kymatio.torch">PyTorch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codereference.html#tensorflow">TensorFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codereference.html#keras">Keras</a></li>
 </ul>

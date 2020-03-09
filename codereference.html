@@ -38,29 +38,9 @@
             
   <div class="section" id="documentation">
 <h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
-<p>The Kymatio API is divided between different frontends, which perform the same operations, but integrate in different frameworks. This integration allows the user to take advantage of different features available in certain frameworks, such as autodifferentiation and GPU processing in PyTorch and TensorFlow/Keras, while having code that runs almost identically in NumPy or scikit-learn. The available frontends are:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">kymatio.numpy</span></code> for NumPy,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kymatio.sklearn</span></code> for scikit-learn (as <code class="docutils literal notranslate"><span class="pre">Transformer</span></code> and <code class="docutils literal notranslate"><span class="pre">Estimator</span></code> objects),</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kymatio.torch</span></code> for PyTorch,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kymatio.tensorflow</span></code> for TensorFlow, and</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kymatio.keras</span></code> for Keras.</p></li>
-</ul>
-<p>To instantiate a <code class="docutils literal notranslate"><span class="pre">Scattering2D</span></code> object for the NumPy frontend, run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio.numpy</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
-<span class="n">S</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>Alternatively, the object may be instantiated in a dynamic way using the <code class="docutils literal notranslate"><span class="pre">kymatio.Scattering2D</span></code> object by providing a <code class="docutils literal notranslate"><span class="pre">frontend</span></code> argument. This object then transforms itself to the desired frontend. Using this approach, the above example becomes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
-<span class="n">S</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">frontend</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>In Kymatio 0.2, the default frontend is <code class="docutils literal notranslate"><span class="pre">torch</span></code> for backwards compatibility reasons, but this change to <code class="docutils literal notranslate"><span class="pre">numpy</span></code> in the next version.</p>
-<div class="section" id="numpy">
-<h2>NumPy<a class="headerlink" href="#numpy" title="Permalink to this headline">¶</a></h2>
-<p>The NumPy frontend takes <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s as input and outputs <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s. All computation is done on the CPU, which means that it will be slow for large inputs.</p>
-<span class="target" id="module-kymatio.numpy"></span><dl class="class">
+<div class="section" id="module-kymatio.numpy">
+<span id="numpy"></span><h2>NumPy<a class="headerlink" href="#module-kymatio.numpy" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
 <dt id="kymatio.numpy.Scattering1D">
 <em class="property">class </em><code class="sig-prename descclassname">kymatio.numpy.</code><code class="sig-name descname">Scattering1D</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">shape</em>, <em class="sig-param">Q=1</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">average=True</em>, <em class="sig-param">oversampling=0</em>, <em class="sig-param">vectorize=True</em>, <em class="sig-param">out_type='array'</em>, <em class="sig-param">backend='numpy'</em><span class="sig-paren">)</span><a class="headerlink" href="#kymatio.numpy.Scattering1D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">kymatio.frontend.numpy_frontend.ScatteringNumPy</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">kymatio.scattering1d.frontend.base_frontend.ScatteringBase1D</span></code></p>
@@ -549,21 +529,9 @@ coefficients, concatenated along the feature axis.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="scikit-learn">
-<h2>Scikit-learn<a class="headerlink" href="#scikit-learn" title="Permalink to this headline">¶</a></h2>
-<p>The scikit-learn frontend is both a <code class="docutils literal notranslate"><span class="pre">Transformer</span></code> and an <code class="docutils literal notranslate"><span class="pre">Estimator</span></code>, making it easy to integrate the object into a scikit-learn <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code>. For example, you can write the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
-
-<span class="kn">from</span> <span class="nn">kymatio.sklearn</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
-
-<span class="n">S</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">classifier</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">()</span>
-<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span> <span class="n">S</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;clf&#39;</span><span class="p">,</span> <span class="n">classifier</span><span class="p">)])</span>
-</pre></div>
-</div>
-<p>which creates a <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> consisting of a 2D scattering transform and a logistic regression estimator.</p>
-<span class="target" id="module-kymatio.sklearn"></span><dl class="class">
+<div class="section" id="module-kymatio.sklearn">
+<span id="scikit-learn"></span><h2>Scikit-learn<a class="headerlink" href="#module-kymatio.sklearn" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
 <dt id="kymatio.sklearn.Scattering1D">
 <em class="property">class </em><code class="sig-prename descclassname">kymatio.sklearn.</code><code class="sig-name descname">Scattering1D</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">shape</em>, <em class="sig-param">Q=1</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">average=True</em>, <em class="sig-param">oversampling=0</em>, <em class="sig-param">vectorize=True</em>, <em class="sig-param">out_type='array'</em>, <em class="sig-param">backend='numpy'</em><span class="sig-paren">)</span><a class="headerlink" href="#kymatio.sklearn.Scattering1D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">kymatio.frontend.sklearn_frontend.ScatteringTransformerMixin</span></code>, <a class="reference internal" href="#kymatio.numpy.Scattering1D" title="kymatio.numpy.Scattering1D"><code class="xref py py-class docutils literal notranslate"><span class="pre">kymatio.numpy.Scattering1D</span></code></a></p>
@@ -988,10 +956,9 @@ integration.</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="pytorch">
-<h2>PyTorch<a class="headerlink" href="#pytorch" title="Permalink to this headline">¶</a></h2>
-<p>The PyTorch frontend inherits from <code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code>. As a result, it can be integrated with other PyTorch <code class="docutils literal notranslate"><span class="pre">Module</span></code>s to create a computational model. It also supports the <cite>cuda</cite>, <cite>cpu</cite>, and <cite>to</cite> methods, allowing the user to easily move the object from CPU to GPU and back.</p>
-<span class="target" id="module-kymatio.torch"></span><dl class="class">
+<div class="section" id="module-kymatio.torch">
+<span id="pytorch"></span><h2>PyTorch<a class="headerlink" href="#module-kymatio.torch" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
 <dt id="kymatio.torch.Scattering1D">
 <em class="property">class </em><code class="sig-prename descclassname">kymatio.torch.</code><code class="sig-name descname">Scattering1D</code><span class="sig-paren">(</span><em class="sig-param">J</em>, <em class="sig-param">shape</em>, <em class="sig-param">Q=1</em>, <em class="sig-param">max_order=2</em>, <em class="sig-param">average=True</em>, <em class="sig-param">oversampling=0</em>, <em class="sig-param">vectorize=True</em>, <em class="sig-param">out_type='array'</em>, <em class="sig-param">backend='torch'</em><span class="sig-paren">)</span><a class="headerlink" href="#kymatio.torch.Scattering1D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">kymatio.frontend.torch_frontend.ScatteringTorch</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">kymatio.scattering1d.frontend.base_frontend.ScatteringBase1D</span></code></p>
@@ -1532,25 +1499,9 @@ coefficients, concatenated along the feature axis.</p>
 </div>
 <div class="section" id="tensorflow">
 <h2>TensorFlow<a class="headerlink" href="#tensorflow" title="Permalink to this headline">¶</a></h2>
-<p>The TensorFlow frontend inherits from <code class="docutils literal notranslate"><span class="pre">tf.Module</span></code>. It therefore supports the same functionality and can be integrated with other <code class="docutils literal notranslate"><span class="pre">Module</span></code>s to form a computational graph.</p>
 </div>
 <div class="section" id="keras">
 <h2>Keras<a class="headerlink" href="#keras" title="Permalink to this headline">¶</a></h2>
-<p>The Keras frontend extends the TensorFlow frontend by implementing the scattering transform as a Keras <code class="docutils literal notranslate"><span class="pre">Layer</span></code>. This can be combined with other <code class="docutils literal notranslate"><span class="pre">Layer</span></code>s to form a <code class="docutils literal notranslate"><span class="pre">Model</span></code> that may then be trained for a given task. Note that since Keras infers the input shape of a <code class="docutils literal notranslate"><span class="pre">Layer</span></code>, we do not specify the shape when creating the scattering object. The result may look something like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">Dense</span>
-
-<span class="kn">from</span> <span class="nn">kymatio.keras</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
-
-<span class="n">in_layer</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
-<span class="n">sc</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="mi">3</span><span class="p">)(</span><span class="n">in_layer</span><span class="p">)</span>
-<span class="n">sc_flat</span> <span class="o">=</span> <span class="n">Flatten</span><span class="p">()(</span><span class="n">sc</span><span class="p">)</span>
-<span class="n">out_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">)(</span><span class="n">sc_flat</span><span class="p">)</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">in_layer</span><span class="p">,</span> <span class="n">out_layer</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>where we feed the scattering coefficients into a dense layer with ten outputs for handwritten digit classification on MNIST.</p>
 </div>
 </div>
 
@@ -1589,9 +1540,9 @@ coefficients, concatenated along the feature axis.</p>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developerguide.html">Information for developers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#numpy">NumPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#scikit-learn">Scikit-learn</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pytorch">PyTorch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kymatio.numpy">NumPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kymatio.sklearn">Scikit-learn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kymatio.torch">PyTorch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tensorflow">TensorFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#keras">Keras</a></li>
 </ul>
