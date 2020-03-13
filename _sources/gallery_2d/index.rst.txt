@@ -74,7 +74,7 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Author: https://github.com/Jonas1312 Edited by: Edouard Oyallon ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Author: https://github.com/Jonas1312 Edited by: Edouard Oyallon">
 
 .. only:: html
 
@@ -134,7 +134,7 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST">
 
 .. only:: html
 
@@ -154,7 +154,7 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10 ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10">
 
 .. only:: html
 
@@ -174,7 +174,7 @@ class, ``Scattering2D``.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10 ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10">
 
 .. only:: html
 
