@@ -5,16 +5,16 @@
 
 Computation times
 =================
-**01:01.706** total execution time for **gallery_1d** files:
+**01:09.370** total execution time for **gallery_1d** files:
 
 +------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_classif_torch.py` (``plot_classif_torch.py``) | 00:58.280 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_classif_torch.py` (``plot_classif_torch.py``) | 01:05.448 | 0.0 MB |
 +------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_real_signal.py` (``plot_real_signal.py``)     | 00:02.171 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_real_signal.py` (``plot_real_signal.py``)     | 00:02.652 | 0.0 MB |
 +------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_synthetic.py` (``plot_synthetic.py``)         | 00:00.766 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_synthetic.py` (``plot_synthetic.py``)         | 00:00.769 | 0.0 MB |
 +------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_1d_plot_filters.py` (``plot_filters.py``)             | 00:00.490 | 0.0 MB |
+| :ref:`sphx_glr_gallery_1d_plot_filters.py` (``plot_filters.py``)             | 00:00.501 | 0.0 MB |
 +------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_gallery_1d_classif_keras.py` (``classif_keras.py``)           | 00:00.000 | 0.0 MB |
 +------------------------------------------------------------------------------+-----------+--------+
