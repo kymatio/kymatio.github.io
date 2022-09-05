@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Information for developers &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Documentation" href="codereference.html" />
+    <link rel="prev" title="User guide" href="userguide.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="information-for-developers">
+<span id="dev-guide"></span><h1>Information for developers<a class="headerlink" href="#information-for-developers" title="Permalink to this heading">¶</a></h1>
+<section id="github-workflow">
+<h2>(GitHub Workflow)<a class="headerlink" href="#github-workflow" title="Permalink to this heading">¶</a></h2>
+<p>Kymatio implements the scattering transform for different frontends (currently <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>),
+each of which have one or more corresponding backends. This way, the generic scattering algorithm can be written in an
+architecture-agnostic manner, since all low-level operations are relegated to the backend, and high-level operations
+specific to an API are relegated to the frontend.</p>
+<p>To make sure that a future pull request (PR) will pass the jenkins and travis tests, please try our package on the
+unit tests, the speed as well as the documentation. You might need to install auxiliary libraries via the
+<code class="docutils literal notranslate"><span class="pre">requirements_optional.txt</span></code>.</p>
+<p>For development purposes, you might need to install the package via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">kymatio</span><span class="o">/</span><span class="n">kymatio</span><span class="o">.</span><span class="n">git</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">origin</span><span class="o">/</span><span class="n">dev</span>
+<span class="n">cd</span> <span class="n">kymatio</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span>
+</pre></div>
+</div>
+<p>Please refer to <a class="reference external" href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow</a> for more recommendations.</p>
+</section>
+<section id="backend-to-frontend-core-of-the-algorithm">
+<h2>Backend to frontend: core of the algorithm<a class="headerlink" href="#backend-to-frontend-core-of-the-algorithm" title="Permalink to this heading">¶</a></h2>
+<p>Common to the 1D, 2D and 3D scattering transform routines are four low-level functions which must be optimized:</p>
+<ol class="arabic simple">
+<li><p>Fast Fourier transform (FFT) and its inverse (iFFT)</p></li>
+<li><p>Subsampling in the Fourier domain (periodization)</p></li>
+<li><p>Non-linearity (modulus in 1D and 2D, quadratic mean in 3D)</p></li>
+<li><p>Dotwise complex multiplication (<code class="docutils literal notranslate"><span class="pre">cdgmm</span></code>)</p></li>
+<li><p>Padding and unpadding</p></li>
+</ol>
+</section>
+<section id="checking-unit-tests">
+<h2>Checking unit tests<a class="headerlink" href="#checking-unit-tests" title="Permalink to this heading">¶</a></h2>
+<p>For running all the unit tests and avoiding bugs, please first install the latest versions of <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>,
+<code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">cupy</span></code>, <code class="docutils literal notranslate"><span class="pre">scikit-cuda</span></code>. Then, run (in the root directory):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+<p>If all the tests pass, you may submit your pull request as explained below. A speed-test is welcome as well.</p>
+</section>
+<section id="checking-speed">
+<h2>Checking speed<a class="headerlink" href="#checking-speed" title="Permalink to this heading">¶</a></h2>
+<p>For checking the speed of the actual HEAD of the repository, install first ASV and then you can run the ASV benchmarks
+on various architectures and for various config files (one config file per backend and device) via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">benchmarks</span>
+<span class="n">asv</span> <span class="n">run</span> <span class="o">--</span><span class="n">config</span> <span class="n">asv_torch</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>You can visualize the results via (one can use either <cite>show</cite>, <cite>publish</cite> or <cite>preview</cite>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">benchmarks</span>
+<span class="n">asv</span> <span class="n">show</span> <span class="o">--</span><span class="n">config</span> <span class="n">asv_torch</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>For trying a specific range of commits from XXXXXXXXX to YYYYYYYYY, you can also do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">benchmarks</span>
+<span class="n">asv</span> <span class="n">run</span> <span class="n">YYYYYYYYY</span><span class="o">..</span><span class="n">XXXXXXXXX</span>  <span class="o">--</span><span class="n">config</span> <span class="n">asv_numpy</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>It is also possible to run a specific benchmark via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">benchmarks</span>
+<span class="n">asv</span> <span class="n">run</span> <span class="o">--</span><span class="n">bench</span> <span class="n">torch_scattering1d</span> <span class="o">--</span><span class="n">config</span> <span class="n">asv_torch</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>In order to run the CUDA benchmarks, for (e.g., torch) use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">benchmarks</span>
+<span class="n">asv</span> <span class="n">run</span> <span class="o">--</span><span class="n">config</span> <span class="n">asv_torch_cuda</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">launch</span><span class="o">-</span><span class="n">method</span> <span class="n">spawn</span>
+</pre></div>
+</div>
+<p>Note that here the attribute <cite>spawn</cite> is necessary because several packages (e.g., <cite>pytorch</cite>) do not supported <cite>forked</cite>
+subprocess methods. Use <cite>-e</cite> to display potential errors.</p>
+</section>
+<section id="checking-documentation">
+<h2>Checking documentation<a class="headerlink" href="#checking-documentation" title="Permalink to this heading">¶</a></h2>
+<p>For checking the documentation, please run the following commands, that will built it through sphinx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">doc</span>
+<span class="n">make</span> <span class="n">clean</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+</section>
+<section id="proposing-a-pull-request">
+<h2>Proposing a pull request<a class="headerlink" href="#proposing-a-pull-request" title="Permalink to this heading">¶</a></h2>
+<p>Each PR must be documented using docstrings, illustrated with an example and must pass the unit tests. Please check the
+PRs already merged on the GitHub repository if you need an example of a good PR.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">User guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Information for developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#github-workflow">(GitHub Workflow)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backend-to-frontend-core-of-the-algorithm">Backend to frontend: core of the algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-unit-tests">Checking unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-speed">Checking speed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-documentation">Checking documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#proposing-a-pull-request">Proposing a pull request</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="codereference.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="userguide.html" title="previous chapter">User guide</a></li>
+      <li>Next: <a href="codereference.html" title="next chapter">Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/developerguide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

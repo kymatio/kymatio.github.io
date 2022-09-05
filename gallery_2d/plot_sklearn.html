@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Scikit-learn transformer example &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plot the 2D wavelet filters" href="plot_filters.html" />
+    <link rel="prev" title="Classification of MNIST with scattering" href="mnist_keras.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="../_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-2d-plot-sklearn-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="scikit-learn-transformer-example">
+<span id="sphx-glr-gallery-2d-plot-sklearn-py"></span><h1>Scikit-learn transformer example<a class="headerlink" href="#scikit-learn-transformer-example" title="Permalink to this heading">¶</a></h1>
+<p>Here we demonstrate a simple application of scattering as a transformer</p>
+<section id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this heading">¶</a></h2>
+<p>Import the relevant classes and functions from sciki-learn.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+</pre></div>
+</div>
+<p>Import the scikit-learn <cite>Scattering2D</cite> frontend.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio.sklearn</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
+</pre></div>
+</div>
+</section>
+<section id="preparing-the-data">
+<h2>Preparing the data<a class="headerlink" href="#preparing-the-data" title="Permalink to this heading">¶</a></h2>
+<p>First, we load the dataset. In this case, it’s the UCI ML digits dataset
+included with scikit-learn, consisting of 8×8 images of handwritten digits
+from one to ten.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">digits</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_digits</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We then extract the images, reshape them to an array of size <cite>(n_features,
+n_samples)</cite> needed for processing in a scikit-learn pipeline.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">images</span> <span class="o">=</span> <span class="n">digits</span><span class="o">.</span><span class="n">images</span>
+<span class="n">images</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We then split the images (and their labels) into a train and a test set.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">digits</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+                                                    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="training-and-testing-the-model">
+<h2>Training and testing the model<a class="headerlink" href="#training-and-testing-the-model" title="Permalink to this heading">¶</a></h2>
+<p>Create a <cite>Scattering2D</cite> object, which implements a scikit-learn
+<cite>Transformer</cite>. We set the input shape to match that of the the images (8×8)
+and the averaging scale is set to <cite>J = 1</cite>, which means that the local
+invariance is <cite>2 ** 1 = 1</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">S</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">J</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then plug this into a scikit-learn pipeline which takes the scattering
+features, scales them, then provides them to a <cite>LogisticRegression</cite> classifier.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">classifier</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">estimators</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span> <span class="n">S</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;scaler&#39;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span> <span class="p">(</span><span class="s1">&#39;clf&#39;</span><span class="p">,</span> <span class="n">classifier</span><span class="p">)]</span>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">estimators</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Given the pipeline, we train it on <cite>(x_train, y_train)</cite> using
+<cite>pipelien.fit</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Pipeline(steps=[(&#39;scatter&#39;,
+                 Scattering2D(J=1,
+                              backend=&lt;class &#39;kymatio.scattering2d.backend.numpy_backend.NumpyBackend2D&#39;&gt;,
+                              shape=(8, 8))),
+                (&#39;scaler&#39;, StandardScaler()),
+                (&#39;clf&#39;, LogisticRegression(max_iter=150))])
+</pre></div>
+</div>
+<p>Finally, we calculate the predicted labels on the test data and output the
+classification accuracy.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Accuracy:&#39;</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Accuracy: 0.9755283648498332
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.403 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-plot-sklearn-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/5d6d024c2ebfebb5d25464b4cd452b76/plot_sklearn.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_sklearn.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/0697270a7b6572a2e4cf59d59b53cfce/plot_sklearn.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_sklearn.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">2D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mnist_keras.html">Classification of MNIST with scattering</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Scikit-learn transformer example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-the-data">Preparing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-and-testing-the-model">Training and testing the model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering_torch.html">Inverting scattering via mse</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST_torch.html">Regularized inverse of a scattering transform on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_torch.html">Classification on CIFAR10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_resnet_torch.html">Classification on CIFAR10 (ResNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_small_sample.html">Classification on CIFAR10 (ResNet)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">2D examples</a><ul>
+      <li>Previous: <a href="mnist_keras.html" title="previous chapter">Classification of MNIST with scattering</a></li>
+      <li>Next: <a href="plot_filters.html" title="next chapter">Plot the 2D wavelet filters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gallery_2d/plot_sklearn.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

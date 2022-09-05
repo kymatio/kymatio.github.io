@@ -1,0 +1,205 @@
+:orphan:
+
+2D examples
+===========
+
+These scripts demonstrate the capabilities of the 2D scattering transform
+class, ``Scattering2D``.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Classification of MNIST with scattering">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_mnist_keras_thumb.png
+    :alt: Classification of MNIST with scattering
+
+  :ref:`sphx_glr_gallery_2d_mnist_keras.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Classification of MNIST with scattering</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Scikit-learn transformer example">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_plot_sklearn_thumb.png
+    :alt: Scikit-learn transformer example
+
+  :ref:`sphx_glr_gallery_2d_plot_sklearn.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Scikit-learn transformer example</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Plot the 2D wavelet filters">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_plot_filters_thumb.png
+    :alt: Plot the 2D wavelet filters
+
+  :ref:`sphx_glr_gallery_2d_plot_filters.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Plot the 2D wavelet filters</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Inverting scattering via mse">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_plot_invert_scattering_torch_thumb.png
+    :alt: Inverting scattering via mse
+
+  :ref:`sphx_glr_gallery_2d_plot_invert_scattering_torch.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Inverting scattering via mse</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Author: https://github.com/Jonas1312">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_plot_scattering_disk_thumb.png
+    :alt: Scattering disk display
+
+  :ref:`sphx_glr_gallery_2d_plot_scattering_disk.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Scattering disk display</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Description: This example trains a convolutional network to invert the scattering transform at ...">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_regularized_inverse_scattering_MNIST_torch_thumb.png
+    :alt: Regularized inverse of a scattering transform on MNIST
+
+  :ref:`sphx_glr_gallery_2d_regularized_inverse_scattering_MNIST_torch.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Regularized inverse of a scattering transform on MNIST</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for MNIST">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_cifar_torch_thumb.png
+    :alt: Classification on CIFAR10
+
+  :ref:`sphx_glr_gallery_2d_cifar_torch.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Classification on CIFAR10</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_cifar_resnet_torch_thumb.png
+    :alt: Classification on CIFAR10 (ResNet)
+
+  :ref:`sphx_glr_gallery_2d_cifar_resnet_torch.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Classification on CIFAR10 (ResNet)</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Based on pytorch example for CIFAR10">
+
+.. only:: html
+
+  .. image:: /gallery_2d/images/thumb/sphx_glr_cifar_small_sample_thumb.png
+    :alt: Classification on CIFAR10 (ResNet)
+
+  :ref:`sphx_glr_gallery_2d_cifar_small_sample.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Classification on CIFAR10 (ResNet)</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /gallery_2d/mnist_keras
+   /gallery_2d/plot_sklearn
+   /gallery_2d/plot_filters
+   /gallery_2d/plot_invert_scattering_torch
+   /gallery_2d/plot_scattering_disk
+   /gallery_2d/regularized_inverse_scattering_MNIST_torch
+   /gallery_2d/cifar_torch
+   /gallery_2d/cifar_resnet_torch
+   /gallery_2d/cifar_small_sample
+
+
+.. only:: html
+
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
+
+    .. container:: sphx-glr-download sphx-glr-download-python
+
+      :download:`Download all examples in Python source code: gallery_2d_python.zip </gallery_2d/gallery_2d_python.zip>`
+
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+      :download:`Download all examples in Jupyter notebooks: gallery_2d_jupyter.zip </gallery_2d/gallery_2d_jupyter.zip>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

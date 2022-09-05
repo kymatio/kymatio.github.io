@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Compute the scattering transform of a speech recording &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plot the 1D wavelet filters" href="plot_filters.html" />
+    <link rel="prev" title="1D examples" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="../_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-1d-plot-real-signal-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="compute-the-scattering-transform-of-a-speech-recording">
+<span id="sphx-glr-gallery-1d-plot-real-signal-py"></span><h1>Compute the scattering transform of a speech recording<a class="headerlink" href="#compute-the-scattering-transform-of-a-speech-recording" title="Permalink to this heading">¶</a></h1>
+<p>This script loads a speech signal from the free spoken digit dataset (FSDD)
+of a man pronouncing the word “zero,” computes its scattering transform, and
+displays the zeroth-, first-, and second-order scattering coefficients.</p>
+<dl class="simple">
+<dt>Preliminaries</dt><dd></dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">scipy.io.wavfile</span>
+</pre></div>
+</div>
+<p>We import <cite>matplotlib</cite> to plot the calculated scattering coefficients.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>Finally, we import the <cite>Scattering1D</cite> class from the <cite>scattering</cite> package and
+the <cite>fetch_fsdd</cite> function from <cite>scattering.datasets</cite>. The <cite>Scattering1D</cite>
+class is what lets us calculate the scattering transform, while the
+<cite>fetch_fsdd</cite> function downloads the FSDD, if needed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio.numpy</span> <span class="kn">import</span> <span class="n">Scattering1D</span>
+<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">fetch_fsdd</span>
+</pre></div>
+</div>
+<section id="scattering-setup">
+<h2>Scattering setup<a class="headerlink" href="#scattering-setup" title="Permalink to this heading">¶</a></h2>
+<p>First, we download the FSDD (if not already downloaded) and read in the
+recording <cite>0_jackson_0.wav</cite> of a man pronouncing the word “zero”.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">info_dataset</span> <span class="o">=</span> <span class="n">fetch_fsdd</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_dataset</span><span class="p">[</span><span class="s1">&#39;path_dataset&#39;</span><span class="p">],</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">info_dataset</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Cloning git repository at  https://github.com/Jakobovski/free-spoken-digit-dataset.git
+</pre></div>
+</div>
+<p>Once the recording is in memory, we normalize it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We are now ready to set up the parameters for the scattering transform.
+First, the number of samples, <cite>T</cite>, is given by the size of our input <cite>x</cite>.
+The averaging scale is specified as a power of two, <cite>2**J</cite>. Here, we set
+<cite>J = 6</cite> to get an averaging, or maximum, scattering scale of <cite>2**6 = 64</cite>
+samples. Finally, we set the number of wavelets per octave, <cite>Q</cite>, to <cite>16</cite>.
+This lets us resolve frequencies at a resolution of <cite>1/16</cite> octaves.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">J</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="mi">16</span>
+</pre></div>
+</div>
+<p>Finally, we are able to create the object which computes our scattering
+transform, <cite>scattering</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">Q</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="compute-and-display-the-scattering-coefficients">
+<h2>Compute and display the scattering coefficients<a class="headerlink" href="#compute-and-display-the-scattering-coefficients" title="Permalink to this heading">¶</a></h2>
+<p>Computing the scattering transform of a signal is achieved using the
+<cite>__call__</cite> method of the <cite>Scattering1D</cite> class. The output is an array of
+shape <cite>(C, T)</cite>. Here, <cite>C</cite> is the number of scattering coefficient outputs,
+and <cite>T</cite> is the number of samples along the time axis. This is typically much
+smaller than the number of input samples since the scattering transform
+performs an average in time and subsamples the result to save memory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sx</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To display the scattering coefficients, we must first identify which belong
+to each order (zeroth, first, or second). We do this by extracting the <cite>meta</cite>
+information from the scattering object and constructing masks for each order.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">meta</span> <span class="o">=</span> <span class="n">scattering</span><span class="o">.</span><span class="n">meta</span><span class="p">()</span>
+<span class="n">order0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">order1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">order2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, we plot the original signal <cite>x</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Original signal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_real_signal_001.png" srcset="../_images/sphx_glr_plot_real_signal_001.png" alt="Original signal" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Original signal&#39;)
+</pre></div>
+</div>
+<p>We now plot the zeroth-order scattering coefficient, which is simply an
+average of the original signal at the scale <cite>2**J</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="n">order0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Zeroth-order scattering&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_real_signal_002.png" srcset="../_images/sphx_glr_plot_real_signal_002.png" alt="Zeroth-order scattering" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Zeroth-order scattering&#39;)
+</pre></div>
+</div>
+<p>We then plot the first-order coefficients, which are arranged along time
+and log-frequency.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="n">order1</span><span class="p">],</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;First-order scattering&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_real_signal_003.png" srcset="../_images/sphx_glr_plot_real_signal_003.png" alt="First-order scattering" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;First-order scattering&#39;)
+</pre></div>
+</div>
+<p>Finally, we plot the second-order scattering coefficients. These are also
+organized aling time, but has two log-frequency indices: one first-order
+frequency and one second-order frequency. Here, both indices are mixed along
+the vertical axis.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">Sx</span><span class="p">[</span><span class="n">order2</span><span class="p">],</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Second-order scattering&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_real_signal_004.png" srcset="../_images/sphx_glr_plot_real_signal_004.png" alt="Second-order scattering" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Second-order scattering&#39;)
+</pre></div>
+</div>
+<p>Display the plots!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_real_signal_005.png" srcset="../_images/sphx_glr_plot_real_signal_005.png" alt="plot real signal" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.777 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-plot-real-signal-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/28ef87a7ee6198f7797085821df131d5/plot_real_signal.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_real_signal.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c16c297818b0e19f8e1c312899a2baa6/plot_real_signal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_real_signal.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1D examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Compute the scattering transform of a speech recording</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scattering-setup">Scattering setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compute-and-display-the-scattering-coefficients">Compute and display the scattering coefficients</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 1D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_synthetic.html">Compute the scattering transform of a synthetic signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classif_keras.html">Classification of spoken digit recordings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reconstruct_torch.html">Reconstruct a synthetic signal from its scattering transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_classif_torch.html">Classification of spoken digit recordings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">1D examples</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">1D examples</a></li>
+      <li>Next: <a href="plot_filters.html" title="next chapter">Plot the 1D wavelet filters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gallery_1d/plot_real_signal.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

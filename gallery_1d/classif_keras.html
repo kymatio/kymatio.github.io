@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Classification of spoken digit recordings &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reconstruct a synthetic signal from its scattering transform" href="reconstruct_torch.html" />
+    <link rel="prev" title="Compute the scattering transform of a synthetic signal" href="plot_synthetic.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="../_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-1d-classif-keras-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="classification-of-spoken-digit-recordings">
+<span id="sphx-glr-gallery-1d-classif-keras-py"></span><h1>Classification of spoken digit recordings<a class="headerlink" href="#classification-of-spoken-digit-recordings" title="Permalink to this heading">¶</a></h1>
+<p>In this example we use the 1D scattering transform to represent spoken digits,
+which we then classify using a simple classifier. This shows that 1D scattering
+representations are useful for this type of problem.</p>
+<p>This dataset is automatically downloaded and preprocessed from
+<a class="reference external" href="https://github.com/Jakobovski/free-spoken-digit-dataset.git">https://github.com/Jakobovski/free-spoken-digit-dataset.git</a></p>
+<p>Downloading and precomputing scattering coefficients should take about 5 min.
+Running the gradient descent takes about 1 min.</p>
+<p>Results:
+Training accuracy = 99.7%
+Testing accuracy = 98.0%</p>
+<section id="preliminaries">
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this heading">¶</a></h2>
+<p>Since we’re using TensorFlow and Keras to train the model, import the
+relevant modules.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+</pre></div>
+</div>
+<p>To handle audio file I/O, we import <cite>os</cite> and <cite>scipy.io.wavfile</cite>. We also need
+<cite>numpy</cite> for some basic array manipulation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">wavfile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>Finally, we import the <cite>Scattering1D</cite> class from the <cite>kymatio.keras</cite> package
+and the <cite>fetch_fsdd</cite> function from <cite>kymatio.datasets</cite>. The <cite>Scattering1D</cite>
+class is what lets us calculate the scattering transform, while the
+<cite>fetch_fsdd</cite> function downloads the FSDD, if needed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio.keras</span> <span class="kn">import</span> <span class="n">Scattering1D</span>
+<span class="kn">from</span> <span class="nn">kymatio.datasets</span> <span class="kn">import</span> <span class="n">fetch_fsdd</span>
+</pre></div>
+</div>
+</section>
+<section id="pipeline-setup">
+<h2>Pipeline setup<a class="headerlink" href="#pipeline-setup" title="Permalink to this heading">¶</a></h2>
+<p>We start by specifying the dimensions of our processing pipeline along with
+some other parameters.</p>
+<p>First, we have signal length. Longer signals are truncated and shorter
+signals are zero-padded. The sampling rate is 8000 Hz, so this corresponds to
+little over a second.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">13</span>
+</pre></div>
+</div>
+<p>Maximum scale 2**J of the scattering transform (here, about 30 milliseconds)
+and the number of wavelets per octave.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">Q</span> <span class="o">=</span> <span class="mi">12</span>
+</pre></div>
+</div>
+<p>We need a small constant to add to the scattering coefficients before
+computing the logarithm. This prevents very large values when the scattering
+coefficients are very close to zero.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log_eps</span> <span class="o">=</span> <span class="mf">1e-6</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-the-data">
+<h2>Loading the data<a class="headerlink" href="#loading-the-data" title="Permalink to this heading">¶</a></h2>
+<p>Once the parameter are set, we can start loading the data into a format that
+can be fed into the scattering transform and then a logistic regression
+classifier.</p>
+<p>We first download the dataset. If it’s already downloaded, <cite>fetch_fsdd</cite> will
+simply return the information corresponding to the dataset that’s already
+on disk.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">info_data</span> <span class="o">=</span> <span class="n">fetch_fsdd</span><span class="p">()</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">info_data</span><span class="p">[</span><span class="s1">&#39;files&#39;</span><span class="p">]</span>
+<span class="n">path_dataset</span> <span class="o">=</span> <span class="n">info_data</span><span class="p">[</span><span class="s1">&#39;path_dataset&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Set up NumPy arrays to hold the audio signals (<cite>x_all</cite>), the labels
+(<cite>y_all</cite>), and whether the signal is in the train or test set (<cite>subset</cite>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">T</span><span class="p">))</span>
+<span class="n">y_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For each file in the dataset, we extract its label <cite>y</cite> and its index from the
+filename. If the index is between 0 and 4, it is placed in the test set, while
+files with larger indices are used for training. The actual signals are
+normalized to have maximum amplitude one, and are truncated or zero-padded
+to the desired length <cite>T</cite>. They are then stored in the <cite>x_all</cite> array while
+their labels are in <cite>y_all</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+    <span class="n">basename</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Get label (0-9) of recording.</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Index larger than 5 gets assigned to training set.</span>
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="n">subset</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subset</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Load the audio signal and normalize it.</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_dataset</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="c1"># If it&#39;s too long, truncate it.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="c1"># If it&#39;s too short, zero-pad it.</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">x_all</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">y_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+</pre></div>
+</div>
+</section>
+<section id="log-scattering-layer">
+<h2>Log-scattering layer<a class="headerlink" href="#log-scattering-layer" title="Permalink to this heading">¶</a></h2>
+<p>We now create a classification model using the <cite>Scattering1D</cite> Keras layer.
+First, we take the input signals of length <cite>T</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_in</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>These are fed into the <cite>Scattering1D</cite> layer.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">Scattering1D</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="o">=</span><span class="n">Q</span><span class="p">)(</span><span class="n">x_in</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Since it does not carry useful information, we remove the zeroth-order
+scattering coefficients, which are always placed in the first channel of
+the scattering transform.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Lambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:])(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># To increase discriminability, we take the logarithm of the scattering</span>
+<span class="c1"># coefficients (after adding a small constant to make sure nothing blows up</span>
+<span class="c1"># when scattering coefficients are close to zero). This is known as the</span>
+<span class="c1"># log-scattering transform.</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Lambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">log_eps</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We then average along the last dimension (time) to get a time-shift
+invariant representation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">GlobalAveragePooling1D</span><span class="p">(</span><span class="n">data_format</span><span class="o">=</span><span class="s1">&#39;channels_first&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we apply batch normalization to ensure that the data is within a
+moderate range.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These features are then used to classify the input signal using a dense
+layer followed by a softmax activation.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x_out</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we create the model and display it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">x_in</span><span class="p">,</span> <span class="n">x_out</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="training-the-classifier">
+<h2>Training the classifier<a class="headerlink" href="#training-the-classifier" title="Permalink to this heading">¶</a></h2>
+<p>Having set up the model, we attach an Adam optimizer and a cross-entropy
+loss function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span>
+              <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;sparse_categorical_crossentropy&#39;</span><span class="p">,</span>
+              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We then train the model using <cite>model.fit</cite>. The training data is given by
+those indices satisfying <cite>subset == 0</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">],</span> <span class="n">y_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+          <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we evaluate the model on the held-out test data. These are given by
+the indices <cite>subset == 1</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="n">y_all</span><span class="p">[</span><span class="n">subset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-classif-keras-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/d9f1e51204e30e8b02fe64f0a5ff3298/classif_keras.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">classif_keras.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ae40ba1b42de375328198019fe04ebbf/classif_keras.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">classif_keras.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_real_signal.html">Compute the scattering transform of a speech recording</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 1D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_synthetic.html">Compute the scattering transform of a synthetic signal</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Classification of spoken digit recordings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pipeline-setup">Pipeline setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-the-data">Loading the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log-scattering-layer">Log-scattering layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-the-classifier">Training the classifier</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reconstruct_torch.html">Reconstruct a synthetic signal from its scattering transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_classif_torch.html">Classification of spoken digit recordings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">1D examples</a><ul>
+      <li>Previous: <a href="plot_synthetic.html" title="previous chapter">Compute the scattering transform of a synthetic signal</a></li>
+      <li>Next: <a href="reconstruct_torch.html" title="next chapter">Reconstruct a synthetic signal from its scattering transform</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gallery_1d/classif_keras.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Scattering disk display &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Regularized inverse of a scattering transform on MNIST" href="regularized_inverse_scattering_MNIST_torch.html" />
+    <link rel="prev" title="Inverting scattering via mse" href="plot_invert_scattering_torch.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="../_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-2d-plot-scattering-disk-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="scattering-disk-display">
+<span id="sphx-glr-gallery-2d-plot-scattering-disk-py"></span><h1>Scattering disk display<a class="headerlink" href="#scattering-disk-display" title="Permalink to this heading">¶</a></h1>
+<p>This script reproduces the display of scattering coefficients amplitude within a disk as described in
+“Invariant Scattering Convolution Networks” by J. Bruna and S. Mallat (2012) (<a class="reference external" href="https://arxiv.org/pdf/1203.1513.pdf">https://arxiv.org/pdf/1203.1513.pdf</a>).</p>
+<p>Author: <a class="reference external" href="https://github.com/Jonas1312">https://github.com/Jonas1312</a></p>
+<p>Edited by: Edouard Oyallon and anakin-datawalker</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">gridspec</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">kymatio</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">img_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;images/digit.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="scattering-computations">
+<h2>Scattering computations<a class="headerlink" href="#scattering-computations" title="Permalink to this heading">¶</a></h2>
+<blockquote>
+<div><p>First, we read the input digit:</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">img_name</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;L&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span>
+<span class="n">src_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">src_img</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;img shape: &quot;</span><span class="p">,</span> <span class="n">src_img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>img shape:  (32, 32)
+</pre></div>
+</div>
+<p>We compute a Scattering Transform with <span class="math notranslate nohighlight">\(L=6\)</span> angles and <span class="math notranslate nohighlight">\(J=3\)</span> scales.</p>
+<p>Morlet wavelets <span class="math notranslate nohighlight">\(\psi_{\theta}\)</span> are Hermitian, i.e: <span class="math notranslate nohighlight">\(\psi_{\theta}^*(u) = \psi_{\theta}(-u) = \psi_{\theta+\pi}(u)\)</span>.</p>
+<p>As a consequence, the modulus wavelet transform of a real signal <span class="math notranslate nohighlight">\(x\)</span> computed with a Morlet wavelet <span class="math notranslate nohighlight">\(\psi_{\theta}\)</span>
+is invariant by a rotation of <span class="math notranslate nohighlight">\(\pi\)</span> of the wavelet. Indeed, since <span class="math notranslate nohighlight">\((x*\psi_{\theta}(u))^* = x*(\psi_{\theta}^*)(u) =
+x*\psi_{\theta+\pi}(u)\)</span>, we have <span class="math notranslate nohighlight">\(\lvert x*\psi_{\theta}(u)\rvert = \lvert x*\psi_{\theta+\pi}(u)\rvert\)</span>.</p>
+<p>Scattering coefficients of order <span class="math notranslate nohighlight">\(n\)</span>:
+<span class="math notranslate nohighlight">\(\lvert \lvert \lvert x * \psi_{\theta_1, j_1} \rvert * \psi_{\theta_2, j_2} \rvert \cdots * \psi_{\theta_n, j_n}
+\rvert * \phi_J\)</span> are thus invariant to a rotation of <span class="math notranslate nohighlight">\(\pi\)</span> of any wavelet <span class="math notranslate nohighlight">\(\psi_{\theta_i, j_i}\)</span>. As a consequence,
+Kymatio computes scattering coefficients with <span class="math notranslate nohighlight">\(L\)</span> wavelets whose orientation is uniformly sampled in
+an interval of length <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">J</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">src_img</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">max_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">frontend</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We now compute the scattering coefficients:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_img_tensor</span> <span class="o">=</span> <span class="n">src_img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mf">255.</span>
+
+<span class="n">scat_coeffs</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">src_img_tensor</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;coeffs shape: &quot;</span><span class="p">,</span> <span class="n">scat_coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># Invert colors</span>
+<span class="n">scat_coeffs</span><span class="o">=</span> <span class="o">-</span><span class="n">scat_coeffs</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>coeffs shape:  (127, 4, 4)
+</pre></div>
+</div>
+<p>There are 127 scattering coefficients, among which 1 is low-pass, <span class="math notranslate nohighlight">\(JL=18\)</span> are of first-order and <span class="math notranslate nohighlight">\(L^2(J(J-1)/2)=108\)</span>
+are of second-order. Due to the subsampling by <span class="math notranslate nohighlight">\(2^J=8\)</span>, the final spatial grid is of size <span class="math notranslate nohighlight">\(4\times4\)</span>.
+We now retrieve first-order and second-order coefficients for the display.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">len_order_1</span> <span class="o">=</span> <span class="n">J</span><span class="o">*</span><span class="n">L</span>
+<span class="n">scat_coeffs_order_1</span> <span class="o">=</span> <span class="n">scat_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="o">+</span><span class="n">len_order_1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="n">norm_order_1</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">scat_coeffs_order_1</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">scat_coeffs_order_1</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mapper_order_1</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm_order_1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="c1"># Mapper of coefficient amplitude to a grayscale color for visualisation.</span>
+
+<span class="n">len_order_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">J</span><span class="o">*</span><span class="p">(</span><span class="n">J</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">scat_coeffs_order_2</span> <span class="o">=</span> <span class="n">scat_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="o">+</span><span class="n">len_order_1</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="n">norm_order_2</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">scat_coeffs_order_2</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">scat_coeffs_order_2</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">clip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">mapper_order_2</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">ScalarMappable</span><span class="p">(</span><span class="n">norm</span><span class="o">=</span><span class="n">norm_order_2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="c1"># Mapper of coefficient amplitude to a grayscale color for visualisation.</span>
+
+<span class="c1"># Retrieve spatial size</span>
+<span class="n">window_rows</span><span class="p">,</span> <span class="n">window_columns</span> <span class="o">=</span> <span class="n">scat_coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;nb of (order 1, order 2) coefficients: &quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">len_order_1</span><span class="p">,</span> <span class="n">len_order_2</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>nb of (order 1, order 2) coefficients:  (18, 108)
+</pre></div>
+</div>
+</section>
+<section id="figure-reproduction">
+<h2>Figure reproduction<a class="headerlink" href="#figure-reproduction" title="Permalink to this heading">¶</a></h2>
+<p>Now we can reproduce a figure that displays the amplitude of first-order and second-order scattering coefficients
+within a disk like in Bruna and Mallat’s paper.</p>
+<p>For visualisation purposes, we display first-order scattering coefficients
+<span class="math notranslate nohighlight">\(\lvert x * \psi_{\theta_1, j_1} \rvert * \phi_J\)</span> with <span class="math notranslate nohighlight">\(2L\)</span> angles <span class="math notranslate nohighlight">\(\theta_1\)</span> spanning <span class="math notranslate nohighlight">\([0,2\pi]\)</span> using the
+central symmetry of those coefficients explained above. We similarly display second-order scattering coefficients
+<span class="math notranslate nohighlight">\(\lvert \lvert x * \psi_{\theta_1, j_1} \rvert * \psi_{\theta_2, j_2} \rvert * \phi_J\)</span> with <span class="math notranslate nohighlight">\(2L\)</span> angles
+<span class="math notranslate nohighlight">\(\theta_1\)</span> spanning <span class="math notranslate nohighlight">\([0,2\pi]\)</span> but keep only <span class="math notranslate nohighlight">\(L\)</span> orientations for <span class="math notranslate nohighlight">\(\theta_2\)</span> (and thus an interval of <span class="math notranslate nohighlight">\(\pi\)</span>),
+so as not to overload the display.</p>
+<p>Here, each scattering coefficient is represented on the polar plane within a quadrant indexed by a radius
+and an angle.</p>
+<p>For first-order coefficients, the polar radius is inversely proportional to the scale <span class="math notranslate nohighlight">\(2^{j_1}\)</span> of the wavelet
+<span class="math notranslate nohighlight">\(\psi_{\theta_1, j_1}\)</span> while the angle corresponds to the orientation <span class="math notranslate nohighlight">\(\theta_1\)</span>. The surface of each quadrant
+is also inversely proportional to the scale <span class="math notranslate nohighlight">\(2^{j_1}\)</span>, which corresponds to the frequency bandwidth of the Fourier
+transform <span class="math notranslate nohighlight">\(\hat{\psi}_{\theta_1, j_1}\)</span>. First-order scattering quadrants can thus be indexed by <span class="math notranslate nohighlight">\((\theta_1,j_1)\)</span>.</p>
+<p>For second-order coefficients, each first-order quadrant is equally divided along the radius axis by the number
+of increasing scales <span class="math notranslate nohighlight">\(j_1 &lt; j_2 &lt; J\)</span> and by <span class="math notranslate nohighlight">\(L\)</span> along the angle axis to produce a quadrant indexed by
+<span class="math notranslate nohighlight">\((\theta_1,\theta_2, j_1, j_2)\)</span>. It simply means in our case where <span class="math notranslate nohighlight">\(J=3\)</span> that the first-order quadrant corresponding
+to <span class="math notranslate nohighlight">\(j_1=0\)</span> is subdivided along its radius in 2 equal quadrants corresponding to <span class="math notranslate nohighlight">\(j_2 \in \{1,2\}\)</span>, which are each
+further divided by the <span class="math notranslate nohighlight">\(L\)</span> possible <span class="math notranslate nohighlight">\(\theta_2\)</span> angles, and that <span class="math notranslate nohighlight">\(j_1=1\)</span> quadrants are only divided by <span class="math notranslate nohighlight">\(L\)</span>,
+corresponding to <span class="math notranslate nohighlight">\(j_2=2\)</span> and the <span class="math notranslate nohighlight">\(L\)</span> possible <span class="math notranslate nohighlight">\(\theta_2\)</span>. Note that no second-order coefficients are thus associated
+to <span class="math notranslate nohighlight">\(j_1=2\)</span> in this case whose quadrants are just left blank.</p>
+<p>Observe how the amplitude of first-order coefficients is strongest along the direction of edges, and that they
+exhibit by construction a central symmetry.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define figure size and grid on which to plot input digit image, first-order and second-order scattering coefficients</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">47</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<span class="n">spec</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_gridspec</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">gs_order_1</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpecFromSubplotSpec</span><span class="p">(</span><span class="n">window_rows</span><span class="p">,</span> <span class="n">window_columns</span><span class="p">,</span> <span class="n">subplot_spec</span><span class="o">=</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">gs_order_2</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpecFromSubplotSpec</span><span class="p">(</span><span class="n">window_rows</span><span class="p">,</span> <span class="n">window_columns</span><span class="p">,</span> <span class="n">subplot_spec</span><span class="o">=</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+<span class="c1"># Start by plotting input digit image and invert colors</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">src_img</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span><span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plot first-order scattering coefficients</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+<span class="n">l_offset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">L</span> <span class="o">-</span> <span class="n">L</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># follow same ordering as Kymatio for angles</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_rows</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_columns</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs_order_1</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">],</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;polar&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="n">coefficients</span> <span class="o">=</span> <span class="n">scat_coeffs_order_1</span><span class="p">[:,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+                <span class="n">coeff</span> <span class="o">=</span> <span class="n">coefficients</span><span class="p">[</span><span class="n">l</span> <span class="o">+</span> <span class="n">j</span> <span class="o">*</span> <span class="n">L</span><span class="p">]</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="n">mapper_order_1</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">coeff</span><span class="p">)</span>
+                <span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">l_offset</span> <span class="o">-</span> <span class="n">l</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">L</span>
+                <span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">angle</span><span class="p">,</span>
+                       <span class="n">height</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                       <span class="n">width</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">L</span><span class="p">,</span>
+                       <span class="n">bottom</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                       <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">angle</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
+                       <span class="n">height</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                       <span class="n">width</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">L</span><span class="p">,</span>
+                       <span class="n">bottom</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                       <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+<span class="c1"># Plot second-order scattering coefficients</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_rows</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_columns</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs_order_2</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">],</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;polar&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="n">coefficients</span> <span class="o">=</span> <span class="n">scat_coeffs_order_2</span><span class="p">[:,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">j1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">J</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+                        <span class="n">coeff_index</span> <span class="o">=</span> <span class="n">l1</span> <span class="o">*</span> <span class="n">L</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">j1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">l2</span> <span class="o">+</span> <span class="n">L</span> <span class="o">*</span> <span class="p">(</span><span class="n">j2</span> <span class="o">-</span> <span class="n">j1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">L</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> \
+                                      <span class="p">(</span><span class="n">j1</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">j1</span> <span class="o">*</span> <span class="p">(</span><span class="n">j1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="c1"># indexing a bit complex which follows the order used by Kymatio to compute</span>
+                        <span class="c1"># scattering coefficients</span>
+                        <span class="n">coeff</span> <span class="o">=</span> <span class="n">coefficients</span><span class="p">[</span><span class="n">coeff_index</span><span class="p">]</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="n">mapper_order_2</span><span class="o">.</span><span class="n">to_rgba</span><span class="p">(</span><span class="n">coeff</span><span class="p">)</span>
+                        <span class="c1"># split along angles first-order quadrants in L quadrants, using same ordering</span>
+                        <span class="c1"># as Kymatio (clockwise) and center (with the 0.5 offset)</span>
+                        <span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="n">l_offset</span> <span class="o">-</span> <span class="n">l1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">L</span> <span class="o">+</span> <span class="p">(</span><span class="n">L</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">l2</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">L</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="n">radius</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">j1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="c1"># equal split along radius is performed through height variable</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">angle</span><span class="p">,</span>
+                               <span class="n">height</span><span class="o">=</span><span class="n">radius</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">j1</span><span class="p">),</span>
+                               <span class="n">width</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">L</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                               <span class="n">bottom</span><span class="o">=</span><span class="n">radius</span> <span class="o">+</span> <span class="p">(</span><span class="n">radius</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">j1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">j2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                               <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+                        <span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">angle</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span>
+                               <span class="n">height</span><span class="o">=</span><span class="n">radius</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">j1</span><span class="p">),</span>
+                               <span class="n">width</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">L</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                               <span class="n">bottom</span><span class="o">=</span><span class="n">radius</span> <span class="o">+</span> <span class="p">(</span><span class="n">radius</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">j1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">j2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                               <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_scattering_disk_001.png" srcset="../_images/sphx_glr_plot_scattering_disk_001.png" alt="plot scattering disk" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.057 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-plot-scattering-disk-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c50ea393c6aba6af9deadd1bad3a2c21/plot_scattering_disk.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_scattering_disk.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/d76e3d53d72839710f96bf594b89a3f3/plot_scattering_disk.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_scattering_disk.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">2D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mnist_keras.html">Classification of MNIST with scattering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sklearn.html">Scikit-learn transformer example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_invert_scattering_torch.html">Inverting scattering via mse</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Scattering disk display</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scattering-computations">Scattering computations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#figure-reproduction">Figure reproduction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST_torch.html">Regularized inverse of a scattering transform on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_torch.html">Classification on CIFAR10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_resnet_torch.html">Classification on CIFAR10 (ResNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_small_sample.html">Classification on CIFAR10 (ResNet)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">2D examples</a><ul>
+      <li>Previous: <a href="plot_invert_scattering_torch.html" title="previous chapter">Inverting scattering via mse</a></li>
+      <li>Next: <a href="regularized_inverse_scattering_MNIST_torch.html" title="next chapter">Regularized inverse of a scattering transform on MNIST</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gallery_2d/plot_scattering_disk.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

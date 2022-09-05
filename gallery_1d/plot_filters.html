@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Plot the 1D wavelet filters &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="shortcut icon" href="../_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Compute the scattering transform of a synthetic signal" href="plot_synthetic.html" />
+    <link rel="prev" title="Compute the scattering transform of a speech recording" href="plot_real_signal.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="../_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-1d-plot-filters-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="plot-the-1d-wavelet-filters">
+<span id="sphx-glr-gallery-1d-plot-filters-py"></span><h1>Plot the 1D wavelet filters<a class="headerlink" href="#plot-the-1d-wavelet-filters" title="Permalink to this heading">¶</a></h1>
+<p>Let us examine the wavelet filters used by kymatio to calculate 1D scattering
+transforms. Filters are generated using the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">kymatio.scattering1d.filter_bank.scattering_filter_factory()</span></code> method,
+which creates both the first- and second-order filter banks.</p>
+<dl class="simple">
+<dt>Preliminaries</dt><dd></dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">kymatio.scattering1d.filter_bank</span> <span class="kn">import</span> <span class="n">scattering_filter_factory</span>
+</pre></div>
+</div>
+<p>We then import <cite>numpy</cite> and <cite>matplotlib</cite> to display the filters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<section id="filter-parameters-and-generation">
+<h2>Filter parameters and generation<a class="headerlink" href="#filter-parameters-and-generation" title="Permalink to this heading">¶</a></h2>
+<p>The filters are defined for a certain support size <cite>T</cite> which corresponds to
+the size of the input signal. The only restriction is that <cite>T</cite> must be a
+power of two. Since we are not computing any scattering transforms here, we
+may pick any power of two for <cite>T</cite>. Here, we choose <cite>2**13 = 8192</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">13</span>
+</pre></div>
+</div>
+<p>The parameter <cite>J</cite> specifies the maximum scale of the low-pass filters as a
+power of two. In other words, the largest filter will be concentrated in a time
+interval of size <cite>2**J</cite>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">J</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>The <cite>Q</cite> parameter controls the number of wavelets per octave in the</dt><dd><p>first-and second-order filter banks. The larger the value, the narrower
+these filters in the frequency domain and the wider they are in the time domain
+(in general, the number of non-negligible oscillations in time is proportional
+to <cite>Q</cite>). For audio signals, it is often beneficial to have a large value for
+<cite>Q1</cite> (between 4 and 16), since these signals are often highly oscillatory and</p>
+</dd>
+<dt>are better localized in frequency than they are in time. For the second layer,</dt><dd><p><cite>Q2</cite> is typically equal to 1 or 2. In this example, we set Q1=8 and Q2=1. Hence:</p>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Q</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We are now ready to create the filters. These are generated by the
+<cite>scattering_filter_factory</cite> method, which takes the logarithm of <cite>T</cite> and
+the <cite>J</cite> and <cite>Q</cite> parameters. It returns the lowpass filter (<cite>phi_f</cite>), the
+first-order wavelet filters (<cite>psi1_f</cite>), and the second-order filters
+(<cite>psi2_f</cite>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">phi_f</span><span class="p">,</span> <span class="n">psi1_f</span><span class="p">,</span> <span class="n">psi2_f</span> <span class="o">=</span> <span class="n">scattering_filter_factory</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <cite>phi_f</cite> output is a dictionary where each integer key corresponds points
+to the instantiation of the filter at a certain resolution. Specifically,
+<cite>phi_f[‘levels’][0]</cite> corresponds to the lowpass filter at resolution <cite>T</cite>, while
+<cite>phi_f[‘levels’][1]</cite> corresponds to the filter at resolution <cite>T/2</cite>, and so on.</p>
+<p>While <cite>phi_f</cite> only contains a single filter (at different resolutions),
+the <cite>psi1_f</cite> and <cite>psi2_f</cite> outputs are lists of filters, one for each wavelet
+bandpass filter in the filter bank.</p>
+</section>
+<section id="plot-the-frequency-response-of-the-filters">
+<h2>Plot the frequency response of the filters<a class="headerlink" href="#plot-the-frequency-response-of-the-filters" title="Permalink to this heading">¶</a></h2>
+<p>We are now ready to plot the frequency response of the filters.
+We first display the lowpass filter (at full resolution) in red.
+We then plot each of the bandpass filters in blue. Since we don’t care about
+the negative frequencies, we limit the plot to the frequency interval
+<span class="math notranslate nohighlight">\([0, 0.5]\)</span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">,</span> <span class="n">phi_f</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">psi_f</span> <span class="ow">in</span> <span class="n">psi1_f</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">,</span> <span class="n">psi_f</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\omega$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\hat\psi_j(\omega)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Frequency response of first-order filters (Q = </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Q</span><span class="p">),</span>
+          <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_filters_001.png" srcset="../_images/sphx_glr_plot_filters_001.png" alt="Frequency response of first-order filters (Q = (8, 1))" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Frequency response of first-order filters (Q = (8, 1))&#39;)
+</pre></div>
+</div>
+<p>Do the same plot for the second-order filters. Note that since here <cite>Q = 1</cite>,
+we obtain wavelets that have higher frequency bandwidth.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">,</span> <span class="n">phi_f</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">psi_f</span> <span class="ow">in</span> <span class="n">psi2_f</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">/</span><span class="n">T</span><span class="p">,</span> <span class="n">psi_f</span><span class="p">[</span><span class="s1">&#39;levels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\omega$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\hat\psi_j(\omega)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Frequency response of second-order filters (Q = 1)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_filters_002.png" srcset="../_images/sphx_glr_plot_filters_002.png" alt="Frequency response of second-order filters (Q = 1)" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Frequency response of second-order filters (Q = 1)&#39;)
+</pre></div>
+</div>
+</section>
+<section id="plot-the-filter-in-time-domain">
+<h2>Plot the filter in time domain<a class="headerlink" href="#plot-the-filter-in-time-domain" title="Permalink to this heading">¶</a></h2>
+<p>The filters have been generated directly in the frequency domain to efficiently
+compute the convolution using the fft. By applying the ifft we get the filters
+in the time domain yielding analytic wavelets. We plot the first-order largest
+wavelet band-pass filter here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;text.usetex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+<span class="n">psi_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">psi1_f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;levels&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">psi_real</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">psi_time</span><span class="p">)</span>
+<span class="n">psi_imag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">psi_time</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">psi_real</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="o">**</span><span class="mi">8</span><span class="p">:],</span><span class="n">psi_real</span><span class="p">[:</span><span class="mi">2</span><span class="o">**</span><span class="mi">8</span><span class="p">])),</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">psi_imag</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="o">**</span><span class="mi">8</span><span class="p">:],</span><span class="n">psi_imag</span><span class="p">[:</span><span class="mi">2</span><span class="o">**</span><span class="mi">8</span><span class="p">])),</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$t$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\psi(t)$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;First-order filter - Time domain (Q = </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Q</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;$\psi$_real&quot;</span><span class="p">,</span><span class="s2">&quot;$\psi$_imag&quot;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_filters_003.png" srcset="../_images/sphx_glr_plot_filters_003.png" alt="First-order filter - Time domain (Q = (8, 1))" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.454 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-1d-plot-filters-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/a6ec0b7451e8effecc2ff9e8507a2261/plot_filters.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_filters.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c59c0082264771134ab4aab9be0808b6/plot_filters.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_filters.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">1D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_real_signal.html">Compute the scattering transform of a speech recording</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Plot the 1D wavelet filters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#filter-parameters-and-generation">Filter parameters and generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-the-frequency-response-of-the-filters">Plot the frequency response of the filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-the-filter-in-time-domain">Plot the filter in time domain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_synthetic.html">Compute the scattering transform of a synthetic signal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classif_keras.html">Classification of spoken digit recordings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reconstruct_torch.html">Reconstruct a synthetic signal from its scattering transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_classif_torch.html">Classification of spoken digit recordings</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_2d/index.html">2D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">1D examples</a><ul>
+      <li>Previous: <a href="plot_real_signal.html" title="previous chapter">Compute the scattering transform of a speech recording</a></li>
+      <li>Next: <a href="plot_synthetic.html" title="next chapter">Compute the scattering transform of a synthetic signal</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gallery_1d/plot_filters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>

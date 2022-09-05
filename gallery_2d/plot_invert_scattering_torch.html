@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Inverting scattering via mse &#8212; kymatio 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/kymatio.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Scattering disk display" href="plot_scattering_disk.html" />
+    <link rel="prev" title="Plot the 2D wavelet filters" href="plot_filters.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+    <link rel="apple-touch-icon" href="../_static/kymatio.jpg" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-gallery-2d-plot-invert-scattering-torch-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="inverting-scattering-via-mse">
+<span id="sphx-glr-gallery-2d-plot-invert-scattering-torch-py"></span><h1>Inverting scattering via mse<a class="headerlink" href="#inverting-scattering-via-mse" title="Permalink to this heading">¶</a></h1>
+<p>This script aims to quantify the information loss for natural images by
+performing a reconstruction of an image from its scattering coefficients via a
+L2-norm minimization.</p>
+<section id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">from</span> <span class="nn">scipy.misc</span> <span class="kn">import</span> <span class="n">face</span>
+
+<span class="kn">from</span> <span class="nn">kymatio.torch</span> <span class="kn">import</span> <span class="n">Scattering2D</span>
+
+<span class="n">device</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="load-test-image">
+<h2>Load test image<a class="headerlink" href="#load-test-image" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src_img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">face</span><span class="p">())</span>
+<span class="n">src_img</span> <span class="o">=</span> <span class="n">src_img</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">512</span><span class="p">,</span> <span class="mi">384</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">ANTIALIAS</span><span class="p">)</span>
+<span class="n">src_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">src_img</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">src_img</span> <span class="o">=</span> <span class="n">src_img</span> <span class="o">/</span> <span class="mf">255.0</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">src_img</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Original image&quot;</span><span class="p">)</span>
+
+<span class="n">src_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">src_img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># HWC to CHW</span>
+<span class="n">max_iter</span> <span class="o">=</span> <span class="mi">15</span> <span class="c1"># number of steps for the GD</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Image shape: &quot;</span><span class="p">,</span> <span class="n">src_img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">channels</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">src_img</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+<img src="../_images/sphx_glr_plot_invert_scattering_torch_001.png" srcset="../_images/sphx_glr_plot_invert_scattering_torch_001.png" alt="Original image" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/kymatio/kymatio/examples/2d/plot_invert_scattering_torch.py:28: DeprecationWarning: ANTIALIAS is deprecated and will be removed in Pillow 10 (2023-07-01). Use Resampling.LANCZOS instead.
+  src_img = src_img.resize((512, 384), Image.ANTIALIAS)
+Image shape:  (3, 384, 512)
+</pre></div>
+</div>
+</section>
+<section id="main-loop">
+<h2>Main loop<a class="headerlink" href="#main-loop" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">J</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>
+
+        <span class="c1"># Compute scattering coefficients</span>
+        <span class="n">scattering</span> <span class="o">=</span> <span class="n">Scattering2D</span><span class="p">(</span><span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">),</span> <span class="n">max_order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s2">&quot;cuda&quot;</span><span class="p">:</span>
+            <span class="n">scattering</span> <span class="o">=</span> <span class="n">scattering</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">max_iter</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="n">src_img_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">src_img</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span>
+        <span class="n">scattering_coefficients</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">src_img_tensor</span><span class="p">)</span>
+
+        <span class="c1"># Create trainable input image</span>
+        <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">src_img</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Optimizer hyperparams</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">([</span><span class="n">input_tensor</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Training</span>
+        <span class="n">best_img</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_iter</span><span class="p">):</span>
+            <span class="n">new_coefficients</span> <span class="o">=</span> <span class="n">scattering</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">new_coefficients</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">scattering_coefficients</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Epoch </span><span class="si">{}</span><span class="s2">, loss: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">epoch</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">loss</span> <span class="o">&lt;</span> <span class="n">best_loss</span><span class="p">:</span>
+                <span class="n">best_loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">best_img</span> <span class="o">=</span> <span class="n">input_tensor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="n">best_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">best_img</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="c1"># PSNR</span>
+        <span class="n">mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">src_img</span> <span class="o">-</span> <span class="n">best_img</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">psnr</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">PSNR: </span><span class="si">{:.2f}</span><span class="s2">dB for order </span><span class="si">{}</span><span class="s2"> and J=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">psnr</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+
+        <span class="c1"># Plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">best_img</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PSNR: </span><span class="si">{:.2f}</span><span class="s2">dB (order </span><span class="si">{}</span><span class="s2">, J=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">psnr</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">J</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../_images/sphx_glr_plot_invert_scattering_torch_002.png" srcset="../_images/sphx_glr_plot_invert_scattering_torch_002.png" alt="PSNR: 14.85dB (order 1, J=2)" class = "sphx-glr-multi-img"/></li>
+<li><img src="../_images/sphx_glr_plot_invert_scattering_torch_003.png" srcset="../_images/sphx_glr_plot_invert_scattering_torch_003.png" alt="PSNR: 14.97dB (order 1, J=4)" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Epoch 1, loss: 0.004395806696265936
+Epoch 2, loss: 0.010747981257736683
+Epoch 3, loss: 0.0029847484547644854
+Epoch 4, loss: 0.002685928950086236
+Epoch 5, loss: 0.004441110882908106
+Epoch 6, loss: 0.0030704180244356394
+Epoch 7, loss: 0.0015076962299644947
+Epoch 8, loss: 0.0015746791614219546
+Epoch 9, loss: 0.0020367270335555077
+Epoch 10, loss: 0.001731803989969194
+Epoch 11, loss: 0.0011120557319372892
+Epoch 12, loss: 0.0009237747872248292
+Epoch 13, loss: 0.0010906597599387169
+Epoch 14, loss: 0.0011006807908415794
+PSNR: 14.85dB for order 1 and J=2
+Epoch 1, loss: 0.0018843415891751647
+Epoch 2, loss: 0.0028222508262842894
+Epoch 3, loss: 0.0010740647558122873
+Epoch 4, loss: 0.0007734951213933527
+Epoch 5, loss: 0.0010741836158558726
+Epoch 6, loss: 0.0008093100623227656
+Epoch 7, loss: 0.00048384207184426486
+Epoch 8, loss: 0.00044804130448028445
+Epoch 9, loss: 0.0004951524315401912
+Epoch 10, loss: 0.0004230768245179206
+Epoch 11, loss: 0.00030509373755194247
+Epoch 12, loss: 0.00026347331004217267
+Epoch 13, loss: 0.00027792336186394095
+Epoch 14, loss: 0.00026439508656039834
+PSNR: 14.97dB for order 1 and J=4
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  14.631 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-2d-plot-invert-scattering-torch-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/13f2d4903fe92124758c31271d1c19bb/plot_invert_scattering_torch.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_invert_scattering_torch.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/86a30be9c5bff25c3824a05e9c4e75b0/plot_invert_scattering_torch.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_invert_scattering_torch.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/kymatio.jpg" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Wavelet Scattering in Python<br>&nbsp;&nbsp;&nbsp;<a href="https://twitter.com/KymatioWavelets"><img width="40px" src="https://avatars3.githubusercontent.com/u/50278?s=200&v=4"></a></p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=kymatio&repo=kymatio&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userguide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerguide.html">Information for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../codereference.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_1d/index.html">1D examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">2D examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mnist_keras.html">Classification of MNIST with scattering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_sklearn.html">Scikit-learn transformer example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_filters.html">Plot the 2D wavelet filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Inverting scattering via mse</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#imports">Imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#load-test-image">Load test image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#main-loop">Main loop</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="plot_scattering_disk.html">Scattering disk display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="regularized_inverse_scattering_MNIST_torch.html">Regularized inverse of a scattering transform on MNIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_torch.html">Classification on CIFAR10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_resnet_torch.html">Classification on CIFAR10 (ResNet)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cifar_small_sample.html">Classification on CIFAR10 (ResNet)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery_3d/index.html">3D examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">What’s New</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">2D examples</a><ul>
+      <li>Previous: <a href="plot_filters.html" title="previous chapter">Plot the 2D wavelet filters</a></li>
+      <li>Next: <a href="plot_scattering_disk.html" title="next chapter">Scattering disk display</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018–2021, The Kymatio Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/gallery_2d/plot_invert_scattering_torch.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/kymatio/kymatio" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-130785726-1']);
+      _gaq.push(['_setDomainName', 'none']);
+      _gaq.push(['_setAllowLinker', true]);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
+</html>
